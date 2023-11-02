@@ -1,0 +1,195 @@
+<html>
+
+<head>
+    <title>Database</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+    <header>
+        <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
+            RelaX</a>
+        <a class="nav-link" href="../index.html" target="_self">Home</a>
+        <h1>Database</h1>
+    </header>
+    <section>
+        <h2>SELECT</h3>
+            <h3>Natural JOIN</h3>
+            <p>Per effettuare Natural JOIN in SQL tramite query SELECT possiamo:
+                <code>SELECT emp.name, dep.name FROM emp,dep WHERE emp.name = dep.name</code>
+                Viene fatto quindi un Natural JOIN prendendo in considerazione l'attributo name.
+            </p>
+            <h3>Prodotto cartesiano</h3>
+            <p>Se nella query SELECT non andiamo a specificare alcuna condizione WHERE allora otteniamo il prodotto
+                cartesiano dell'algebra relazionale
+                <code>SELECT * FROM emp,dep</code>
+                Viene fatto quindi un Natural JOIN prendendo in considerazione l'attributo name.
+            </p>
+    </section>
+    <section>
+        <h2>Join esplicito (JOIN ON)</h2>
+        <p>Questo operatore serve ad effettuare operazioni di JOIN più complesse (anche annidate). Vediamone le
+            caratteristiche</p>
+        <ul>
+            <li>Più adatta per effettuare operazioni di JOIN. La sintassi SELECT è stata ideata infatti per fare il
+                prodotto cartesiano
+            </li>
+            <li>Dal primo punto, arriviamo a questo e cioè è più rapida rispetto alla classica SELECT nell'effettuare
+                operazioni di JOIN.
+                <code>SELECT madre.madre, padre.padre, madre.figlio FROM madre,padre WHERE madre.figlio = padre.figlio</code>
+                <code>SELECT madre.madre,padre.padre, madre.figlio FROM madre JOIN padre ON madre.figlio = padre.figlio</code>
+            </li>
+            <li>La sua sintassi è più chiara soprattutto con l'ausilio degli alias rispetto ad una SELECT
+                <code><span class="code-title">Scarta il valore più grande da una lista di numeri (SELECT)</span> SELECT number.value FROM number,number as number2  WHERE number.value < number2.value</code>
+                <code><span class="code-title">scarta il valore più grande da una lista di numeri (JOIN ON)</span> SELECT number.value FROM number JOIN number as number2 ON number.value < number2.value</code>
+            </li>
+            <li>Ci permette di effettuare operazioni di OUTER JOIN che non avremmo potuto fare con l'operatore SELECT
+                <code><span class="code-title">Restituisci il valore del padre e se è noto anche il valore della madre</span>SELECT padre.padre,madre.madre,padre.figlio FROM padre LEFT JOIN madre ON madre.figlio = padre.figlio</code>
+                In questo caso vogliamo conservare i valori del padre (a sinistra rispetto la JOIN) e tornare null se
+                non è presente la madre (a destra rispetto la JOIN), quello che vogliamo fare è cioè conservare se non
+                presenti quelli di destra i valori di sinistra (padre).
+                Possiamo anche scrivere una RIGHT OUTER JOIN:
+                <code><span class="code-title">Restituisci il valore della madre e se è noto anche il valore del padre</span>SELECT padre.padre,madre.madre,padre.figlio FROM padre RIGHT JOIN madre ON madre.figlio = padre.figlio</code>
+                Ed infine vediamo una FULL OUTER JOIN:
+                <code><span class="code-title">Restituisci il valore della madre e del padre (anche se non sono noti) </span>SELECT padre.padre,madre.madre,padre.figlio FROM padre FULL JOIN madre ON madre.figlio = padre.figlio</code>
+            </li>
+            <li><span class="bold">CROSS JOIN</span> è un modo per forzare il prodotto cartesiano partendo da una JOIN
+            </li>
+            <li><span class="bold">NATURAL JOIN</span>che effettua la NATURAL JOIN tra due tabelle considerando <span
+                    class="bold">TUTTI</span> i loro attributi in comune.
+                <code><span class="code-title">Date A={x,y,z} e B={y,z,t} questo operatore creerà una nuova relazione mettendo insieme A.y,A.z,B.y,B.z</span></code>
+                <code><span class="code-title">Voglio ottenere tutte quelle coppie che hanno il figlio in comune (sono mamma e papà)</span>SELECT padre.padre,madre.madre FROM madre NATURAL JOIN padre</code>
+                Abbiamo rifatto cioè il primo esempio di questo punto elenco ma sfruttando un operatore più adatto
+            </li>
+            <li><span class="bold">JOIN ... USING ()</span> che effettua la NATURAL JOIN tra due tabelle considerando
+                attributi <span class="bold">SPECIFICI</span> dichiarati nella USING.
+                <code><span class="code-title">Date A={x,y,z} e B={y,z,t} e specificando y in USING questo operatore creerà una nuova relazione mettendo insieme A.y,B.y</span></code>
+            </li>
+            <li><span class="bold">[LEFT | RIGHT | FULL]</span> usato con NATURAL JOIN o JOIN
+                <code>
+                        <span class="code-title">
+                            Dato lo schema relazionale agenti(codiceagente) e ordini(codiceagente,ammontare) si vuole capire il codice agente e l'ammontare anche di agenti che non hanno efettuato ordini
+                        </span>
+                            SELECT ordini.codiceagente,ordini.ammontare FROM agenti LEFT NATURAL JOIN ordini
+                        <span class="code-title">
+                            Quello che avevo fatto io era invece
+                        </span>
+                        SELECT ordini.codiceagente,ordini.ammontare FROM agenti LEFT JOIN ordini ON agenti.codiceagente=ordini.codiceagente
+                        <span class="code-title">
+                            Su dati agenti{1,2,3,4} e ordini{(1,20),(2,40)} mi dava un risultato del tipo {(1,20),(2,40),(NULL,NULL)} praticamente mi considerava i valori NULL ma sbagliando cioè (NULL,NULL) è come se fossero due agenti.codiceagente=ordini.codiceagente
+                        </span>
+                    
+                    </code>
+            </li>
+            <li><span class="bold">UNION JOIN ON</span> che approfondiamo più avanti</li>
+        </ul>
+    </section>
+    <section>
+        <h2>Unione, Intersezione e Differenza</h3>
+            <h3>UNION</h3>
+            <p>Di per se la SELECT non permette di fare l'unione, per farlo usiamo la sintassi:
+                <code>SELECT ... UNION [ALL] ... SELECT</code>
+                Questa operazione mantiene i duplicati, per eliminarli aggiungiamo ALL. L'unione di SQL non è l'unione
+                dell'algebra relazionale.
+                Vediamo quali attributi vengono conservati e come viene fatta l'unione del seguente esempio:
+                <code>
+                        SELECT padre.padre FROM padre UNION SELECT madre.madre FROM mandre
+                    </code>
+                Se partiamo da uno schema relazionale con dati padre(1,2,3) e madre(3,4,5) allora il risultato della
+                query sarà (1,2,3,3,4,5) e verrà conservato solo l'attributo padre.
+                Quindi durante un UNION i valori della seconda SELECT vengono <span class="bold">messi sotto </span> i
+                valori dela prima e viene conservato l'attributo della prima relazione che appare nella UNION. Se
+                specifichiamo
+                ALL nella query allora il risultato sarà (1,2,3,4,5) rimuovendo il duplicato 3. Di conseguenza <span
+                    class="bold">gli attributi che si vanno a scegliere nella UNION devono essere dello stesso tipo e
+                    nello stesso ordine tra le due SELECT
+                    altrimenti non funzionerà</span>
+
+            </p>
+            <h3>INTERSECT</h3>
+            <p>Permette di fare l'intersezione insiemistica</p>
+            <code>SELECT ... INTERSECT [ALL] ... SELECT</code>
+            <h3>EXCEPT</h3>
+            <p>Permette di fare la differenza insiemistica</p>
+            <code>SELECT ... EXCEPT [ALL] ... SELECT</code>
+    </section>
+    <section>
+        <h2>Aggregazioni di dati</h3>
+            In SQL abbiamo 5 operatori di aggregamento:
+            <ul>
+                <li><span class="bold">COUNT</span>: il suo comportamento varia in base l'utilizzo. Restituisce 0 se chiamata su tutti valori NULL</li>
+                <li><span class="bold">MIN</span>:usabile per tutti i tipi SQL. Restituisce NULL se chiamata su tutti valori NULL</li>
+                <li><span class="bold">MAX</span>: usabile per tutti i tipi SQL. Restituisce NULL se chiamata su tutti valori NULL</li>
+                <li><span class="bold">AVG</span>: solo per colonne numeriche. Ignora i valori nulli e restituisce NULL se chiamata su tutti valori NULL</li>
+                <li><span class="bold">SUM</span>: solo per colonne numeriche. Ignora i valori nulli e restituisce NULL se chiamata su tutti valori NULL</li>
+            </ul>
+            In algebra relazionale, a meno di stratagemmi, non abbiamo operatori di aggregamento out of the box. Vediamo
+            la sintassi
+            <code><span class="bold">SELECT [column,] group_function(column) FROM table [WHERE condition]</span> [GROUP BY column] [ORDER BY column]</code>
+            Per adesso ci andiamo a concentrare sulla parte evidenziata.
+            <code><span class="code-title">Selezionare dalla tabella stipendi(valore) il massimo ed il minimo stipendio e lo stipendio medio</span>
+                SELECT MAX(stipendi.valore),MIN(stipendi.valore),AVG(stipendi.valore) FROM stipendi
+            </code>
+            <h3>COUNT</h3>
+            <p>Il comportamento di questo operatore cambia in base a come usato. Vediamo come cambia il comportamento prendendo un db.</p>
+            <table>
+                <thead>
+                  <tr>
+                    <th>valore</th>
+                    <th>nome</th>
+                  </tr>
+                </thead>
+                <tbody>
+                   <tr>
+                    <td>1800</td>
+                    <td>Giacomo</td>
+                  </tr>
+                  <tr>
+                    <td>1200</td>
+                    <td>Luca</td>
+
+                  </tr>
+                  <tr>
+                    <td>1800</td>
+                    <td>Francesco</td>
+                  </tr>
+                  <tr>
+                    <td>NULL</td>
+                    <td>Samuele</td>
+                  </tr>
+                </tbody>
+            </table>
+            <ul>
+                <li> Il COUNT(*) con il simbolo star, conta il numero di righe che abbiamo come risultato dalla query.
+                    <code>SELECT COUNT(*) FROM stipendi WHERE stipendi.valore=1800</code>
+                    Avremo come risultato 2, effettivamente abbiamo due stipendi di 1800 nella tabella.
+                </li>
+                <li>Se specificato un attributo COUNT(att) restituisce il numero di valori non nulli di quell'attributo
+                    <code>SELECT COUNT(stipendi.valore) FROM stipendi WHERE stipendi.valore=1800</code>
+                    Avremo come risultato 3 con duplicati: 1800,1200,1800
+                </li>
+                <li>
+                    <code>SELECT COUNT(DISTINCT stipendi.valore) FROM stipendi WHERE stipendi.valore=1800</code>
+                    Avremo come risultato 2, infatti due sono i possibili valori non nulli non duplicati: 1200 e 1800.
+                </li>
+            </ul>
+            <h3>Osservazioni</h3>
+            è possibile utilizzare questi operatori con SELECT:
+            <code>
+                <span class="code-title" >Restituisci la media degli stipendi maggiori di 1800</span>
+                SELECT avg(stipendi.valore) FROM stipendi WHERE stipendi.valore > 1800
+            </code>
+            Se usiamo operatori di raggruppamento, non possiamo inserire nuovi attributi nella target list. Non potremmo ad esempio fare
+            <code> SELECT avg(valore),stipendi.nome FROM stipendi WHERE stipendi.valore > 1800</code>
+            Possiamo superare questo limite con l'operatore GROUP BY.
+            <span class="bold">quindi nella target list o attributi o operatori di raggruppamento</span>
+            <h3>GROUP BY</h3>
+            <p>Divide le righe di una tabella in gruppo più piccoli, si tratta di un modo per raggirare il limite di prima, quindi possiamo scrivere:
+                <code> SELECT avg(valore),stipendi.nome FROM stipendi WHERE =.valore > 1800 GROUP BY stipendinome</code>
+            </p>
+            
+
+    </section>
+</body>
+
+</html>

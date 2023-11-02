@@ -1,0 +1,52 @@
+code{
+    padding: 10px;
+    margin: 20px;
+    display: block;
+    background-color:antiquewhite;
+}
+.code-inline{
+    display: inline;
+    padding: 2px;
+    margin: 0px;
+    background-color:antiquewhite;
+}
+.code-title{
+    display: block;
+    padding: 10px;
+    font-family:'Courier New', Courier, monospace;
+}
+.nav-link{
+    float: right;  
+    margin: 10px;
+    color: white
+}
+table{
+    border: 1px solid;
+    width: 100%;
+    text-align: center;
+}
+img{
+    display: block;
+    padding: 10px;
+    width: 400px;
+}
+.bold{
+    font-weight: bold;
+}
+section{
+    padding: 30px;
+    margin: 10px;
+    border: 0px;
+    border-bottom: 2px;
+    border-color: black;
+    border-style: solid;
+}
+body{
+    margin: 0;
+    padding: 0;
+}
+header{
+    background-color:slategray;
+    color: white;
+    padding: 20px;
+}
