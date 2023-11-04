@@ -19,11 +19,48 @@
         <code>
             SELECT column FROM TABLE WHERE column >= (SELECT column2 FROM TABLE2)
         </code>
-        Affinchè la query sia valida, la <span class="bold">subselect</span> dovrà restituire un solo valore o nessuno perchè l'operatore >= accetta confronti con un solo valore.
-        Se avessimo avuto l'operatore IN e la subselect restituiva una lista, allora la query era da considerarsi sintatticamente corretta. Quindi nel caso di subselect nei confronti
-        è esseziale che il risultato restituito dalla subselect sia conforme alle specifiche dell'operatore di confronto usato. 
+        <p> Affinchè la query sia valida, la <span class="bold">subselect</span> dovrà restituire un solo valore o
+            nessuno perchè l'operatore >= accetta confronti con un solo valore.
+            Se avessimo avuto l'operatore IN e la subselect restituiva una lista, allora la query era da considerarsi
+            sintatticamente corretta. Quindi nel caso di subselect nei confronti
+            è esseziale che il risultato restituito dalla subselect sia conforme alle specifiche dell'operatore di
+            confronto usato..Esitono degli attributi interessanti da usare con le subselect: 
+        </p>
+        <ul>
+            <li>
+                <code class="code-inline">ANY</span></code>
+                <p>
+                    Ritorna true se almeno uno dei risultati della subselect rispetta la condizione.
+                    Es. <code class="code-inline">...WHERE A > ANY (subselect)</code>
+                </p>
+            </li>
+            <li>
+                <code class="code-inline">ALL</span></code>
+                <p>
+                    Ritorna true se tutti i risultati della subselect rispettano la condizione.
+                    Es. <code class="code-inline">...WHERE A > ALL (subselect)</code>
+                </p>
+            </li>
+            <li>
+                <code class="code-inline">[NOT] EXISTS</span></code>
+                <p>
+                    Ritorna true se la subselect restituisce almeno un record.
+                    Es. <code class="code-inline">...WHERE EXISTS (subselect)</code>
+                </p>
+            </li>
+            <li>
+                <code class="code-inline">[NOT] IN</span></code>
+            </li>
+        </ul>
+        <p>
+            <span class="bold">Una subselect non può contenere operatori insiemistici (UNION, INTERSECT, EXCEPT)</span> quindi
+            <code class="wrong">
+                <span class="code-title">Limite SQL</span>
+                SELECT column FROM table WHERE condition (SELECT column2 FROM table2 UNION SELECT column3 FROM table3)
+            </code>
+        </p>
     </section>
-    
+
 </body>
 
 </html>
