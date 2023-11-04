@@ -1,0 +1,29 @@
+<html>
+
+<head>
+    <title>Database</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+    <header>
+        <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
+            RelaX</a>
+        <a class="nav-link" href="https://www.w3schools.com/sql/trysql.asp?filename=trysql_asc">Simulatore SQL</a>
+        <a class="nav-link" href="../index.html" target="_self">Home</a>
+        <h1>Database</h1>
+    </header>
+    <section>
+        <h2>Annidamento tra query</h2>
+        <p>In SQL è possibile annidare query tra di loro.</p>
+        <code>
+            SELECT column FROM TABLE WHERE column >= (SELECT column2 FROM TABLE2)
+        </code>
+        Affinchè la query sia valida, la <span class="bold">subselect</span> dovrà restituire un solo valore o nessuno perchè l'operatore >= accetta confronti con un solo valore.
+        Se avessimo avuto l'operatore IN e la subselect restituiva una lista, allora la query era da considerarsi sintatticamente corretta. Quindi nel caso di subselect nei confronti
+        è esseziale che il risultato restituito dalla subselect sia conforme alle specifiche dell'operatore di confronto usato. 
+    </section>
+    
+</body>
+
+</html>

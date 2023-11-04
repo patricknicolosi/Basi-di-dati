@@ -9,6 +9,7 @@
     <header>
         <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
             RelaX</a>
+        <a class="nav-link" href="https://www.w3schools.com/sql/trysql.asp?filename=trysql_asc">Simulatore SQL</a>
         <a class="nav-link" href="../index.html" target="_self">Home</a>
         <h1>Database</h1>
     </header>
@@ -123,72 +124,83 @@
                 <li><span class="bold">AVG</span>: solo per colonne numeriche. Ignora i valori nulli e restituisce NULL se chiamata su tutti valori NULL</li>
                 <li><span class="bold">SUM</span>: solo per colonne numeriche. Ignora i valori nulli e restituisce NULL se chiamata su tutti valori NULL</li>
             </ul>
-            In algebra relazionale, a meno di stratagemmi, non abbiamo operatori di aggregamento out of the box. Vediamo
-            la sintassi
-            <code><span class="bold">SELECT [column,] group_function(column) FROM table [WHERE condition]</span> [GROUP BY column] [ORDER BY column]</code>
-            Per adesso ci andiamo a concentrare sulla parte evidenziata.
-            <code><span class="code-title">Selezionare dalla tabella stipendi(valore) il massimo ed il minimo stipendio e lo stipendio medio</span>
-                SELECT MAX(stipendi.valore),MIN(stipendi.valore),AVG(stipendi.valore) FROM stipendi
+            <p>
+                Posso usare operatori tutti gli operatori di aggregamento con sintassi
+            </p>
+            <code>
+                SELECT group_by(column) FROM table
             </code>
-            <h3>COUNT</h3>
-            <p>Il comportamento di questo operatore cambia in base a come usato. Vediamo come cambia il comportamento prendendo un db.</p>
-            <table>
-                <thead>
-                  <tr>
-                    <th>valore</th>
-                    <th>nome</th>
-                  </tr>
-                </thead>
-                <tbody>
-                   <tr>
-                    <td>1800</td>
-                    <td>Giacomo</td>
-                  </tr>
-                  <tr>
-                    <td>1200</td>
-                    <td>Luca</td>
-
-                  </tr>
-                  <tr>
-                    <td>1800</td>
-                    <td>Francesco</td>
-                  </tr>
-                  <tr>
-                    <td>NULL</td>
-                    <td>Samuele</td>
-                  </tr>
-                </tbody>
-            </table>
-            <ul>
-                <li> Il COUNT(*) con il simbolo star, conta il numero di righe che abbiamo come risultato dalla query.
-                    <code>SELECT COUNT(*) FROM stipendi WHERE stipendi.valore=1800</code>
-                    Avremo come risultato 2, effettivamente abbiamo due stipendi di 1800 nella tabella.
-                </li>
-                <li>Se specificato un attributo COUNT(att) restituisce il numero di valori non nulli di quell'attributo
-                    <code>SELECT COUNT(stipendi.valore) FROM stipendi WHERE stipendi.valore=1800</code>
-                    Avremo come risultato 3 con duplicati: 1800,1200,1800
+            <p>
+                <span class="bold">Quello che non posso fare è dichiarare target list miste con operatori di aggregamento e attributi</span>, quindi:
+            </p>
+            <code class="wrong">
+                <span class="code-title">Sintassi errata</span>
+                SELECT column,group_by(column) FROM table
+            </code>
+            <p>
+                Per aggirare questo problema introduciamo l'operatore <code class="code-inline">GROUP BY</code>. Con GROUP BY possiamo quindi:
+            </p>
+            <code class="right">
+                <span class="code-title">Sintassi corretta</span>
+                SELECT column,group_by(column) FROM table GROUP by column
+            </code>
+            <p>
+                Un'altra cosa che non possiamo fare è usare <span class="bold">operatori di aggregamento per effettuare condizioni nella sezione WHERE</span> sui dati raggruppati quindi:
+            </p>
+            <code class="wrong">
+                <span class="code-title">Sintassi errata</span>
+                SELECT column,group_by(column) FROM table GROUP BY column WHERE group_by(column) condition
+            </code>
+            <p>
+                Superiamo questo limite con l'operatore HAVING:
+            </p>
+            <code class="right">
+                <span class="code-title">Sintassi corretta</span>
+                SELECT column,group_by(column) FROM table GROUP BY column WHERE condition HAVING group_by(column) condition
+            </code>
+            <p>
+                La HAVING inoltre <span class="bold">non accetta condizioni complesse</span> del tipo <code class="code-inline wrong">...HAVING MAX(AVG(column)) > 80</code>, accetta invece condizioni semplici concatenate con connettivi logici <code class="code-inline right">...HAVING max(column) > 40 and min(column) < 80</code> oppure
+                accetta anche condizioni che prende in esame altre query del tipo <code class="code-inline right">...HAVING max(column) > (SELECT * ...)</code>
+                Ed in generale ricordiamoci che
+                <code class="big-wrong">
+                    <span class="code-title">Equivale all'annullamento dell'esercizio</span>
+                    MIN(MAX(colum)) > 20
+                </code>
+            </p>
+            <p>Arricchiamo le possibili query fattibili con l'attributo 
+                <code class="code-inline">ORDER BY</code>
+            </p>
+            <p>
+                Questo attributo ha la precendenza più bassa rispetto quelli usati fino ad ora, per cui nella sintassi verrà messo per ultimo.
+            </p>
+            <code>
+                SELECT column,group_by(column) FROM table GROUP BY column HAVING group_by(column) condition ORDER BY column
+            </code>
+            <p>Vediamo un esempio interessante che sintetizza i concetti:</p>
+            <code>
+                <span class="code-title">Creare una query che restituisca nome,matricola,voto massimo,voto minimo,media per gli studenti che hanno dato più di 8 materie</span>
+                SELECT nome,matricola,AVG(voto),MIN(voto),MAX(voto) from Studenti,Esami WHERE Studenti.matricola = Esami.matricola GROUP BY Nome,Matricola HAVING COUNT(*) > 8
+            </code>
+            <p>
+                Commentiamo la query:
+            </p>
+            <ol>
+                <li>
+                    L'esercizio ci chiede di voler mostrare nome,matricola,media,massimo e minimo; andiamo a specificare queste informazioni nella sezione <code class="code-inline">SELECT nome,matricola,AVG(voto),MIN(voto),MAX(voto)</code>
                 </li>
                 <li>
-                    <code>SELECT COUNT(DISTINCT stipendi.valore) FROM stipendi WHERE stipendi.valore=1800</code>
-                    Avremo come risultato 2, infatti due sono i possibili valori non nulli non duplicati: 1200 e 1800.
+                    Le informazioni che necessitiamo si trovano nelle tabelle che andiamo ad indicare nella parte della query <code class="code-inline">FROM Studenti,Esami</code>
                 </li>
-            </ul>
-            <h3>Osservazioni</h3>
-            è possibile utilizzare questi operatori con SELECT:
-            <code>
-                <span class="code-title" >Restituisci la media degli stipendi maggiori di 1800</span>
-                SELECT avg(stipendi.valore) FROM stipendi WHERE stipendi.valore > 1800
-            </code>
-            Se usiamo operatori di raggruppamento, non possiamo inserire nuovi attributi nella target list. Non potremmo ad esempio fare
-            <code> SELECT avg(valore),stipendi.nome FROM stipendi WHERE stipendi.valore > 1800</code>
-            Possiamo superare questo limite con l'operatore GROUP BY.
-            <span class="bold">quindi nella target list o attributi o operatori di raggruppamento</span>
-            <h3>GROUP BY</h3>
-            <p>Divide le righe di una tabella in gruppo più piccoli, si tratta di un modo per raggirare il limite di prima, quindi possiamo scrivere:
-                <code> SELECT avg(valore),stipendi.nome FROM stipendi WHERE =.valore > 1800 GROUP BY stipendinome</code>
-            </p>
-            
-
+                <li>
+                    Per unire le tabelle andiamo ad inserire la condizione di JOIN <code class="code-inline">WHERE Studenti.matricola = Esami.matricola</code>
+                </li>
+                <li>
+                    Non ci dimentichiamo che nella prima parte abbiamo inserito una target list mista, andiamo quindi a specificare gli attributi semplici come argomenti della GROUP BY <span class="bold">(passaggio obbligatorio)</span>: <code class="code-inline">GROUP BY nome,matricola</code>
+                </li>
+                <li>
+                    Come condizione abbiamo che il tutto deve essere effettuato se il numero di esami dati è maggiore di 8, si tratta di una condizione che non solo fa uso di operatori di aggregamento ma è fatta su gruppi che dobbiamo quindi <span class="bold">obbligatoriamente</span> fare con l'attributo HAVING: <code class="code-inline">HAVING COUNT(*)>8</code>
+                </li>
+            </ol>
     </section>
 </body>
 

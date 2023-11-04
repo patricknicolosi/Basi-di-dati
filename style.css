@@ -4,11 +4,26 @@ code{
     display: block;
     background-color:antiquewhite;
 }
+.relax{
+    background-color:gainsboro;
+}
+.big-wrong{
+    background-color: red;
+    font-size: larger;
+    color: white;
+}
+.wrong{
+    background-color: rgba(255, 0, 0, 0.508);
+    color: white;
+}
+.right{
+    background-color: rgba(0, 128, 0, 0.589);
+    color: white;
+}
 .code-inline{
     display: inline;
     padding: 2px;
     margin: 0px;
-    background-color:antiquewhite;
 }
 .code-title{
     display: block;

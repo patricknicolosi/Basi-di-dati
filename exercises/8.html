@@ -1,0 +1,35 @@
+<html>
+
+<head>
+    <title>Database</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+    <header>
+        <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
+            RelaX</a>
+        <a class="nav-link" href="https://www.w3schools.com/sql/trysql.asp?filename=trysql_asc">Simulatore SQL</a>
+        <a class="nav-link" href="../index.html" target="_self">Home</a>
+        <h1>Database</h1>
+    </header>
+
+    <section>
+        <p>Dato lo schema relazionale: <br>
+            Quadri(Pittore, Titolo, DataCreazione, NomeMuseo) <br>
+            Musei(NomeMuseo, Città, Curatore) <br>
+            Costo(Titolo, Prezzo) <br>
+        </p>
+        <code>
+            <span class="code-title">Elenco dei musei e del valore medio dei quadri posseduti</span>
+            SELECT Musei.NomeMuseo,AVG(*) FROM Quadri,Musei,Costo WHERE Quadri.Titolo = Costo.Titolo GROUP BY Musei.NomeMuseo
+        </code>
+        <code>
+            <span class="code-title">Il numero di quadri per ogni pittore fra tutti i musei parigini</span>
+            SELECT COUNT(*) FROM Quadri,Musei WHERE Quadri.NomeMuseo = Musei.NomeMuseo and Musei.Città = 'Parigi' GROUP BY Quadri.Pittore
+        </code>
+    </section>
+    
+</body>
+
+</html>
