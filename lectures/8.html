@@ -42,11 +42,32 @@
                 </p>
             </li>
             <li>
-                <code class="code-inline">[NOT] EXISTS</span></code>
+                <code class="code-inline">[NOT] EXISTS</span><span class="bold">(operatore esistenziale)</span></code>
                 <p>
                     Ritorna true se la subselect restituisce almeno un record.
                     Es. <code class="code-inline">...WHERE EXISTS (subselect)</code>
                 </p>
+                <code>
+                    <span class="code-title">Clienti che hanno preso TUTTE le pizze</span>
+                    SELECT DISTINCT nome_cliente FROM Ordini WHERE NOT EXISTS (SELECT Pizze.id_pizza FROM Pizze WHERE NOT EXISTS (SELECT * FROM Ordini o2 WHERE o2.id_pizza = Pizze.id_pizza and Ordini.nome_cliente = o2.nome_cliente));
+                </code>
+                <p>
+                    La query più interna restituisce true quando non esiste un cliente che ha ordinato tutte le pizze, se la query più interna da true allora la seconda più interna da true e quindi in questo caso il cliente in questione va preso come buono perchè non esiste alcun ordine cui pizza è non è stata presa (in altre 
+                    parole ha preso tutte le pizze). Con l'attributo esistenziale abbiamo <span class="bold">implementato la divisione</span> dell'algebra relazionale.
+                </p>
+                <p>
+                    Per definire una regola generale su come implementare la divisione in SQL:
+                </p>
+                <ol>
+                    <li>Mettiamo nella query più esterna il dato da restituire (Clienti). Scegliamo la tabella dal testo: solitamente questo dato
+                        si trova sempre inizio frase. </li>
+                    <li>Nella prima NOT EXIST vanno messi tutti quei dati per il quale effettuare matching (le pizze nel nostro caso). Scegliamo il dato per fare matching anche dal testo: solitamente questo dato
+                        si trova sempre dopo la parola chiave TUTT*
+                    </li>
+                    <li>
+                        Nella seconda NOT EXIST vanno messe le regole per collegare tra i due precedenti (Pizze con Ordini)
+                    </li>
+                </ol>
             </li>
             <li>
                 <code class="code-inline">[NOT] IN</span></code>
@@ -59,6 +80,24 @@
                 SELECT column FROM table WHERE condition (SELECT column2 FROM table2 UNION SELECT column3 FROM table3)
             </code>
         </p>
+        <p>
+            Nell'utilizzo di query annidate dobbiamo inoltre rispettore delle regole di <span class="bold">visibilità</span> per cui 
+            <span class="bold">dalla query più interna posso sempre fare riferimento alla query più esterna, non vale il viceversa</span>.
+            Questo ci permette di fare una cosa del genere:
+        </p>
+        <code>
+            <span class="code-title">Dove il nome della subselect fa riferimento alla tabella Persone della query più esterna</span>
+            SELECT * FROM Persone WHERE EXISTS (SELECT * FROM Paternita WHERE Padre = <span class="bold">nome</span> )
+        </code>
+        <code class="right">
+            <span class="title">Prendere dalla tabella persone tutte quelle persone che hanno un omonimo e non si chiamando Andrea</span>
+            SELECT distinct nome FROM Persone p1 WHERE p1.nome in(SELECT nome FROM Persone p2 WHERE p1.id <> p2.id AND p1.nome = p2.nome AND p1.nome != "Andrea");
+        </code>
+        <p>Non avremmo invece potuto fare</p>
+        <code class="wrong">
+            <span class="title">Non possiamo fare riferimento a p2 perchè è un alias definito nel subselect</span>
+            SELECT distinct nome FROM Persone p1 WHERE p2.nome != "Andrea AND p1.nome in(SELECT nome FROM Persone p2 WHERE p1.id <> p2.id AND p1.nome = p2.nome");
+        </code>
     </section>
 
 </body>
