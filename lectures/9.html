@@ -9,7 +9,7 @@
     <header>
         <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
             RelaX</a>
-        <a class="nav-link" href="https://www.mycompiler.io/it/new/sql>Simulatore SQL</a>
+        <a class="nav-link" href="https://www.mycompiler.io/it/new/sql">Simulatore SQL</a>
         <a class="nav-link" href="../index.html" target="_self">Home</a>
         <h1>Database</h1>
     </header>
@@ -36,16 +36,111 @@
     </section>
     <section>
         <h2>Creazione tabella in un db</h2>
+        <p>
+            Partiamo da un esempio per vedere sintassi e sfumature:
+        </p>
         <code>
-            CREATE TABLE Nome (
-                Attributo Tipo [Vincolo, {Vincolo}] //Attributi <br>
-                [VincoloDiTabella, {VincoloDiTabella}] //Vincoli (tipo indicare chi è chiave primaria)
+            CREATE TABLE Impiegato( //1 <br>
+            Matricola CHAR(6) PRIMARY KEY, //2 <br>
+            Nome CHAR(20) NOT NULL, //3 <br>
+            Cognome CHAR (20) NOT NULL, //4 <br>
+            Dipart CHAR(15), //5<br>
+            Stipendio NUMERIC(9) DEFAULT 0 //6<br>
+            FOREIGN KEY(Dipart) REFERENCES Dipartimento (NomeDip), UNIQUE (Cognome, Nome) //7<br>
             )
         </code>
         <p>
-            Se non specifichiamo nulla verrà preso di default il valore CASCADE, con questo verrà eliminato tutto il database ed il suo contenuto.
-            Se specificato RESTRICT invece verrà cancellata la base di dati solo se è vuota (non ci sono tabelle).
+            Approfondiamo ogni riga della sintassi:
         </p>
+        <ol>
+            <li>
+                Viene creata una nuova Tabella Impiegato
+            </li>
+            <li>
+                Viene definita una chiave primaria chiamata Matricola
+            </li>
+            <li>
+                Il nome ha il vincolo di essere non NULL
+            </li>
+            <li>
+                Stessa cosa del nome per il cognome
+            </li>
+            <li>
+                Il dipartimento non ha nessun vincolo, per cui può assumere valori NULL. Il suo 
+                valore di default è NULL
+            </li>
+            <li>
+                Lo stipendio è un tipo nullable anche se ha un valore di default a 0
+            </li>
+            <li>
+                Definisco una chiave esterna dove Dipart è il campo a cui mi collego, la parola chiave Reference è 
+                seguito dal nome della tabella a cui vado a collegarmi e tra parentesi l'attributo della tabella 
+                Dipartimento che è chiave esterna. E' possibile specificare un nuovo tipo di chiave detta UNIQUE
+                che specifica per quali campi della tabella il valore deve essere univoco 
+            </li>
+        </ol>
+    </section>
+    <section>
+        <h2>Domini</h2>
+        <p>
+            Abbiamo due tipi di domini
+        </p>
+        <ul>
+            <li>Domini elementari</li>
+            <li>Domini definiti dall'utente (semplici ma riutilizzabili)</li>
+        </ul>
+        <h3>
+            Domini elementari
+        </h3>
+        <p>
+            Quelli comuni a tutte le basi di dati sono:
+        </p>
+        <ul>
+            <li>
+                <code class="code-inline">CHAR(n)</code>: stringhe di lunghezza n
+            </li>
+            <li>
+                <code class="code-inline">VARCHAR(n)</code>: stringhe di lunghezza con al massimo n caratteri
+            </li>
+            <li>
+                <code class="code-inline">INTEGER</code>: interi
+            </li>
+            <li>
+                <code class="code-inline">REAL</code>: reali
+            </li>
+            <li>
+                <code class="code-inline">FLOAT</code>: es 0.17E16
+            </li>
+            <li>
+                <code class="code-inline">NUMERIC(p,s)</code>: p cifre di cui s decimali
+            </li>
+            <li>
+                <code class="code-inline">DATE,TIME</code>: per date o ore
+            </li>
+            <li>
+                <code class="code-inline">DATETIME o TIMESTAMP</code>: per date e ore (contemporaneamente)
+            </li>
+        </ul>
+        <h3>
+            Domini definiti
+        </h3>
+        <p>
+            In SQL è possibile rappresentare domini personalizzabili, che sono dei veri e propri alias.
+        </p>
+        <code>
+            CREATE DOMAIN Voto AS SMALLINT DEFAULT NULL CHECK (value >= 18 AND value <= 30)
+        </code>
+        <p>
+            Definiamo quindi questo tipo che è un intero e che segue il <span class="bold">vincolo di integrità</span>, per il 
+            quale dovrà essere maggiore uguale a 18 e minore uguale a 30. <br>
+            Durante la mia definizione della tabella posso quindi a specificare, qualcosa di simile:
+        </p>
+       <code>
+            CREATE TABLE Esame (...., voto Voto)
+       </code>
+    </section>
+    <section>
+        <h2>Vincoli di integrità</h2>
     </section>
 </body>
 
