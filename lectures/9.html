@@ -1,0 +1,52 @@
+<html>
+
+<head>
+    <title>Database</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+    <header>
+        <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
+            RelaX</a>
+        <a class="nav-link" href="https://www.mycompiler.io/it/new/sql>Simulatore SQL</a>
+        <a class="nav-link" href="../index.html" target="_self">Home</a>
+        <h1>Database</h1>
+    </header>
+    <section>
+        <h2>Creazione db</h2>
+        <p>Fino ad ora abbiamo visto come interrogare una base di dati. Vediamo come creare un nuovo db in SQL.</p>
+        <code>
+            CREATE SCHEMA Nome [AUTHORIZATION utente]
+        </code>
+        <p>
+            Con questo comando andiamo a creare un nuovo db di nome "Nome" dove l'utente "utente" è amministratore. Ovviamente
+            con questo comando andiamo a creare un db (schema relazionale), contenitore di un set di tabelle.
+        </p>
+    </section>
+    <section>
+        <h2>Eliminazione db</h2>
+        <code>
+            DROP SCHEMA Nome [RESTRICT|CASCADE]
+        </code>
+        <p>
+            Se non specifichiamo nulla verrà preso di default il valore CASCADE, con questo verrà eliminato tutto il database ed il suo contenuto.
+            Se specificato RESTRICT invece verrà cancellata la base di dati solo se è vuota (non ci sono tabelle).
+        </p>
+    </section>
+    <section>
+        <h2>Creazione tabella in un db</h2>
+        <code>
+            CREATE TABLE Nome (
+                Attributo Tipo [Vincolo, {Vincolo}] //Attributi <br>
+                [VincoloDiTabella, {VincoloDiTabella}] //Vincoli (tipo indicare chi è chiave primaria)
+            )
+        </code>
+        <p>
+            Se non specifichiamo nulla verrà preso di default il valore CASCADE, con questo verrà eliminato tutto il database ed il suo contenuto.
+            Se specificato RESTRICT invece verrà cancellata la base di dati solo se è vuota (non ci sono tabelle).
+        </p>
+    </section>
+</body>
+
+</html>

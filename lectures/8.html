@@ -9,7 +9,7 @@
     <header>
         <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
             RelaX</a>
-        <a class="nav-link" href="https://www.w3schools.com/sql/trysql.asp?filename=trysql_asc">Simulatore SQL</a>
+        <a class="nav-link" href="https://www.mycompiler.io/it/new/sql>Simulatore SQL</a>
         <a class="nav-link" href="../index.html" target="_self">Home</a>
         <h1>Database</h1>
     </header>
@@ -33,12 +33,14 @@
                     Ritorna true se almeno uno dei risultati della subselect rispetta la condizione.
                     Es. <code class="code-inline">...WHERE A > ANY (subselect)</code>
                 </p>
+                Restituisce NULL se non restituisce risultati oppure se tra i risultati che restituisce è presente il valore NULL.
             </li>
             <li>
                 <code class="code-inline">ALL</span></code>
                 <p>
                     Ritorna true se tutti i risultati della subselect rispettano la condizione.
                     Es. <code class="code-inline">...WHERE A > ALL (subselect)</code>
+                    Restituisce NULL se non restituisce risultati oppure se tra i risultati che restituisce è presente il valore NULL.
                 </p>
             </li>
             <li>
@@ -68,6 +70,16 @@
                         Nella seconda NOT EXIST vanno messe le regole per collegare tra i due precedenti (Pizze con Ordini)
                     </li>
                 </ol>
+                <p>
+                    Possiamo anche usare la sintassi:
+                </p>
+                <code>
+                    SELECT o.nome_cliente FROM Ordini o GROUP BY o.nome_cliente HAVING COUNT(DISTINCT o.id_pizza) = (SELECT COUNT(*) FROM Pizze);
+                </code>
+                <p>
+                    Sfruttando il fatto che se raggruppiamo gli ordini di ogni cliente eliminando i duplicati (DISTINCT o.id_pizza), allora la cardinalità di questo insieme
+                    deve essere uguale a quello di tutte le pizze.
+                </p>
             </li>
             <li>
                 <code class="code-inline">[NOT] IN</span></code>
@@ -75,13 +87,19 @@
         </ul>
         <p>
             <span class="bold">Una subselect non può contenere operatori insiemistici (UNION, INTERSECT, EXCEPT)</span> quindi
-            <code class="wrong">
-                <span class="code-title">Limite SQL</span>
-                SELECT column FROM table WHERE condition (SELECT column2 FROM table2 UNION SELECT column3 FROM table3)
-            </code>
         </p>
+        <code class="wrong">
+            <span class="code-title">Limite SQL</span>
+            SELECT column FROM table WHERE condition (SELECT column2 FROM table2 UNION SELECT column3 FROM table3)
+        </code>
         <p>
-            Nell'utilizzo di query annidate dobbiamo inoltre rispettore delle regole di <span class="bold">visibilità</span> per cui 
+            Possiamo invece usare gli operatori UNION oppure EXCEPT per unire più sottoquery per esempio:
+        </p>
+        <code class="right">
+            SELECT column FROM table WHERE condition (SELECT column2 FROM table2) UNION (SELECT column3 FROM table3)
+        </code>
+        <p>
+            Nell'utilizzo di query annidate dobbiamo inoltre rispettare delle regole di <span class="bold">visibilità</span> per cui 
             <span class="bold">dalla query più interna posso sempre fare riferimento alla query più esterna, non vale il viceversa</span>.
             Questo ci permette di fare una cosa del genere:
         </p>
@@ -98,8 +116,13 @@
             <span class="title">Non possiamo fare riferimento a p2 perchè è un alias definito nel subselect</span>
             SELECT distinct nome FROM Persone p1 WHERE p2.nome != "Andrea AND p1.nome in(SELECT nome FROM Persone p2 WHERE p1.id <> p2.id AND p1.nome = p2.nome");
         </code>
+        <p>
+            Data una query con una o più sottoselect (unite da UNION o EXCEPT) potremmo anche <span class="bold">aggiungere un ordinamento</span> con <code class="code-inline">ORDER BY</code>
+        </p>
+        <code class="right">
+            SELECT * FROM Table WHERE (SELECT * FROM Table2) ORDER BY Column [DESC];
+        </code>
     </section>
-
 </body>
 
 </html>
