@@ -3,6 +3,7 @@
 <head>
     <title>Database</title>
     <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
 </head>
 
 <body>
@@ -20,7 +21,8 @@
             CREATE SCHEMA Nome [AUTHORIZATION utente]
         </code>
         <p>
-            Con questo comando andiamo a creare un nuovo db di nome "Nome" dove l'utente "utente" è amministratore. Ovviamente
+            Con questo comando andiamo a creare un nuovo db di nome "Nome" dove l'utente "utente" è amministratore.
+            Ovviamente
             con questo comando andiamo a creare un db (schema relazionale), contenitore di un set di tabelle.
         </p>
     </section>
@@ -30,7 +32,8 @@
             DROP SCHEMA Nome [RESTRICT|CASCADE]
         </code>
         <p>
-            Se non specifichiamo nulla verrà preso di default il valore CASCADE, con questo verrà eliminato tutto il database ed il suo contenuto.
+            Se non specifichiamo nulla verrà preso di default il valore CASCADE, con questo verrà eliminato tutto il
+            database ed il suo contenuto.
             Se specificato RESTRICT invece verrà cancellata la base di dati solo se è vuota (non ci sono tabelle).
         </p>
     </section>
@@ -66,17 +69,17 @@
                 Stessa cosa del nome per il cognome
             </li>
             <li>
-                Il dipartimento non ha nessun vincolo, per cui può assumere valori NULL. Il suo 
+                Il dipartimento non ha nessun vincolo, per cui può assumere valori NULL. Il suo
                 valore di default è NULL
             </li>
             <li>
                 Lo stipendio è un tipo nullable anche se ha un valore di default a 0
             </li>
             <li>
-                Definisco una chiave esterna dove Dipart è il campo a cui mi collego, la parola chiave Reference è 
-                seguito dal nome della tabella a cui vado a collegarmi e tra parentesi l'attributo della tabella 
+                Definisco una chiave esterna dove Dipart è il campo a cui mi collego, la parola chiave Reference è
+                seguito dal nome della tabella a cui vado a collegarmi e tra parentesi l'attributo della tabella
                 Dipartimento che è chiave esterna. E' possibile specificare un nuovo tipo di chiave detta UNIQUE
-                che specifica per quali campi della tabella il valore deve essere univoco 
+                che specifica per quali campi della tabella il valore deve essere univoco
             </li>
         </ol>
     </section>
@@ -131,16 +134,171 @@
             CREATE DOMAIN Voto AS SMALLINT DEFAULT NULL CHECK (value >= 18 AND value <= 30)
         </code>
         <p>
-            Definiamo quindi questo tipo che è un intero e che segue il <span class="bold">vincolo di integrità</span>, per il 
+            Definiamo quindi questo tipo che è un intero e che segue il <span class="bold">vincolo di integrità</span>,
+            per il
             quale dovrà essere maggiore uguale a 18 e minore uguale a 30. <br>
             Durante la mia definizione della tabella posso quindi a specificare, qualcosa di simile:
         </p>
-       <code>
+        <code>
             CREATE TABLE Esame (...., voto Voto)
        </code>
     </section>
     <section>
         <h2>Vincoli di integrità</h2>
+        <p>
+            Abbiamo due tipi di vincoli:
+        </p>
+        <ul>
+            <li><span class="bold">I vincoli intrarelazionali</span>: cioè vincoli che coinvolgono la stessa relazione
+            </li>
+            <li><span class="bold">I vincoli referenziali</span>: cioè vincoli che coinvolgono più relazioni</li>
+        </ul>
+        <p>
+            I vincoli di integrità vengono controllati ogni volta si esegue una delle tre possibili operazioni <code
+                class="code-inline">INSERT,UPDATE,DELETE</code>
+        </p>
+        <h3>
+            Vincoli interrelazionali
+        </h3>
+        <ul>
+            <li>
+                <code class="code-inline">FOREIGN KEY</code>
+                <p>
+                    Sono delle chiavi esterne cui sintassi è la seguente:
+                </p>
+                <code>
+                    CREATE TABLE Esami(
+                        MatricolaStudente VARCHAR(10),
+                        ...,
+                        <span class="bold">
+                            FOREIGN KEY (MatricolaStudente)
+                            REFERENCES  Studenti(Matricola)
+                        </span>
+                    )
+                </code>
+                <p>
+                    Praticamente la query mi dice che l'attributo di Esami MatricolaStudente
+                    è una chiave esterna (FOREIGN KEY) e che fa riferimento all'attributo Matricola
+                    della tabella Studenti. Se si tenta di inserire un nuovo esame passando una Matricola
+                    che non esiste in Studenti, allora l'operazione non verrà portata al termine. E' possibile
+                    definire dei comportamenti quando si interagisce con chiavi secondarie.
+                </p>
+                <code>
+                    CREATE TABLE Esami(
+                        MatricolaStudente VARCHAR(10),
+                        ...,
+                        FOREIGN KEY (MatricolaStudente)
+                        REFERENCES  Studenti(Matricola)
+                        <span class="bold">
+                        ON DELETE {NO ACTION | CASCADE | SET NULL}
+                        ON UPDATE {NO ACTION | CASCADE | SET NULL}
+                        </span>
+                    )
+                </code>
+                <p>
+                    Il comportamento ON DELETE può essere di tipo:
+                <ul>
+                    <li>
+                        <code class="code-inline">NO ACTION (default)</code>
+                    </li>
+                    <li>
+                        <code class="code-inline">CASCADE</code>, se ad esempio
+                        elimino uno Studente, verranno eliminati tutti gli esami che fatto lo studente
+                    </li>
+                    <li>
+                        <code class="code-inline">SET NULL </code>, se ad esempio
+                        elimino uno Studente, verrà settato a null il valore che fa da chiave esterna (ovviamente solo
+                        se la chiave che mette a NULL è stata settata come nullable)
+                    </li>
+                </ul>
+                </p>
+                <p>
+                    Il comportamento ON UPDATE può essere di tipo:
+                </p>
+                <ul>
+                    <li>
+                        <code class="code-inline">NO ACTION (default)</code>, cioè se modifico la chiave primaria nella
+                        tabella di riferimento della chiave esterna, questa modifica verrà bloccata
+                    </li>
+                    <li>
+                        <code class="code-inline">CASCADE</code>, se ad esempio
+                        aggiorno uno Studente, questa modifica verrà propagata anche nella tabella che usa gli attributi
+                        di Studente come riferimento
+                    </li>
+                    <li>
+                        <code class="code-inline">SET NULL </code>, setta a NULL tutti gli attributi della tabella che
+                        fa uso del riferimento esterno quando questo è modificato
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <code class="code-inline">CHECK</code> definisce i valori ammissibili per un determinato attributo
+            </li>
+        </ul>
+        <h3>Vincoli intrarelazionali</h3>
+        <p>
+            Tutti i possibili vincoli intrarelazionali sono:
+        </p>
+        <ul>
+            <li>
+                <code class="code-inline">NOT NULL</code>
+            </li>
+            <li>
+                <code class="code-inline">UNIQUE</code>
+                <p>Possiamo dire che un attributo deve avere valore univoco con UNIQUE, ad esempio</p>
+                <code>
+                    CREATE TABLE Studenti (
+                        Nome VARCHAR(10) <span class="bold">UNIQUE</span>,
+                        Cognome VARCHAR(10) <span class="bold">UNIQUE</span>,
+                        ...
+                    )
+                </code>
+                <p>Possiamo anche dire che una n-upla di attributi deve essere univoca con la notazione</p>
+                <code>
+                    CREATE TABLE Studenti (
+                        Nome VARCHAR(10),
+                        Cognome VARCHAR(10),
+                        ...,
+                        <span class="bold">UNIQUE</span> (Nome,Cognome)
+                    )
+                </code>
+                <p>Cioè la coppia Nome,Cognome deve essere univoca nella tabelle.</p>
+                <p>Attenzione perchè le due sintassi, semanticamente hanno significato differente, infatti:</p>
+                <ul>
+                    <li>La prima notazione indica che se ad esempio c'è uno Studente che si chiama Mario, non potrà
+                        esistere nessun altro che si chiama Mario</li>
+                    <li>La seconda notazione indica che se ad esempio uno Studente si chiama Mario, allora potranno
+                        esistere ad esempio Mario Rossi, Mario Verdi. Non potranno
+                        invece esistere due Mario Rossi perchè la coppia (Nome,Cognome) è già stata usata
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <code class="code-inline">PRIMARY KEY</code>
+                <p>Definiamo una chiave primaria con la sintassi</p>
+                <code>
+                    CREATE TABLE Studenti(Matricola CHAR(6) <span class="bold">PRIMARY KEY</span>)
+                </code>
+            </li>
+            <li>
+                <code class="code-inline">CHECK</code> definisce i valori ammissibili per un determinato attributo
+            </li>
+        </ul>
+    </section>
+    <section>
+        <h2>Modifica dati nella tabella</h2>
+        <h3>Inserisci dati in una tabella</h3>
+        <code>
+            <span class="bold">INSERT INTO</span> Studenti VALUES ("X81000928","Patrick Nicolosi")
+        </code>
+        <h3>Elimina dati da una tabella</h3>
+        <code>
+            <span class="bold">DELETE FROM</span> Studenti WHERE Matricola = "X81000928"
+        </code>
+        <h3>Aggiorna dati da una tabella</h3>
+        <code>
+            <span class="bold">UPDATE</span> Studenti SET Nome = "Patrick Nicolosi" WHERE Matricola = "X81000928"
+        </code>
     </section>
 </body>
 
