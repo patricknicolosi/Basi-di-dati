@@ -1,0 +1,62 @@
+<html>
+
+<head>
+    <title>Database</title>
+    <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+</head>
+
+<body>
+    <header>
+        <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
+            RelaX</a>
+        <a class="nav-link" href="https://www.mycompiler.io/it/new/sql">Simulatore SQL</a>
+        <a class="nav-link" href="../index.html" target="_self">Home</a>
+        <h1>Database</h1>
+    </header>
+
+    <section>
+        <p>Si consideri lo schema Marinaio-Barca-Prenotazione: <br>
+            M(idm, nomem, rating, eta) <br>
+            B(idb, nomeb, colore) <br>
+            P(idm, idb, data)<br>
+        </p>
+        <code>
+            <span class="code-title">Trovare i colori della barca prenotata dal marinaio Marco;</span>
+            SELECT DISTINCT B.colore FROM M,B,P WHERE P.idm = M.idm and M.nomem LIKE "marco"
+        </code>
+        <p>
+            Oppure avremmo potuto usare 
+        </p>
+        <code>
+            SELECT B.colore FROM P JOIN B ON P.idb = B.idb WHERE P.idm = (SELECT DISTINCT M.idm FROM M WHERE M.nomem = "Marco")
+        </code>
+        <p>
+            e ancora
+        </p>
+        <code>
+            SELECT B.colore FROM P JOIN B ON P.idb = B.idb JOIN M ON P.idm = M.idm WHERE M.nomem = "Marco"
+        </code>
+        <code>
+            <span class="code-title">Stampare gli id dei marinai che hanno un rating di almeno 8 o che hanno prenotato la barca 103;</span>
+                SELECT DISTINCT P.idm FROM P,M WHERE P.idm = M.idm AND M.rating >= 8 OR P.idb = 103;
+        </code>
+        <code>
+            <span class="code-title">Trovare il nome dei marinai che <span class="bold">non hanno</span> prenotato barche rosse</span>
+                SELECT M.nomem FROM M WHERE NOT EXISTS(SELECT * FROM P,B WHERE P.idm = M.idm and B.idb = P.idb and B.colore = "Rosso");
+                <span class="code-subtitle"><a href="https://www.mycompiler.io/view/1WsVG9MKHaq" target="_blank">Test</a></span>
+        </code>
+        <code>
+            <span class="code-title">Trovare il nome dei marinai che hanno prenotato <span class="bold">almeno due</span> barche</span>
+            SELECT M.nomeM FROM M,P WHERE M.idm = P.idm GROUP BY M.nomeM HAVING COUNT(*) >= 2
+            <span class="code-subtitle"><a href="https://www.mycompiler.io/view/FWEqgoXrPGO" target="_blank">Test</a></span>
+        </code>
+        <code>
+            <span class="code-title">Trovare il nome dei marinai che hanno prenotato <span class="bold">almeno due</span> barche <span class="bold">diverse</span> </span>
+            SELECT M.nomeM FROM M,P WHERE M.idm = P.idm GROUP BY M.nomeM HAVING COUNT(DISTINCT P.idb) >= 2
+        </code>
+    </section>
+
+</body>
+
+</html>

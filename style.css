@@ -30,6 +30,13 @@ code{
     padding: 10px;
     font-family:'Courier New', Courier, monospace;
 }
+.code-subtitle{
+    display: block;
+    margin: 10px;
+    padding: 10px;
+    font-size: smaller;
+    text-align: center;
+}
 .nav-link{
     float: right;  
     margin: 10px;
@@ -47,6 +54,9 @@ img{
 }
 .bold{
     font-weight: bold;
+}
+.underline{
+    text-decoration: underline;
 }
 section{
     padding: 30px;
