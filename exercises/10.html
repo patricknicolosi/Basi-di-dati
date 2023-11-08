@@ -55,6 +55,34 @@
             <span class="code-title">Trovare il nome dei marinai che hanno prenotato <span class="bold">almeno due</span> barche <span class="bold">diverse</span> </span>
             SELECT M.nomeM FROM M,P WHERE M.idm = P.idm GROUP BY M.nomeM HAVING COUNT(DISTINCT P.idb) >= 2
         </code>
+        <code>
+            <span class="code-title">Trovare tutti i marinai che hanno prenotato <span class="bold">tutte</span> le barche possibili</span>
+            SELECT DISTINCT P.idm FROM P WHERE NOT EXISTS (SELECT B.idb FROM B WHERE NOT EXISTS (SELECT * FROM P P2 WHERE P2.idb = B.idb and P.idm = P2.idm))
+            <span class="code-subtitle"><a href="https://www.mycompiler.io/view/36PLxYLcToa">Test</a></span>
+        </code>
+        <p>
+            In altre parole, per ogni marinaio non deve esistere una barca che non ha prenotato
+        </p>
+    </section>
+    <section>
+        <p>
+            Dato lo schema relazionale:  <br>
+            EVENTO(id, titolo, data, categoria, costo_partecipazione, idcatering) <br>
+            ORGANIZZATORE(id, idevento) <br>
+            PERSONA(id, nome, cognome, provincia_residenza) <br>
+            PARTECIPANTE(idevento,idpersona) <br>
+            CATERING(idcompagnia,nome,descrizione) <br>
+            CATEGORIAEVENTO(id,descrizione) <br>
+        </p>
+        <code>
+            <span class="code-title">Trovare gli eventi che hanno avuto maggiore incasso</span>
+            SELECT totali.id,MAX(totali.costo_totale) FROM (SELECT EVENTO.id,(EVENTO.costo_partecipazione * COUNT(PARTECIPANTE.idpersona)) as costo_totale FROM EVENTO,PARTECIPANTE WHERE EVENTO.id = PARTECIPANTE.idevento GROUP BY EVENTO.id) AS totali
+            <code class="code-subtitle"><a href="https://www.mycompiler.io/view/JMyyXP4OSX2" target="_blank">Test</a></code>
+        </code>
+        <code>
+            SELECT DISTINCT PARTECIPANTE.idpersona FROM PARTECIPANTE WHERE PARTECIPANTE.idpersona IN (SELECT PERSONA.id FROM EVENTO,ORGANIZZATORE,PERSONA WHERE EVENTO.id = ORGANIZZATORE.idevento and ORGANIZZATORE.id = PERSONA.id and PERSONA.provincia_residenza = "Catania");
+            <span class="code-subtitle"><a href="https://www.mycompiler.io/view/6OzBFchPdJ3" target="_blank">Test</a></span>
+        </code>
     </section>
 
 </body>
