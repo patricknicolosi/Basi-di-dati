@@ -58,6 +58,21 @@ img{
 .underline{
     text-decoration: underline;
 }
+.red{
+    color: red;
+}
+.green{
+    color: green;
+}
+.blue{
+    color: blue;
+}
+.purple{
+    color: purple;
+}
+.orange{
+    color: orange;
+}
 section{
     padding: 30px;
     margin: 10px;

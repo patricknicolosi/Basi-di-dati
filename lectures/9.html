@@ -82,6 +82,32 @@
                 che specifica per quali campi della tabella il valore deve essere univoco
             </li>
         </ol>
+        <h3>Creare tabelle sulla base di altre</h3>
+        <p>
+            Consideriamo una tabella di struttura:
+        </p>
+        <code>
+            CREATE TABLE Studenti( Nome CHAR(30), Matricola INTEGER, Indirizzo CHAR(30), Telefono INTEGER)
+        </code>
+        <p>
+            SQL ci permette di creare tabelle sulla base di altre già presenti con <code class="code-inline">LIKE</code>
+        </p>
+        <code>CREATE TABLE Fuoricorso LIKE Studenti</code>
+        <p>
+            Abbiamo così creato una tabella Fuoricorso che ha la stessa struttura di Studenti.
+        </p>
+        <p>
+            Possiamo anche creare tabelle sulla base di altre e prendendo in considerazione query.
+        </p>
+        <code>
+            CREATE TABLE EsamiBuoni LIKE ESAMI AS SELECT * FROM Esami WHERE  Esami.voto >= 27
+        </code>
+        <p>
+            Quello che fa il comando è creare una nuova tabella EsamiBuoni con la stessa struttura
+            di Esami e dopodicchè va a mettere all'interno della nuova tabella EsamiBuoni
+            tutti quegli Esami che vengono da Esami e hanno una votazione >= 27.
+        </p>
+
     </section>
     <section>
         <h2>Domini</h2>

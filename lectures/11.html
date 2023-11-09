@@ -1,0 +1,339 @@
+<html>
+
+<head>
+    <title>Database</title>
+    <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+</head>
+
+<body>
+    <header>
+        <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
+            RelaX</a>
+        <a class="nav-link" href="https://www.mycompiler.io/it/new/sql">Simulatore SQL</a>
+        <a class="nav-link" href="../index.html" target="_self">Home</a>
+        <h1>Database</h1>
+    </header>
+    <section>
+        <h2>Viste</h2>
+        <p>
+            Sono delle tabelle generate a partire da una query e sono aggiornate ogni 
+            volta la tabella che generatrice cambia. Sono delle tabelle definite
+            <span class="bold">ausiliare e virtuali</span> questo perchè non sono delle verie e proprie
+            tabella ma più delle "query che vengono eseguite al volo" (infatti molti dbms implementano le viste come placeholders di query). Vari sono i vantaggi delle view:
+        </p>    
+        <ul>
+            <li>Semplificazione</li>
+            <li>Protezione di dati, infatti possiamo implementare tramite le query lo "schema esterno" e dare la possibilità di accesso ai dati solo con i dovuti permessi</li>
+            <li>Facilita l'aggiornamento, infatti possiamo creare viste con una nuova struttura che operano sulla vecchia</li>
+        </ul>
+        <h3>Creare Viste</h3>
+        <p>
+            Possiamo creare delle VIEW usando una sintassi molto semplice:
+        </p>
+        <code>
+            CREATE View [(Attributo1, Attributo2)] AS Query-SELECT
+        </code>
+        <p>
+            Questo prende il risultato della select e crea una tabella virtuale con il nome specificato importando i soli attributi specificati. La lista di attributi è opzionale, in questo
+            caso prenderà tutti gli attributi della Query-SELECT. Le VIEW possono essere usate come delle vere e proprie tabelle:
+        </p>
+        <code>
+            <span class="code-title">Uso una View per semplificare una query</span>
+            CREATE VIEW ORGANIZZATORE_CATANIA AS SELECT PERSONA.id FROM EVENTO,ORGANIZZATORE,PERSONA WHERE EVENTO.id = ORGANIZZATORE.idevento and ORGANIZZATORE.id = PERSONA.id and PERSONA.provincia_residenza = "Catania"; <br>
+            SELECT DISTINCT PARTECIPANTE.idpersona FROM PARTECIPANTE WHERE PARTECIPANTE.idpersona IN ORGANIZZATORE_CATANIA;
+            <span class="code-subtitle"><a href="https://www.mycompiler.io/view/Fv6D5G65OsG" target="_blank">Test</a></span>
+        </code>
+        <h3>Cancellare Viste</h3>
+        <p>
+            E proprio come tabelle è possibile cancellare una VIEW. La cancellazione varia rispetto quella di una tabella infatti ricordiamo
+            che la vista non ha contenuto, ma è solo un placeholder per una query, quindi:
+        </p>
+        <ul>
+            <li>
+                Con <code class="code-inline">DROP VIEW RESTRICT</code> viene bloccata la cancellazione della VIEW se è usata in altre viste.
+            </li>
+            <li>
+                Con <code class="code-inline">DROP VIEW CASCADE</code> viene effettuata l'eliminazione della View e le viste che la utilizzano.
+            </li>
+        </ul>
+        <p>
+            La distruzione delle VIEW non altera le tabelle su cui la VIEW si basa.
+        </p>
+        <p>
+            Come per le tabelle inoltre, <span class="bold">una VIEW può essere definita sulla base di un'altra VIEW</span>. <br>
+            Nelle ultime versioni di SQL è possibile effettuare <span class="bold">in condizioni particolari </span> operazioni di <span class="bold"> Insert, Update e Delete</span>.
+        </p>
+        <p class="bold">
+            Che succede se una tabella usata da una vista viene eliminata? DIPENDE DAL DB.
+        </p>
+        <h3>Aggiornamento nelle viste</h3> 
+        <p>
+            Immaginiamo di avere una tabella:
+        </p>
+        <code>
+            Impiegato(Nome,Stipendio)
+        </code>
+        <p>
+            Il personale della segreteria ( <span class="bold">esempio di accesso controllato tramite query</span> ) non può accedere all'informazione 'Stipendio'. Possiamo creare
+            una view Impiegato2:
+        </p>
+        <code>
+            CREATE VIEW Impiegato2 AS SELECT Nome FROM Impiegato
+        </code>
+        <p>
+            La segreteria vuole aggiungere un nuovo impiegato con:
+        </p>
+        <code>
+            INSERT INTO Impiegato2 VALUES (Patrick)
+        </code>
+        <p>
+            cosa succede? Lo stipendio in Impiegato viene inizializzato a NULL. Se NULL non è accettato 
+            come valore allora l'operazione fallisce. Se altrimenti in Impiegato c'è un valore di default
+            l'inserimento viene accettato.
+        </p>
+        <p>
+            Il comportamento di inserimento su di una query è sempre permesso se la query è semplice,
+            per VIEW definite a partire da query complesse (con JOIN ad esempio) come <code class="code-inline">CREATE VIEW Esempio AS SELECT * FROM Tabella1,Tabella2 WHERE Tabella1.id = Tabella2.id </code>
+            il comportamento non è ben definito e varia molto in base a come è costruita la query. In quest ultimo caso quindi,
+            anche se il DBMS potrebbe permetterlo, noi valuteremo un inserimento nella VIEW come non possibile (perchè non possiamo capirne a fondo il comportamento). In genere:
+            <br><br><span class="bold">Una VIEW definita su di una singola tabella è modificabile <span class="underline">se gli attributi della VIEW contengono la chiave primaria</span> </span><br>
+            <span class="bold">Una VIEW definita su più tabelle non è modificabile</span><br>
+            <span class="bold">Una VIEW che usa funzioni di aggreganzioni (SUM, COUNT,...) non è MAI aggiornabile</span>
+            <br><br> Il principio di base è:
+        </p>
+        <code class="right">
+            <span class="code-title">Per essere modificabile una VIEW deve accadere che</span>
+            Ogni riga e colonna della VIEW deve corrispondere ad una ed una sola riga ed una sola colonna della tabella base
+        </code>
+    </section>
+    <section>
+        <h2>Limiti dell'algebra relazionale</h2>
+        <p>
+           Seppur rappresenta una logica molto robusta, l'algebra relazionale presenta dei limiti che l'approccio SQL supera. Ad esempio,
+           <span class="bold"> è possibile estrarre solo valori </span> in altre parole <span class="bold"> non è consentito il calcolo di valori derivati </span>
+            (somme, medie, ecc..), per altre operazioni come l'estrazione del minimo e massimo è possibili invece usare alcuni workaround. Esistono molti problemi come quello della <span class="bold"> chiusura transitiva in un grafo</span> 
+            che rappresentano un limite per l'algebra relazionale, ma che non vengono superati neanche da SQL (di default).
+        </p>
+        <h3>Esempio di chiusura transitiva</h3>
+        <p>
+            Nella teoria dei grafi la chiusura transitiva di un nodo, è l'insieme dei nodi 
+            raggiungibili partendo dal nodo di partenza. Data la relazione:
+        </p>
+        <code>
+            Supervisione( <span class="underline">Impiegato</span>,Capo )
+        </code>
+        <table>
+            <tr>
+              <th>Impiegato</th>
+              <th>Capo</th> 
+            </tr>
+            <tr>
+                <td>Rossi</td>
+                <td>Lupi</td> 
+            </tr>
+            <tr>
+                <td>Neri</td>
+                <td>Bruni</td> 
+            </tr>
+            <tr>
+                <td>Lupi</td>
+                <td>Falchi</td> 
+            </tr>
+        </table>
+        <p>
+            La chiusura transitiva sarà:
+        </p>
+        <table>
+            <tr>
+              <th>Impiegato</th>
+              <th>Superiore</th> 
+            </tr>
+            <tr>
+                <td>Rossi</td>
+                <td>Lupi</td> 
+            </tr>
+            <tr>
+                <td>Neri</td>
+                <td>Bruni</td> 
+            </tr>
+            <tr>
+                <td>Lupi</td>
+                <td>Falchi</td> 
+            </tr>
+            <tr>
+                <td>Rossi</td>
+                <td>Falchi</td> 
+            </tr>
+        </table>
+        <p>
+            Infatti:
+        </p>
+        <ul>
+            <li>Lupi è il capo di Rossi</li>
+            <li>Bruni è il capo di Nei</li>
+            <li>Falchi è il capo di Lupi</li>
+            <li>Falchi è il capo di Lupi e Lupo il capo di Rossi: posso arrivare da Rossi a Falchi tramite Lupi</li>
+        </ul>
+        <p>
+            Di default non sarebbe implementabile in algebra relazionale (e neppure in SQL) infatti per ottenere un risultato del genere dovrei fare tante JOIN della 
+            stessa tabella con se stessa un numero di volte non definibile a priori. Esiste un'interessante estensione di SQL <span class="bold"> le viste ricorsive </span>
+            che permette di definire delle vere e proprie funzioni ricorsive sulle relazioni.
+        </p>
+    </section>
+    <section>
+        <h2>Viste ricorsive</h2>
+        <code>
+            <span class="code-title">Somma ricorsiva dei primi 5 numeri (1+2+3+4+5)</span>
+            <span class="orange">WITH total AS</span> <span class="red">(SELECT 1 AS interation, 1 AS sum </span> <span class="green">UNION ALL</span> <span class="purple">SELECT iteration + 1, sum + (iteration + 1) FROM total</span> <span class="blue">WHERE iteration < 6)</span>
+        </code>
+        <ul>
+            <li>
+                <span class="orange"> 
+                    Definisco una query ricorsiva total
+                </span>
+            </li>
+            <li>
+                <span class="red"> 
+                    Definisco le condizioni iniziali della ricorsione
+                </span>
+            </li>
+            <li>
+                <span class="green"> 
+                    Mettiamo sempre UNION ALL per unire le condizioni iniziali con la parte ricorsiva
+                </span>
+            </li>
+            <li>
+                <span class="purple">
+                    Definisco il passo ricorsivo (cosa deve fare la ricorsione) su quale tabella di partenza (total cioè se stessa)
+                </span>
+            </li>
+            <li>
+                <span class="blue"> 
+                    Definisco delle condizioni di uscita per la ricorsione
+                </span>
+            </li>
+        </ul>
+        <h3>Datalog</h3>
+        <p>
+            Un modo per capire meglio il meccanismo delle query ricorsive è attraverso lo studio del Datalog, un linguaggio basato sui predicati. Abbiamo due tipi di predicati:
+        </p>
+        <ul>
+            <li>
+                <span class="bold">Estensionali: </span> relazione della base di dati
+            </li>
+            <li>
+                <span class="bold">Intensionali: </span> corrisponde ad una vista
+            </li>
+        </ul>
+        <p>
+            In Datalog non esistono per cui delle query vere e proprie, tutto è una vista (predicati intensionali) che viene eseguita sui dati di partenza (predicati estensionali). 
+            In Datalog l'interazione avviene tramite l'uso delle <span class="bold">regole</span>. Ogni regola è composta da:
+        </p>
+        <code>
+            testa <- corpo
+        </code>
+        <ul>
+            <li>
+                <span class="bold">Testa: </span> è un predicato atomico
+            </li>
+            <li>
+                <span class="bold">Corpo: </span> congiunzione di condizione
+            </li>
+        </ul>
+        <p>
+            Le interrogazioni (le query di SQL) vengono fatte mediante il predicato atomico <span class="code-inline">?</span>.
+        </p>
+        <code>
+            <span class="code-title">Interrogo tutti gli impiegati di età 30 e di matricola,nome,stipendio qualsiasi </span>
+            ? Impiegati(Matricola:m, Nome:n, Età:30, Stipendio:s)
+        </code>
+        <code>
+            <span class="code-title">Trovare matricola, nome, età e stipendio degli impiegati che guadagnano ріù di 40</span>
+            <ol>
+                <li>
+                    <span class="code-title"> Definisco un predicato intensionale ImpRicchi</span>
+                    ImpRicchi(Matricola:m,Nome:n,Stipendio:s) <- Impiegati(Matricola:m,Nome:n,Stipendio:s),s>40
+                </li>
+                <li>
+                    <span class="code-title"> Mi prendo gli impiegati tramite interrogazione</span>
+                    ?ImpRicchi(Matricola:m,Nome:n,Stipendio:s)
+                </li>
+            </ol>
+        </code>
+        <p>
+            Datalog viene usato per rendere più semplice il concetto di viste ricorsive.
+        </p>
+        <code>
+            <span class="code-title">Per ogni impiegato trovare tutti i suoi superiori</span>
+            Superiore (Impiegato:i, SuperCapo:c) <- Supervisione(Impiegato:i, Capo:c) </br>
+            Superiore (Impiegato:i, SuperCapo:c) <- Supervisione(Impiegato:i, Capo:c') <- Superiore (Impiegato:c', Supercapo:c) </br>
+        </code>
+        <ol>
+            <li>(Caso base) banalmente c è capo di i (c->i)</li>
+            <li>(Passo ricorsivo )Chi altro può essere un capo ricorsivamente? Un capo di un capo. Quindi diciamo che c è capo di i se ESISTE un capo c' tale che c' è capo di i e c' è impiegato di c (c->c'->i). In altre parole capo di i è un capo c' ricorsivamente capo di c. </li>
+        </ol>
+       
+    </section>
+    <section>
+        <h2>Funzioni utilità SQL</h2>
+        <ul>
+            <li>
+                <span class="bold">Temporali</span>
+                <ul> 
+                    <li>
+                        <code class="code-inline">current_date</code> restituisce la data corrente
+                    </li>
+                    <li>
+                        <code class="code-inline">extract(year from data)</code> estrae quello che indichiamo (l'anno in questo caso) da un attributo tipo data
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <span class="bold">Manipolazione stringhe</span>
+                <ul> 
+                    <li>
+                        <code class="code-inline">char_length(string)</code> restituisce la lunghezza di un attributo stringa
+                    </li>
+                    <li>
+                        <code class="code-inline">lower</code> converte una stringa in lowercase
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <span class="bold">Conversione</span>
+                <ul> 
+                    <li>
+                        <code class="code-inline">CAST(X AS Tipo)</code> fa il cast di X al Tipo specificato
+                    </li>
+                    <li>
+                        <code class="code-inline">lower</code> converte una stringa in lower case
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <span class="bold">Funzioni condizionali</span>
+                <ul> 
+                    <li>
+                        <code class="code-inline">CASE END</code> sostiusce lo switch di altri linguaggi.
+                        <code>
+                            CASE Tipo <br>
+                             WHEN 'Auto' THEN 2,58*kwatt <br>
+                             WHEN 'Moto' THEN 1,58*kwatt <br>
+                             ELSE NULL <br>
+                            END AS Tassa <br>
+                        </code>
+                        Quello che fa è, facendo riferimento all'attributo Tipo, restituire 2,58*kwatt se è un Auto, 1,58*kwatt se è una Moto; altrimenti NULL se non è nessuna delle due. 
+                        I possibili valori (2,58*kwatt,...) li assegna all'alias Tassa.
+                    </li>
+                    <li>
+                        <code class="code-inline">NullIf(Esp1,Esp2)</code> restituisce NULL se le espressioni Esp1,Esp2 sono uguali, altrimenti restiuisce la prima espressione Esp1.
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </section>
+    
+</body>
+
+</html>
