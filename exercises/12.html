@@ -1,0 +1,58 @@
+<html>
+
+<head>
+    <title>Database</title>
+    <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+</head>
+
+<body>
+    <header>
+        <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
+            RelaX</a>
+        <a class="nav-link" href="https://www.mycompiler.io/it/new/sql">Simulatore SQL</a>
+        <a class="nav-link" href="../index.html" target="_self">Home</a>
+        <h1>Database</h1>
+    </header>
+
+    <section>
+        <p>Si consideri il seguente schema relazionale: <br>
+            PRODOTTO NANEI CON alto da aperto daia, siula, numero, rate id contraente) <br>
+            PERSONA(id_persona,nome, cognome, data _nascita) <br>
+            TRANSATONE COd ontoUT, data causale, dare avere; porto) <br>
+            TRANSAZIONEPRODOTTOFINANZIARIO(id_conto,data, causale importo,id prodotto) <br>
+        </p>
+        <code>
+            <span class="code-title">Trovare la persona che ha il saldo totale più elevato</span>
+            SELECT contomassimo.id_persona FROM (SELECT contocorrente.id_conto, titolare.id_persona, MAX(contocorrente.saldo) FROM contocorrente, titolare WHERE titolare.id_conto = contocorrente.id_conto) as contomassimo,persona WHERE persona.id_persona = contomassimo.id_persona;
+            <span class="code-subtitle"> <a href="https://www.mycompiler.io/view/0asWHh0QIE2" target="_blank">Test</a></span>
+        </code>
+        <p>
+            Si può anche fare evitando le viste.
+        </p>
+        <code>
+            SELECT id_persona FROM titolare,contocorrente WHERE contocorrente.id_conto = titolare.id_conto and contocorrente.saldo >= (SELECT MAX(contocorrente.saldo) FROM contocorrente)
+            <span class="code-subtitle"> <a href="https://www.mycompiler.io/view/IIHwxE5uG9g" target="_blank">Test</a></span>
+        </code>
+        <p>
+            La sintassi risulta più semplice.
+        </p>
+    </section>
+    <section>
+        <p>
+            Dato lo schema relazionale: <br>
+            Escursione(id, titolo, descrizione, durata, difficoltà, costo) <br>
+            DataEscursione(id, data, idescursione, id guida) <br>
+            Partecipante(idpartecipante, idescursione) <br>
+            Persona(id, nome, cognome) <br>
+        </p>
+        <code>
+            <span class="code-title">Trovare titolo di tutte le escursioni con il maggior prezzo</span>
+            SELECT escursione.titolo FROM escursione WHERE escursione.costo >= (SELECT MAX(escursione.costo) FROM escursione);
+            <span class="code-subtitle"><a href="https://www.mycompiler.io/view/KUbVgxXSJkY" target="_blank">Test</a> </span>
+        </code>
+    </section>
+
+</body>
+
+</html>
