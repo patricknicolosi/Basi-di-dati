@@ -1,0 +1,318 @@
+<html>
+
+<head>
+    <title>Database</title>
+    <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+</head>
+
+<body>
+    <header>
+        <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
+            RelaX</a>
+        <a class="nav-link" href="https://www.mycompiler.io/it/new/sql">Simulatore SQL</a>
+        <a class="nav-link" href="../index.html" target="_self">Home</a>
+        <h1>Database</h1>
+    </header>
+    <section>
+        <h2>Disclaimer</h2>
+        Non esistendo uno standard, tutto quello che vediamo in questa sezione può cambiare tra DBMS. Nello specifico vedremo i trigger di DB2 e SQL3 che hanno la stessa sintassi. Nella parte di esercizi verrà vista anche la sintassi Oracle.
+        <h2>Basi di dati attive</h2>
+        <p>
+            L'idea di base è quella di voler rendere il mio database più dinamico possibile. Se voglio applicare nuove regole al database, quello che devo fare 
+            è modificare la logica di business per ogni applicativo che accede al mio database. Si vuole creare un set di regole in modo da modificare la logica di business
+            lato database. Una base di dati attiva è una base di dati che contiene regole attive che chiamiamo <span class="bold">trigger</span>.
+            il trigger è uno strumento che si basa sul paradigma:
+        </p>    
+        <code>
+            Evento-Condizione-Azione
+        </code>
+        <ol>
+            <li>Si verifica l'evento</li>
+            <li>Viene controllata una condizione</li>
+            <li>Di conseguenza viene eseguita un'azione</li>
+        </ol>
+        <p>
+            Questo modello prende il nome di <span class="bold">modello reattivo</span>. L'unico problema dei trigger è la complessità
+            di progettazione.
+        </p>
+        <ul>
+            <li>
+                <span class="bold">Evento</span> è un'operazione di modifica del database (insert, delete, update). Quando accade l'evento il trigger è <span class="bold">attivato</span>
+            </li>
+            <li>
+                <span class="bold">Condizione</span> è un predicato che viene valutato se il trigger è attivato. Il trigger quindi passa ad uno stato <span class="bold"> valutato</span>
+            </li>
+            <li>
+                <span class="bold">Evento</span> è una sequenza query in SQL. Il trigger passa allo stato di <span class="bold">eseguito</span>
+            </li>
+        </ul>
+        <p>
+            Ogni trigger necessità per essere definito di alcune informazioni standard:
+        </p>
+        <ul class="bold">
+            <li>
+                nome
+            </li>
+            <li>
+                target
+            </li>
+            <li>
+                modalità (<code class="code-inline">after,before</code>)
+            </li>
+            <li>
+                evento (<code class="code-inline">insert,update,delete</code>)
+            </li>
+            <li>
+                granularità (<code class="code-inline">after</code> e <code class="code-inline">before</code>)
+            </li>
+            <li>
+                alias delle tabelle di transizione
+            </li>
+            <li>
+                azione
+            </li>
+            <li>
+                timestamp
+            </li>
+        </ul>
+        <p>
+            La sintassi è la seguente:
+        </p>
+
+        <code class="sql">
+            <pre>
+                create trigger TriggerName                      //definisco nome del trigger
+                {before | after}                                //specifico che modalità usare
+                {insert | delete | update [of column]}          //specifico l'evento, con update posso decidere di agire sulla singola colonna
+                 on Table  //specifico evento e su quale Tabella
+                [referencing                                    //Da qua
+                    {   [old_table [as] OldTableAlias]
+                        [new_table [as] NetwTableAlias] 
+                    } | 
+                    {   [old [row] [as] OldTupleName] 
+                        [new [row] [as] NewTupleName] 
+                    }]                                          //A qua avviene la gestione delle  <div class="tooltip">Tabelle di transizione<span class="tooltiptext">Sono le tabelle prima e dopo dell'esecuzione SQL. Supponiamo di inserire un record in una tabella, allora oldtable sarà la tabella prima dell'inserimento del record, mentre newtable sarà la tabella dopo l'inserimento</span></div>
+                [for each {row | statement}]                    //Con for each row azioniamo il trigger per ogni riga modificata, con for each statement 
+                                                                //azioniamo il trigger solo una volta per blocco di righe 
+                                                                //modificate. Se vengono modificati 10 record, con la prima modalità 
+                                                                //il trigger verrà azionato 10 volte, con la seconda verrà invece azionato una sola volta
+                [when condition] 
+                SqlStatements                                   //I comandi SQL che il triggere deve eseguire
+            </pre>
+        </code>
+        <h3>Before e After</h3>
+        <p>
+            con <code class="code-inline">before</code> dico che vado ad eseguire il trigger prima dell'evento. Invece con <code class="code-inline">after</code> prima viene eseguito l'evento e dopo il trigger. Di conseguenza con la prima modalità
+            il trigger non modifica direttamente il db, cosa che avviene con la seconda modalità.
+        </p>
+        <p>
+            Immaginiamo di voler aggiornare lo stupendio di un dipendente eseguendo <code class="code-inline">UPDATE Impiegato SET Salario = 200 WHERE Impiegato.id = '123456' </code>. Si vuole 
+            creare un trigger in modo tale che ogni volta che aggiorniamo il valore dello stipendio, questo può essere aumentato massimo del 20%. Quindi immaginando lo stipendio iniziale del dipendente 123456 a 100, non è 
+            possibile eseguire la query prima indicata come previsto perchè 200 corrisponde al 50% di più dello stipendio iniziale. Il trigger imposterà il nuovo stipendio a 120. Vogliamo vedere come creare un trigger del genere
+            con i due differenti approcci:
+        </p>
+        <pre>
+            <code>
+                create trigger LimitaAumenti
+                before update of Salario on Impiegato
+                for each row
+<span class="bold green">                when (New.Salario > Old.Salario * 1.2)
+                set New.Salario = Old.Salario * 1.2</span>       
+            </code>
+        </pre>
+        <p>
+            In questo caso vediamo quello che fa il trigger:
+        </p>
+        <ol>
+            <li>
+                Viene eseguita la query <code class="code-inline">UPDATE Impiegato SET Salario = 200 WHERE Impiegato.id = '123456' </code>
+            </li>
+            <li>
+                Il trigger che è registrato in modo da ascoltare per operazioni di update su Impiegato, viene attivato
+            </li>
+            <li>
+                Per ogni record modificato dall'update (for each row) viene valutata una condzione (when) ed un'azione (set). In questo caso
+                le keywords New ed Old fanno riferimento al vecchio valore che il database aveva prima che venisse eseguita la query update e quello che avrà dopo.
+                Possiamo controllare se il nuovo Salario rispetto quello vecchio è aumentato di più del 20%, in questo caso settiamo il nuovo salario con un aumento del 20%.
+            </li>
+        </ol>
+        <p>
+            In ogni caso il trigger viene eseguito prima che venga registrato un vero e proprio update della tabella Impiegato.
+        </p>
+        <pre>
+            <code>
+                create trigger LimitaAumenti
+                after update of Salario on Impiegato
+                for each row
+                when (New.Salario > Old.Salario * 1.2)
+<span class="bold green">                Update Impiegato
+                set Impiegato.Salario = Old.Salario * 1.2
+                WHERE Impiegato.Matricola = Old.Matricola </span> 
+            </code>
+        </pre>
+        <p>
+            Si comporta come prima con l'unica differenza che il trigger viene eseguito dopo l'operazione di update iniziale. Visto che viene eseguito dopo la prima operazione, con after, 
+            quello che dobbiamo specificare è una vera e propria operazione di UPDATE. <span class="bold green"> da notare la parte in verde</span>
+        </p>
+        <h3>Granularità dell'evento (for each row e for each statement)</h3>
+        <ul>
+            <li>
+                Con un trigger di tipo <code class="code-inline">for each statement</code> andiamo a modificare <span class="bold"> insieme </span> un gruppo di tuple.
+            </li>
+            <li>
+                Con un trigger di tipo <code class="code-inline">for each row</code> andiamo a modificare <span class="bold"> uno alla volta </span> un gruppo di tuple.
+            </li>
+        </ul>
+        <p>
+            Scegliere la granularità è importante anche nella definizione del trigger, infatti se:
+        </p>
+        <ul>
+            <li>
+                Nella modalità <span class="bold">row-level</span> abbiamo le keywords <code class="code-inline">Old.Column</code> e <code class="code-inline">New.Column</code>
+            </li>
+            <li>
+                Nella modalità <span class="bold">statement-level</span> abbiamo le keywords <code class="code-inline">Old.Table</code> e <code class="code-inline">New.Table</code> perchè andiamo ad agire su di un insieme di tuple insieme.
+            </li>
+        </ul>
+        <p>
+            Ovviamente:
+        </p>
+        <ul>
+            <li>
+                <span class="bold">old</span> e <span class="bold"> old_table</span> non sono presenti per operazioni di <span class="bold">insert</span>
+            </li>
+            <li>
+                <span class="bold">new</span> e <span class="bold"> new_table</span> non sono presenti per operazioni di <span class="bold">delete</span>
+            </li>
+        </ul>
+        <code>
+            <span class="code-title">Esempio trigger statement level</span>
+                <pre>
+                    create trigger FileDeletedInvoices after delete on Invoice
+                    referencing old_table as OldInvoiceset   //diamo OldInvoiceset come alias per old_table
+                    insert into DeletedInvoices
+                    (select *
+                    from OldInvoiceset)
+                </pre>
+        </code>
+        <p>
+            Quello che fa il trigger è simulare il comportamento di un cestino che conterrà tutti i record eliminati da Invoice
+        </p>
+        <ul>
+            <li>
+                Viene chiamata una delete su Invoice
+            </li>
+            <li>
+                Visto che si tratta di una after trigger, allora i record specificati verranno eliminati da subito da Invoice e inseriti su di una tabella temporanea OldInvoiceSet
+            </li>
+            <li>
+                I record trasferiti su OldInvoiceset temporaneamente vengono spostati in DeletedInvoices
+            </li>
+        </ul>
+        <h3>
+            Esecuzione di trigger multipli
+        </h3>
+        <p>
+            SQL ci da la possibilità di associare più di un trigger ad una stessa tabella, a meno di algoritmi di riduzione conflitti, è molta la probabilità che più 
+            trigger vadano in conflitto, in questi casi il DBMS esegue:
+        </p>
+        <ol>
+            <li>
+                I trigger before statement-level
+            </li>
+            <li>
+                I trigger before row-level
+            </li>
+            <li>
+                La modifica nella tabella e verificati i vincoli di integrità
+            </li>
+            <li>
+                I trigger after row-level
+            </li>
+            <li>
+                I trigger after statement-level
+            </li>
+        </ol>
+        <p>
+            <span class="bold">Quando gli stessi trigger fanno parte della stessa famiglia, allora vengono eseguiti prima quelli che sono stati creati prima cioè quelli che hanno il timestamp di creazione più vecchio</span>
+        </p>
+        <p>
+            Quando i trigger vengono eseguiti gli viene associato un <span class="bold">TEC (trigger execution context)</span>. Un trigger può richiamare altri trigger, in questi casi il TEC iniziale, che definiamo <span class="italic">includente</span>, 
+            verrà salvato e si passa al TEC successivo che sarà quindi <span class="italic">incluso</span> nel primo. Ogni volta che un trigger termina la propria esecuzione, viene eliminato il TEC contenuto e ripristinato quello contenente, e così via ricorsivamente.
+            L'esecuzione <span class="bold">termina correttamente</span> quando si arriva ad uno <span class="italic">stato quiescente</span> cioè non ho più TEC associati a trigger che devo eseguire.
+            L'esecuzione <span class="bold">termina con errore</span> quando si raggiunge una profondità di ricorsione eccessiva dando luogo ad un <span class="bold"> eccezione di non terminazione</span>. Se si verifica un errore durante 
+            l'esecuzione di un trigger contenuto viene fatto invece un rollback allo stato contenente più vicino.
+        </p>
+        <p>
+            Ogni trigger deve avere come importante proprietà quella di <span class="bold"> terminazione </span>, cioè ogni trigger iniziato deve finire(con errore o no). 
+            Per lo studio della terminazione, viene usato il <span class="bold">grafo di triggering</span>, che ha:
+        </p>
+        <ol>
+            <li>
+                un nodo per ogni trigger
+            </li>
+            <li>
+                un arco dal nodo i al nodo j se l'esecuzione del nodo i può attivare il trigger j.
+            </li>
+        </ol>
+        <p>
+            Quello che possiamo dedurre inoltre è:
+        </p>
+        <ul>
+            <li>
+                Che se il grafo è aciclico la catena di chiamate dei trigger termina
+            </li>
+            <li>
+                Se il grafo presenta un ciclo allora la catena di chiamate non è detto termini, quindi può potenzialmente terminare che no
+            </li>
+        </ul>
+        <code>
+            <span class="code-title">Esempio di non terminazione</span>
+            <pre>
+                T2': create trigger CheckBudgetThreshold
+                after update on Employee for each row
+                when New. Salary ‹ 50000
+                update Employee
+                set Salary = 0.9*Salary
+            </pre>
+        </code>
+        <p>
+            In questo caso il nostro grafo sarà del tipo:
+        </p>
+        <img src="../assets/1.png" alt="grafo">
+        <p>
+            Quello che fa il trigger è diminuire del 90% ogni volta il salario se minore di 5000, ovviamente creiamo una condizione di non terminazione. 
+            Dopo un certo numero di ricorsioni avremo quindi un errore.
+        </p>
+        <code>
+            <span class="code-title">Esempio ciclico con terminazione</span>
+            <pre>
+                T1:
+                create trigger AdjustContributions after update of Salary on Employee referencing new table as NewEmp update Employee
+                set Contribution = Salary * 0.8
+                where RegNum in ( select RegNum from NewEmp)
+
+                T2: create trigger CheckBudgetThreshold after update on Employee
+                referencing new_table as NewEmp1
+                when 50000 < ALL (select (Salary+Contribution) from NewEmp1)
+                update Employee
+                set Salary = 0.9*Salary
+            </pre>
+        </code>
+        <p>
+            In questo caso il nostro grafo sarà del tipo:
+        </p>
+        <img src="../assets/2.png" alt="grafo">
+        <p>
+            Pur il grafo presenta dei cicli abbiamo che i trigger terminano. In altre parole, la presenza di cicli nel grafo non è sufficiente per determinare che l'esecuzione continuerà all'infinito; ci sono delle condizioni o degli eventi che fanno sì che l'esecuzione si interrompa o termini.
+        </p>
+        <p class="bold">
+            Il controllo di terminazione è per cui importante per evitare errori grossolani durante la scrittura di trigger.
+        </p>
+    </section>
+
+    
+</body>
+
+</html>

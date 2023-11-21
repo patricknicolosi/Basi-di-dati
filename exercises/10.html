@@ -57,8 +57,8 @@
         </code>
         <code>
             <span class="code-title">Trovare tutti i marinai che hanno prenotato <span class="bold">tutte</span> le barche possibili</span>
-            SELECT DISTINCT P.idm FROM P WHERE NOT EXISTS (SELECT B.idb FROM B WHERE NOT EXISTS (SELECT * FROM P P2 WHERE P2.idb = B.idb and P.idm = P2.idm))
-            <span class="code-subtitle"><a href="https://www.mycompiler.io/view/36PLxYLcToa">Test</a></span>
+            SELECT * FROM M,(SELECT DISTINCT P.idm FROM P WHERE NOT EXISTS (SELECT B.idb FROM B WHERE NOT EXISTS (SELECT * FROM P P2 WHERE P2.idb = B.idb and P.idm = P2.idm))) as univoci WHERE M.idm = univoci.idm;
+            <span class="code-subtitle"><a href="https://www.mycompiler.io/view/DXesZ0frrEv">Test</a></span>
         </code>
         <p>
             In altre parole, per ogni marinaio non deve esistere una barca che non ha prenotato
