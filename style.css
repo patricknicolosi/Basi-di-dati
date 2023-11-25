@@ -1,8 +1,12 @@
 code{
-    padding: 10px;
+    padding: 15px;
     margin: 20px;
     display: block;
     background-color:antiquewhite;
+}
+.terminal{
+    background-color: black;
+    color: white;
 }
 .relax{
     background-color:gainsboro;
@@ -124,5 +128,21 @@ header{
 img{
     display: block; 
     margin: 0 auto;
-    width: 20%;
+    width: 40%;
+}
+
+@media screen and (max-width: 600px) {
+    img{
+        display: block; 
+        margin: 0 auto;
+        width: 80%;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    img{
+        display: block; 
+        margin: 0 auto;
+        width: 60%;
+    }
 }
