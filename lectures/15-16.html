@@ -1,0 +1,827 @@
+<html>
+
+<head>
+    <title>Database</title>
+    <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+</head>
+
+<body>
+    <header>
+        <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
+            RelaX</a>
+        <a class="nav-link" href="https://www.mycompiler.io/it/new/sql">Simulatore SQL</a>
+        <a class="nav-link" href="../index.html" target="_self">Home</a>
+        <h1>Database</h1>
+    </header>
+    <section>
+        <h2>MySQL</h2>
+        <p>
+            MySQL mette a disposizione diversi <span class="bold">tipi di tabelle</span> <span class="italic">storage engine</span> per la memorizzazione dei dati, ognuno
+            presenta delle caratteristiche differenti. Esiste un API che si può utilizzare per creare nuovi storage engine. Quelli principali
+            che MySQL mette a disposizione di default sono:
+        </p>
+        <ul>
+            <li>
+                <span class="bold">Transazionali</span> sono più sicuri, permettono di recuperare i dati in caso di crash e supportano le transazione atomiche (ACID)
+            </li>
+            <li>
+                <span class="bold">Non transazionali</span> sono più veloci, occupano meno spazio su disco e minor richiesta di memoria
+            </li>
+        </ul>
+        <p>
+            Lo storage engine di default è <span>InnoDB</span> che è di tipo transazionale e che tra le novità più interessanti rispetto al precedente engine di MySQL (MyIsam) porta:
+        </p>
+        <ul>
+            <li>
+                lock a livello di record per gestire la concorrenza
+            </li>
+            <li>
+                foreign key
+            </li>
+        </ul>
+        <p>
+            Le tabelle InnoDB sono soggette alle seguenti limitazioni:
+        </p>
+        <ul>
+            <li>
+                Non è possibile creare più di 1000 colonne per tabella
+            </li>
+            <li>
+                Su alcuni sistemi le dimensioni del <span class="italic">table space</span> non possono superare i 2GB.
+            </li>
+            <li>
+                La grandezza minima di un tablespace è di 10MB.
+            </li>
+            <li>
+                Le SELECT COUNT(*) su tabelle molto grandi possonon essere molto lente.
+            </li>
+        </ul>
+    </section>
+    <section>
+        <h2>Tipi di dati in MySQL</h2>
+        <h3>Tipi numerici</h3>
+        <p>
+            Tutti i tipi numerici permettono di rappresentare valori sia con il segno che senza, per specificare al DBMS
+            una delle due modalità dobbiamo usare la parola chiave <code class="code-inline terminal">UNSIGNED <span class="italic">tipo_numerico</span></code> ad esempio per
+            rappresentare valori senza il segno
+        </p>
+        <img src="../assets/4.png" alt="">
+        <p>
+            è possibile riferirsi ai tipi numerici usando degli alias che ne aiutano la memorizzazione:
+        </p>
+        <img src="../assets/5.png" alt="">
+        <h3>Tipi date</h3>
+        <img src="../assets/6.png" alt="">
+        <h3>Tipi testo</h3>
+        <img src="../assets/7.png" alt="">
+        <p>
+            Tra di questi tipi, i <span class="bold">BLOB</span> servono a memorizzare file. Nella colonna corrispondente Max Length, se prendiamo in considerazione ad esempio il LONGBLOB,
+            la Max Length ci restituisce la massima dimensione memorizzabile per file che è quindi 4gb, la stessa colonna Max Lenght se prendiamo in considerazione
+            il tipo TEXT, allora verrà restituita il massimo numero di caratteri memorizzabili. 
+        </p>
+        <p>
+            Il tipo <span class="bold">ENUM</span> ci permette di definire valori standard per limitare la scelta da parte dell'utente che sarà obbligato a scegliere un valore tra quelli specificati nell'ENUM.
+            Ad esempio possiamo definire un ENUM Sesso('Maschio','Femmina') e quindi per l'attributo Sesso l'utente potrà inserire nel database o Maschio o Femmina.
+        </p>
+        <p>
+            Il tipo <span class="bold">SET</span> ci permette di memorizzare invece una "lista di valori", ad esempio SharedPreferences('true','red',...).
+        </p>
+        <h3>Tipi NULL</h3>
+        <p>
+            Il valore NULL per un campo assume significato "valore mancante". In MySQL non è possibile testare valori NULL
+            con i consueti operatori di confronto, due sono gli operatori che possiamo usare per testare valori nullable e cioè:
+        </p>
+        <ul>
+            <li class="bold">
+                IS NULL
+            </li>
+            <li class="bold">
+                IS NOT NULL
+            </li>
+        </ul>
+        <p>
+            Quando si usa ORDER BY, allora i valori NULL:
+        </p>
+        <li>
+            Sono inseriti all'inizio se specifichiamo ASC
+        </li>
+        <li>
+            Sono inseriti alla fine se specifichiamo DESC
+        </li>
+        <p>
+            Nell'esempio che segue vediamo il primo codice tagliato in quanto errato, infatti stiamo usando un operatore di confronto =
+            per fare un test sul valore NULL per il campo return_date.
+        </p>
+        <img src="/assets/14.png" alt="">
+    </section>
+    <section>
+        <h2>Gestione degli accessi MySQL Client</h2>
+        <p>
+            Da linea di comando possiamo dare una serie di comandi, per interagire con un database, i comandi principali che possiamo impartire al client MySql:
+        </p>
+        <ul>
+            <li>
+                Per connettersi ad un database usiamo il comando:
+                <code class="terminal">
+                    mysql -h <span class="italic">host</span> -u <span class="italic">user</span> -p <br>
+                    Enter password: ********
+                </code>
+                <ul>
+                    <li>
+                        Se indicato, il parametro <span class="bold">-h</span> ci permette di indicare l'hostname, e quindi l'indirizzo ip 
+                        dove risiede il nostro database
+                    </li>
+                    <li>
+                        il parametro <span class="bold">-u</span> ci permette di indicare il nostro utente.
+                    </li>
+                    <li>
+                        il parametro <span class="bold">-p</span> ci permette di indicare la password del nostro account per accedere con i corretti privilegi.
+                        <p>
+                            Ad esempio:
+                        </p>
+                        <code class="terminal" >
+                            mysql -h localhost -u root -p
+                        </code>
+                        <p>
+                            Ci permette di collegarmi al database presente nella mia macchina locale indicando la password di accesso.
+                        </p>
+                    </li>                    
+                </ul>
+            </li>
+            <li>
+                Per creare un utente possiamo dare il comando:
+                <code class="terminal">
+                    CREATE USER<span class="italic">'user'</span>@<span class="italic">'host'</span> IDENTIFIED BY <span class="italic">'nome_password'</span>;
+                </code>
+                <ul>
+                    <li>
+                        Con <span class="bold"><span class="italic">'user'</span>@<span class="italic">'host'</span></span> indichiamo il nome dell'account da creare e su quale host risiede.
+                    </li>
+                    <li>
+                        Con <span class="bold">IDENTIFIED BY <span class="italic ">'nome_password'</span></span> andiamo invece a creare una password per l'utente prima specificato. 
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Per mostrare informazioni riguardo il database, possiamo usare il comando <span class="bold">SHOW</span> che ha diverse possibilità:
+                <img src="../assets/3.png" alt="">
+            </li>
+            <li>
+                Con la stessa sintassi dello standard SQL possiamo assegnare privilegi ad un utente:
+                <code class="terminal">
+                    GRANT <span class="italic">privilege,...</span> ON <span class="italic">'db'.'table'</span> FROM <span class="italic">'user'</span>@<span class="italic">'host'</span></span>
+                </code>
+                Dove <span class="italic">privilege</span> può assumere valori:
+                <ul class="bold">
+                    <li>
+                        ALL PRIVILEGES
+                    </li>
+                    <li>
+                        USAGE
+                    </li>
+                    <li>
+                        SELECT,INSERT,UPDATE,DELETE
+                    </li>
+                    <li>
+                        CREATE,ALTER,INDEX,DROP,CREATE,VIEW,TRIGGER
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Per rimuovere un utente
+                <code class="terminal">
+                    DROP USER <span class="italic">'user'</span>@<span class="italic">'host'</span></span>
+                </code>
+            </li>
+            <li>
+                Per revocare i privilegi di un tente:
+                <code class="terminal">
+                    REVOKE <span class="italic">privilege,...</span> ON <span class="italic">'db'.'table'</span> FROM <span class="italic">'user'</span>@<span class="italic">'host'</span></span>
+                </code>
+                Dove <span class="italic">privilege</span> può assumere valori:
+                <ul class="bold">
+                    <li>
+                        ALL PRIVILEGES
+                    </li>
+                    <li>
+                        USAGE
+                    </li>
+                    <li>
+                        SELECT,INSERT,UPDATE,DELETE
+                    </li>
+                    <li>
+                        CREATE,ALTER,INDEX,DROP,CREATE,VIEW,TRIGGER
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Mostrare il nome dell'utente corrente
+                <code class="terminal">
+                    SELECT user();
+                </code>
+            </li>
+        </ul>
+    </section>
+    <section>
+        <h2>Query principali</h2>
+        <h3>INSERT</h3>
+        <p>
+            Supponiamo di stare inserendo un record tramite <span class="bold">la chiave primaria</span> (importante). Il nuovo record da inserire ha la stessa
+            chiave primaria di un record già presenta. Vogliamo quindi fare in modo di non voler introdurre un duplicato
+            e di voler aggioranre il record già presente aggiornandolo con le informazioni del nuovo, allora:
+        </p>
+        <code >
+            <pre>
+                INSERT INTO table (field1,...,fieldN) VALUES (value1,...,valueN) [ON 
+                DUPLICATE KEY UPDATE
+                    field1=value1,
+                    ...
+                    fieldN=valueN]
+            </pre>
+        </code>
+        <h3>SELECT</h3>
+        <p>
+            La SELECT in MySql è molto simile allo standard SQL a cui aggiunge qualche keyword in più per definire dei comportamenti avanzati. Di seguito
+            la sintassi completa della SELECT. 
+        </p>
+        <img src="../assets/9.png" alt="">
+        <p>
+            Tra i comandi nuovi non presenti nel SQL classico e che torneranno utili:
+        </p>
+        <ul>
+            <li>
+                <span class="bold">LIMIT</span>
+            </li>
+            <li>
+                <span class="bold">OFFSET</span>
+            </li>
+            <li>
+                <span class="bold">FOR</span> che serve ad implementare la funzionalità di lock per gestire la concorrenza.
+            </li>
+        </ul>
+        <p>
+            Inoltre in caso di SELECT annidate bisogna sempre indicare un alias, altrimenti ci verrà restituito un errore.
+        </p>
+        <h4>Espressioni regolari</h4>
+        <p>
+            Come funzionalità aggiuntiva rispetto al tradizionale metodo LIKE di SQL, abbiamo quello dell'utilizzo di espressioni regolari per le stringhe, cui sintassi la possiamo
+            vedere di seguito:
+        </p>
+        <img src="../assets/10.png" class="small-img">
+        <h3> UPDATE</h3>
+        <p>
+            Le query di tipo Update seguono la sintassi standard di SQL con due piccole aggiunte opzionali: 
+        </p>
+        <ul>
+            <li>
+                <code class="terminal code-inline">LIMIT</code> per limitare il numero di righe da modificare
+            </li>
+            <li>
+                <code class="terminal code-inline">LOW PRIORIY</code> per indicare al DBMS di eseguire quella modifica solo in condizioni consone, cioè quando il server è inoccupato
+        </ul>
+        <h3>DELETE</h3>
+        <p>
+            Come per l'UPDATE, anche per il DELETE abbiamo una sintassi standard, con la possibilità di poter indicare un <code class="terminal code-inline">LIMIT</code> per limitare il numero di righe da poter eliminare per volta
+        </p>
+    </section>
+    <section>
+        <h2>Funzioni</h2>
+        <p>
+            In MySql abbiamo due tipi di funzione:
+        </p>
+        <ul>
+            <li>
+                <span class="bold">Multiple Row</span>, si tratta di un nuovo tipo di funzione che prende in input un set di righe e restituisce un valore.
+            </li>
+            <li>
+                <span class="bold">Single Row</span>, classiche funzioni che prendono in input un valore e ne restituiscono un in output
+            </li>
+        </ul>
+        <img src="../assets/15.png" alt="">
+        <p>
+            Di funzioni multiple row ne abbiamo conosciuti diverse, SUM(...) ad esempio è una di queste.
+
+        </p>
+        <p>
+            Durante il corso vederemo principalmente funzioni single row, cui tipologie venngono sintetizzate
+            nel seguente schema:
+        </p>
+        <img src="../assets/16.png" alt="">
+    </section>
+    <section>
+        <h2>Operatori</h2>
+        <p>
+            Gli operatori SQL vengono conservati in MySql e ne vengono aggiunti alcuni come quelli matematici, l'operatore aritmentico %, l'operatore logico XOR.
+        </p>
+        <img src="../assets/17.png" alt="">
+        <p>
+            Non esistendo tipi bool, in MySql il risultato di un confronto tramite operatori di confronto restituisce:
+        </p>
+        <ul>
+            <li>
+                1 se il risultato del confronto è true
+            </li>
+            <li>
+                0 ser il risultato del confronto è false
+            </li>
+        </ul>
+        <p>
+            Tra gli operatori introdotti da MySql abbiamo lo <span class="italic">spaceship operator</span> <span class="bold"><=></span>, questo:
+        </p>
+        <ul>
+            <li>
+                Si comporta come un operatore <span class="italic">=</span> se gli argomenti del confronto non sono NULL
+            </li>
+            <li>
+                Restituisce false se andiamo a confrontare un valore qualunque con NULL
+            </li>
+            <li>
+                Restituisce true se andiamo a confrontare NULL con NULL
+            </li>
+        </ul>
+        <p>
+            Questo operatore è quindi classificato come <span class="bold">NULL SAFE</span>, cioè come risultato di un confronto non verrà mai restituito NULL.
+        </p>
+        <p>
+            Con l'operatore = se uno dei due valori è NULL, restituisce invece NULL.
+        </p>
+        <p>
+            Altri operatori che fanno controlli su insiemi di valori o range abbiamo:
+        </p>
+        <img src="../assets/18.png" alt="">
+        <p>
+            Tra questi operatori solo <span class="bold">INTERVAL</span> viene introdotto da MySql rispetto allo standard SQL.
+            Questo operatore potrebbe ad esempio tornare utile per discretizzare certi valori mappandoli in base a dei range.
+        </p>
+    </section>
+    <section>
+        <h2>Controllo del flusso</h2>
+        <p>
+            Come per l'SQL abbiamo vari costrutti condizionali che ci permettono di avere controllo sul flusso di operazioni.
+        </p>
+        <code >
+            IF(expr1,expr2,expr3)
+        </code>
+        <p>
+            If in SQL è una funzione che restituisce expr2 se expr1 è vera, altrimenti restituisce expr3.
+        </p>
+        <code >
+            <span class="code-title">Come per l'SQL, restituisce null se i due valori passati come argomenti sono uguali; altrimenti, restituisce il primo valore</span>
+            NULLIF(expr1,expr2)
+        </code>
+        <code >
+            <span class="code-title">restituisce expr2 se expr1 è nullo</span>
+            IFNULL(expr1,expr2)
+        </code>
+        <code >
+            <span class="code-title">CASE (C-like)</span>
+            <pre>
+                CASE value
+                    WHEN compare_value THEN result
+                    [WHEN compare_value THEN result]
+                    [ELSE result]
+                END
+            </pre>
+        </code>
+        <code >
+            <span class="code-title">CASE (Seconda versione)</span>
+            <pre>
+                CASE 
+                    WHEN condition THEN result
+                    [WHEN condition THEN result]
+                    [ELSE result]
+                END
+            </pre>
+        </code>
+        <p>
+            In questa seconda versione non andiamo a specificare nessun value e potrebbe sostituire la possibilità
+            di altri linguaggi di fare vari if del tipo:
+        </p>
+        <code>
+            <pre>
+                if(foo.a == 'ciao'){
+                    return 'mondo';
+                }
+                if(foo.a == 'mario'){
+                    return 'rossi';
+                }
+                ...
+            </pre>
+        </code>
+    </section>
+    <section>
+        <h2>Funzioni su stringhe</h2>
+        <p>
+            Tra le principali funzioni per la manipolazione di stringhe abbiamo:
+        </p>
+        <img src="../assets/19.png" alt="">
+        <p>
+            Specificando meglio il comportamento di alcuni di questi operatori:
+        </p>
+        <ul>
+            <li>
+                <span class="bold">CONV(N,from_base,to_base)</span> che prende in input un numero e lo converte alla base finale.
+                <code>
+                    CONV(10,10,16)
+                </code>
+                Converte il numero 10 da decimale a esadecimale, ritornando quindi 'A'
+            </li>
+            <li>
+                <span class="bold">BIT_LENGTH(str)</span> la lunghezza in bit che ritorna la funzione è ovviamente strettamente legata alla codifica
+                di caratteri che usiamo. Ad esempio se usiamo una codifica a 8bit, allora BIT_LENGTH(str) restituirà il risultato del prodotto(8*numero_caratteri_str)
+            </li>
+        </ul>
+        <p>
+            Altre interessanti funzioni sono:
+        </p>
+        <ul>
+            <li>
+                <span class="bold">LENGTH(str)</span> che ritorna la lunghezza della stringa in bytes 
+            </li>
+            <li>
+                <span class="bold">LOCATE(substr,str)</span> ritorna la posizione della prima occorrenza della sottostringa nella stringa
+            </li>
+            <li>
+                <span class="bold">LTRIM(str)</span> ritorna str con gli spazi iniziali rimossi
+            </li>
+            <li>
+                <span class="bold">REPEAT(str,count)</span> restituisce una stringa ripetendo count-volte str
+            </li>
+            <li>
+                <span class="bold">REPLEACE(str,from,to)</span> 
+            </li>
+            <li>
+                <span class="bold">STRCMP(exp1,expr2)</span> Ritorna 0 se le due stringhe sono uguali,-1 se il primo argomento è più piccolo del secondo, 1 altrimenti.
+            </li>
+        </ul>
+        <h3>Ricerca Full-Text </h3>
+        <p>
+            Dato un campo di tipo TEXT la possibilità di eseguire ricerche complesse.
+        </p>
+        <code >
+            MATCH(col1,col2,...) AGAINST (expr[search_modifier])
+        </code>
+        <p>
+            Viene cioè fatta una ricerca all'interno delle colonne che sono state passate, del search_modifier che indicato.
+            Possiamo usare la funzione MATCH...AGAINST:
+        </p> 
+        <ul>
+            <li>
+                Come condizione della where:
+                <code >
+                    SELECTE film_id FROM Library WHERE MATCH(category) AGAINST ('azione');
+                </code>
+                In questo caso viene restituito o true o false in base se è stata trovata qualocosa.
+            </li>
+            <li>
+                Nella tartet list oppure come tabella FROM:
+                <code>
+                    SELECT film_id,MATCH(category) AGAINST ('azione') AS score
+                </code>
+                In questo caso viene restituito un valore numerico. Più alto è e più è probabile che quello che cerchiamo è stato trovato.
+            </li>
+        </ul>
+    </section>
+    <section>
+        <h2>Stored Procedure</h2>
+        <p>
+            Le Stored Procedure sono dei programmi, memorizzati nei database e invocati su esplicita richiesta da parte degli utenti. 
+            Ogni DBMS ha un proprio linguaggio per creare Stored Procedure, per quanto riguarda MySql abbiamo il <span class="bold">MySql Stored Procedure</span>.
+            I linguaggi usati dai DBMS per creare Stored Procedure sono da considerarsi come un'estensione dell'SQL che per aggiungere allo standard costruttu come:
+            
+            <br><br><span class="bold">BEGIN,END,DECLARE,FOR,WHILE,LOOP,IF,etc</span>
+        </p>
+        <p>
+            Le stored procedure possono essere scritte si nel linguaggio fornito con il dbms, ma anche, per molti database, con linguaggi esterni (come C/C++).
+        </p>
+        <p>
+            è utile suddividere le stored procedure in due gruppi:
+        </p>
+        <ul>
+            <li>
+                <span class="bold">Procedure</span> accetta parametri in input ma non restituisce parametri in output (void).L'unico modo per farlo è attravero una variabile di output passata in input per riferimento
+            </li>
+            <li>
+                <span class="bold">Funzioni (UDF)</span>  accettano valori in input e restituiscono in output valori
+            </li>
+        </ul>
+        <p>
+            Le SP sono riusabili da qualunque applicativo che può accedere al database. Il grosso vantaggio delle SP è il livello di astrazione con il quale il mio applicativo va a lavorare.
+            L'applicativo si limita quindi a chiamare le SP non conoscendo i dettagli implemetativi del db.
+            Un altro vantaggio è a livello prestazionale, infatti:
+        </p>
+        <ul>
+            <li>
+                In un normale applicativo, vengono fatte richieste di query  (anche più di una) per funzione implementata
+                <img src="../assets/20.png" alt="">
+            </li>
+            <li>
+               Vengono limitate il numero di chiamate perchè vengono chiamate SP dove i comportamenti sono incapsulati
+                <img src="../assets/21.png" alt="">
+            </li>
+        </ul>
+        <p>
+            Nel caso specifico, <span class="bold">MySql non supporta la scrittura di Stored Procedure con un linguaggi esterni</span>.
+        </p>
+        <ul>
+            <li>
+                <span class="bold">Definizione di una procedura</span>
+                <code>
+                    <pre>
+                        CREATE
+                        [DEFINER = {user | CURRENT_USER}]
+                        PROCEDURE nome_procedura ([..parametri..])
+                        [caratteristiche...] corpo_della_routine
+                    </pre>
+                </code>
+            </li>
+            <li>
+                <span class="bold">Definizione di UDF</span>
+                <code>
+                    <pre>
+                        CREATE
+                        [DEFINER = {user | CURRENT_USER}]
+                        FUNCTION nome_procedura ([..parametri..])
+                        RETURN type
+                         [caratteristiche...] corpo_della_routine
+                    </pre>
+                </code>
+            </li>
+        </ul>
+        <p>
+            I parametri possono essere di tipo:
+        </p>
+        <ul>
+            <li>
+                <span class="bold">IN (default)</span> rappresenta una variabile che se passata ad una funzione non può subire modifiche in quanto viene passata per copia di valore
+            </li>
+            <li>
+                <span class="bold">OUT</span> rappresenta una variabile che può subire variazioni in quanto viene passato il riferimento
+            </li>
+            <li>
+                <span class="bold">INOUT</span> è una combinazione delle precedenti
+            </li>
+        </ul>
+        <code>
+            <span class="code-title">Esempio di dichiarazione di una procedura</span>
+            <pre>
+                CREATE PROCEDURE nome_procedura (parametro INT)
+                BEGIN
+                    blocco istruzioni...
+                esistendo
+            </pre>
+        </code>
+        <p>
+            Durante la creazione di procedure con blocchi di istruzioni multiple si verifica un problema. Vediamo un esempio.
+        </p>
+        <code>
+            <pre>
+                1.  CREATE PROCEDURE nome_procedura (parametro INT)
+                2.  BEGIN
+                3.      Istruzione1;
+                4.      Istruzione2;
+                5.  esistendo
+            </pre>
+        </code>
+        <p>
+            In MySql il ; serve a dire che è finita un'istruzione, ma serve all'interno delle SP per delineare la fine di un'istruzione nel blocco di istruzioni. Quello che accade
+            tra l'istruzione1 e l'istruzione2 è un conflitto di SQL in quanto il ; viene interpretato come la fine della dichiarazione della procedura. Per evitare questo,
+            soprattutto se creaiamo procedure da terminale dobbiamo:
+        </p>
+        <code class="terminal">
+            mysql> delimiter //
+            <br><br>
+            mysql> CREATE PROCEDURE nome_procedura (p1 INT) <br>
+            -> BEGIN <br>
+            -> Istruzione1; <br>
+            -> Istruzione2; <br>
+            -> END <br>
+            -> // <br><br>
+            mysql>delimiter ;
+        </code>
+        <p> 
+            In pratica con la prima istruzione diciamo di vedere // come la fine di un'istruzione SQL in modo da poter usare ;
+            come delimitatore tra istruzioni nel corpo della procedura. Possiamo poi ripristinare il consueto funzionamento di MySql con delimiter ;
+        </p>
+        <h3>Variabili nelle procedure</h3>
+        <code>
+            <span class="code-title">Dichiarazione di variabili</span>
+            DECLARE pippo INT DEFAULT 0;
+        </code>
+        <code>
+            <span class="code-title">Assegnare valore alla variabili (consigliato)</span>
+            <pre>
+                DECLARE pippo INT DEFAULT 0;
+                SET pippo = 10;
+            </pre>
+        </code>
+        <code>
+            <span class="code-title">Assegnare valore alla variabili da SELECT (sconsigliato)</span>
+            <pre>
+                DECLARE pippo INT DEFAULT 0;
+                SELECT COUNT(*) INTO pippo FROM Table;
+            </pre>
+        </code>
+        <h4>Scope delle variabili</h4>
+        <p>
+            Ogni variabile ha il proprio scope (visibilità). Lo scope di una variabile è definito tra le istruzioni di BEGIN ed END. Possiamo anche
+            dichiarare variabili globali (tipo static) facendole precedere dal simbolo @. Inoltre la dichiarazione delle variabili viene sempre fatta prima dell'istruzione BEGIN.
+        </p>
+        <code>
+            <pre>
+                1    DECLARE x INT (3);
+                2    BEGIN 
+                3        DEClARE
+                4            y INT;
+                5            BEGIN
+                6              ...  
+                7            END;
+                8        END;
+                9    END;
+            </pre>
+        </code>
+        <p>
+            La variabile x è visibile tra l'istruzione 2 e 9.
+        </p>
+        <p>
+            La variabile y è visibile tra l'istruzione 5 e 7.
+        </p>
+        <h3>Chiamare una procedura</h3>
+        <code>
+            <span class="code-title">Chiamare una procedura che non accetta parametri</span>
+            CALL nome_procedura;
+        </code>
+        <code>
+            <span class="code-title">Chiamare una procedura passando parametri</span>
+            CALL nome_procedura(12);
+        </code>
+        <h3>Controlli del flusso nelle procedure</h3>
+        <p>
+            MySql Stored Procedure consente due dichiarazioni condizionali:
+        </p>
+        <ul>
+            <li>
+                <span class="bold">IF</span>
+                <code>
+                    <pre>
+                        IF espression THEN commands
+                            [ELSEIF expression THEN commands]
+                            [ELSE commands]
+                        END IF;
+                    </pre>
+                </code>
+            </li>
+            <li>
+                <span class="bold">CASE</span>
+                <code>
+                    <pre>
+                        CASE
+                            WHEN expression THEN commands
+                            ...
+                            WHEN expression THEN commands
+                            ELSE commands
+                        END CASE;
+                    </pre>
+                </code>
+            </li>
+        </ul>
+        <p>
+            Questi controlli del flusso hanno una sintassi molto simile rispetto il classico MySql.
+        </p>
+        <h3>Loop</h3>
+        <p>
+            Le stored procedure di MySQL consentono la definzione di loop per consentire di processare comandi iterativamente. I cicli consentiti sono:
+        </p>
+        <ul>
+            <li>
+                <span class="bold">WHILE...DO...ELSE...</span>
+                <code>
+                    <pre>
+                        WHILE espressione DO
+                            Istruzione
+                        END WHILE
+                    </pre>
+                </code>
+                Ripeti Istruzione fino a quando espressione non diventa falsa.
+                <code>
+                    <span class="code-title">Esempio</span>
+                    <pre>
+                        DELIMITER //
+
+                        CREATE PROCEDURE WhileExample
+                        BEGIN
+                            DECLARE x INT DEFAULT 1;
+                            DECLARE str TEXT;
+                            WHILE x < 5 DO
+                                SET str = CONCAT(str,x,',');
+                                SET x = 5;
+                            END WHILE;
+                            SELECT str;
+                        END//
+                    </pre>
+                </code>
+            </li>
+            <li>
+                <span class="bold">REPEAT...UNTIL...</span>
+                è un ciclo che inizialmente esegue l'istruzione e poi ripete l'istruzione fino a quando l'espressione è vera.
+                <code>
+                    <pre>
+                        REPEAT 
+                            Istruzione;
+                            UNTIL espressione
+                        END REPEAT
+                    </pre>
+                </code>
+                <code>
+                    <span class="code-title">Esempio</span>
+                    <pre>
+                        DELIMITER //
+
+                        CREATE PROCEDURE WhileExample
+                        BEGIN
+                            DECLARE x INT DEFAULT 1;
+                            DECLARE str TEXT;
+                            REPEAT 
+                                SET str = CONCAT(str,x,',');
+                                SET x = 5;
+                                UNTIL x < 5;
+                            END REPEAT;
+                            SELECT str;
+                        END//
+                    </pre>
+                </code>
+            </li>
+        </ul>
+        <h3>Cursori</h3>
+        <p>
+             Un <span class="bold">cursore</span> è un iteratore su di un risultato della query. Un cursore ha le seguenti proprietà:
+        </p>
+        <ul>
+            <li>
+                <span class="bold">Read only </span>: se prendiamo il risultato di una query e lo mettiamo in un cursore, quel risultato non potrà essere modificato fino a quando non chiudiamo il cursore.
+            </li>
+            <li>
+                <span class="bold">Non-scrollable</span>: il risultati possono essere letti in maniera sequenziale, dal primo all'ultimo
+            </li>
+            <li>
+                <span class="bold">Asensite</span>: le tabelle sulla quale sono stati aperti i cursori non possono essere modificate quando i cursori sono attivi.
+            </li>
+        </ul>
+        <p>
+            Dichiariamo un cursore come una variabile qualunque:
+        </p>
+        <code>
+            DECLARE cursor_name CURSOR FOR SELECT_statement
+        </code>
+        <p>
+            La SELECT_statement ci restituisce la lista di valori sulla quale chiamare il cursor.
+        </p>
+        <p>
+            Dopo la dichiarazione di un cursore, esso va aperto prima di leggerne le righe.
+        </p>
+        <code>
+            OPEN cursor_name;
+        </code>
+        <p>
+            Successivamente recuperiamo le righe:
+        </p>
+        <code>
+            FETCH cursor_name INTO variable_list;
+        </code>
+        <p>
+            Per chiudere il cursore e rilasciare la memoria occupata, usare il comando:
+        </p>
+        <code>
+            CLOSE cursor_name;
+        </code>
+        <p>
+            Vediamo un esempio:
+        </p>
+        <img src="../assets/22.png" alt="">
+        <img src="../assets/23.png" alt="">
+        <ol>
+            <li>
+                Andiamo a dichiarare il cursore cur_product sui risultati della query <code class="code-inline">SELECT productCode FROM products</code>
+            </li>
+            <li>
+                Dichiaro il <span class="bold">CONTINUE HANDLER</span>
+                <code class="code-inline">DECLARE CONTINUE HANDLER FOR NOT FOUND SET no_more_products = 1;</code> questo handler viene dichiarato per segnalare la fine della fase di fetch.
+                In altre parole quando non ci saranno più elementi da prendere dal cursore la variabile no_mode_products verrà settata a 1.
+            </li>
+            <li>
+                Apro il cursore
+            </li>
+            <li>
+                Dichiaro quindi una REPEAT che si blocca quando no_more_products = 1. All'interno della REPEAT, recupero i dati con FETCH;
+            </li>
+            <li>
+                Chiudo il cursore
+            </li>
+        </ol>
+
+    </section>
+    
+</body>
+
+</html>
