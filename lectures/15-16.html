@@ -819,9 +819,98 @@
                 Chiudo il cursore
             </li>
         </ol>
-
     </section>
-    
+    <section>
+        <h2>Importare dati nel database</h2>
+        <code>
+            <pre>
+                mysql > LOAD DATA INFILE 'orders.txt'    //Nome del file dal quale fare l'import
+                  INTO TABLE Orders;                     //Nome della tabella dove inserire i file importati
+                  FIELD TERMINATED BY '\t' ;            //Carattere di split nella stessa riga
+                  LIKES TERMINATED BY '\r\n';           //Carattere di terminazione tra un dato e l'altro
+            </pre>
+        </code>
+        <p>
+            In questo caso, quello che fa MySql è analizzare il file di testo, splittare sulla riga i dati quando trova il Carattere
+            '\t' e passare alla riga successiva quando trova '\r\n'.
+        </p>
+        <p>
+            Quella appena trattata è la sintassi più generica del comando di import, in realtà quella completa la vediamo di seguito.
+        </p>
+        <code>
+            <pre>
+            1    LOAD DATA [LOW_PRIORITY | CONCURRENT] [LOCAL] INFILE 'file_name.txt'
+            2       [REPLACE | IGNORE]
+            3       INTO TABLE tbl_name
+            4       [FIELDS
+            5           [TERMINATED BY 't']
+            6           [[OPTIONALLY] ENCLOSED BY '']
+            7           [ESCAPED BY '\\'] 
+            8       ] 
+            9       [LINES
+            10           [STARTING BY ''
+            11          [TERMINATED BY '\n']
+            12      ]
+            13      [IGNORE number LINES]
+            14      [(col_name,...)]
+            </pre>
+        </code>
+        <p>
+            Vediamo riga per riga:
+        </p>
+        <ul>
+            <li>
+                Nella riga 1 con <code class="code-inline">[LOW_PRIORITY | CONCURRENT]</code> andiamo a specificare la priorità con il quale l'azione di import
+            </li>
+            <li>
+                Sempre nella riga 1 con <code class="code-inline">[LOCAL]</code> andiamo ad indicare che il file si trova in locale rispetto la macchina che sta facendo la richiesta
+                e non nello stesso filepath del database
+            </li>
+            <li>
+                Nella riga 2 possiamo indicare opzionalmente <code class="code-inline">[REPLACE | IGNORE]</code>. Con la prima voce andiamo ad indicare la volotà di sostituire il record presente
+                nel database con quello letto da file se hanno la stessa chiave primaria. Con la seconda voce invece non andremo ad importare la tupla se presenta la stessa chiave primaria di un altro record già presente.  
+            </li>
+            <li>
+                Dalla riga 9 alla riga 12, indichiamo che MySql deve importare tutte quelle linee che iniziano per il carattere '' e finire con '\n'
+            </li>
+            <li>
+                Nella riga 13 possiamo indicare un OFFSET per la lettura da file, ad esempio se indichiamo <code class="code-inline">IGNORE 5 LINES</code> MySql
+                comincerà la lettura a partire dalla quinta linea del file.
+            </li>
+            <li>
+                Nella riga 14 la possibilità di indicare le colonne da riempire, quelle che non indichiamo verranno riempite con NULL
+            </li>
+        </ul>
+        <p>
+            Se ad esempio diamo una query del genere:
+        </p>
+        <code>
+            LOAD DATA INFILE 'test.txt' INTO TABLE test LINES STARTING BY 'yyy';
+        </code>
+        <p>
+            E abbiamo un file contenente:
+        </p>
+        <code style="background-color: white;">
+            yyy"Row",1
+            blblba yyy"Row",2
+        </code>
+        <p>
+            Allora all'interno del database verrà caricato come:
+        </p>
+        <code>
+            ("row",1)
+            ("row",2)
+        </code>
+        <p>
+            In altre parole verrà ignorato quello che si trova prima rispetto la stringa "yyy". Per cui "blablabla" verrà ignorato.
+        </p>
+        <p>
+            <span class="bold">
+                Quindi ad esempio potrebbe essere un buon modo per pulire file di testo "sporchi" con sequenze di testo
+                che non danno alcuna informazione.
+            </span>
+        </p>
+    </section>
 </body>
 
 </html>
