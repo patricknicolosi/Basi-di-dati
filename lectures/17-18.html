@@ -348,48 +348,47 @@
                 ne
             </li>
         </ul>
-        <h5>Tipi di gerarchie: totalità</h5>
+
+        <p>
+            Le gerarchie possono essere classificate in base a due criteri:
+        </p>
         <ul>
             <li>
-                <span class="bold">t</span> sta per <span class="bold">totale</span>: per ogni istanza dell'entità padre deve far parte di una delle entità figlie. 
-                <ul>
-                    <li>
-                        Nell'esempio del personale, ogni dipendente può essere o esterno o dipendente
-                    </li>
-                </ul>
+                <span class="bold">Totalità (t)</span>: indica se ogni istanza dell'entità padre deve appartenere ad almeno una delle entità figlie.
             </li>
             <li>
-                <span class="bold">nt</span> sta per <span class="bold">non totale</span>: Le istanze delle entità padre possono far parte di una delle entità figlie.
-                <ul>
-                    <li>
-                        Nell'esempio sia i pescatori che i cacciatori sono sottoinsiemi dei cittadini, ma non tutti i cittadini sono pescatori o cacciatori
-                    </li>
-                </ul>
-            </li>
-        </ul>
-        <h5>Tipi di gerarchie: to</h5>
-        <ul>
-            <li>
-                <span class="bold">e</span> sta per <span class="bold">esclusica</span>: Ogni istanza dell'entità padre deve far parte di una suora dell'entità figlie.
-                <ul>
-                    <li>
-                        Nell'esempio del personale, una istanza di personale non può essere sia dipendente che esterno.
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <span class="bold">ne</span> sta per <span class="bold">non esclusiva</span>: Ogni istanza dell'entità padre può far parte di uno o più entità figlie.
-                <ul>
-                    <li>
-                        Un cittadino può essere sia pescatore che cacciatore
-                    </li>
-                </ul>
+                <span class="bold">Esclusività (e)</span>: indica se un'istanza dell'entità padre può appartenere a una sola delle entità figlie.
             </li>
         </ul>
         <p>
-            Le gerarchie possono essere anche <span class="bold">annidate</span>.
+            In base a questi due criteri, si possono distinguere quattro tipi di gerarchie:
         </p>
-        <img class="small-img" src="./../assets/51.png" alt="">
+        <ul>
+            <li>
+                <span class="bold">Gerarchie totali ed esclusive (t,e)</span> in questo tipo di gerarchia, ogni istanza dell'entità padre deve appartenere ad esattamente una delle entità figlie.
+                <p>
+                    Ogni animale domestico (cane o gatto) deve essere associato a un'entità "Animali Domestici". Un animale domestico può essere solo un cane o un gatto, non entrambi.
+                </p>
+            </li>
+            <li>
+                <span class="bold">Gerarchie totali e non esclusive (t,ne)</span> in questo tipo di gerarchia, ogni istanza dell'entità padre deve appartenere ad almeno una delle entità figlie, ma può appartenere a più di una.
+                <p>
+                    Ogni programma TV (film, serie TV, documentario) deve essere associato a un'entità "Programmi TV". Un programma TV potrebbe appartenere a più categorie, ad esempio, un film potrebbe essere anche un documentario.
+                </p>
+            </li>
+            <li>
+                <span class="bold">Gerarchie non totali ed esclusive (nt,e)</span> 
+                <p>
+                    In questo caso, non tutti gli animali domestici devono essere necessariamente né cani né gatti. Potrebbe esserci un animale domestico generico che non rientra in nessuna delle categorie specifiche di cane o gatto. Inoltre, ogni animale domestico è esclusivamente un cane o un gatto, non entrambi contemporaneamente.  
+                </p>
+            </li>
+            <li>
+                <span class="bold">Gerarchie non totali e non esclusive (nt,ne)</span> in questo tipo di gerarchia, non tutte le istanze dell'entità padre devono appartenere ad alcuna delle entità figlie, e un'istanza dell'entità padre può appartenere a più di una delle entità figlie.
+                <p>
+                    Ad esempio ogni cittadino può essere o cacciatore o pescatore. Esistono cittadini che non sono ne pescatori ne cacciatori, ma esistono cittadini che sono sia pescatori che
+                </p>
+            </li>
+        </ul>
         <p>
             Lo schema scheletro viene ampliato da altra documentazione <span class="bold">business rules</span> composta da:
         </p>

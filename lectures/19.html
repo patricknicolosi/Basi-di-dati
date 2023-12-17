@@ -22,7 +22,237 @@
         <h1>Database</h1>
     </header>
     <section>
-        <h2>Progettazione logica</h3>
+        <h2>Progettazione logica</h2>
+        <p>
+            La progettazione logica si divide in:
+        </p>
+        <ol>
+            <li>
+                <h3>Riprogettazione dello schema scheletro</h3>
+                <p>
+                    Immaginiamo di avere il seguente schema:
+                </p>
+                <img src="../assets/61.png" alt="">
+                <p>
+                    Le operazioni di cui vogliamo analizzare il costo sono:
+                </p>
+                <ol>
+                    <li>
+                        Assegna un impiegato ad un progetto
+                    </li>
+                    <li>
+                        Trova i dati di un impiegato, del dipartimento nel quale lavora e dei progetti in cui è coinvolto
+                    </li>
+                    <li>
+                        Trova i dati di tutti gli impiegati di un certo dipartimento
+                    </li>
+                    <li>
+                        Per ogni sede, trova i dipartimenti con il cognome del direttore e l'elenco degli impiegati
+                    </li>
+                </ol>
+                <hr>
+                <h4>Per tutte le operazioni</h4>
+                <p>
+                    Per stimare il costo di ogni singola operazione, è essenziale avere due tabelle di stima. La prima è la 
+                    <span class="bold">tabella dei volumi</span>, mentre la seconda è la <span class="bold">tabella delle operazioni</span>. Entrambe le tabelle faranno quindi
+                    parte della documentazione della base di dati.
+                </p>
+                <img src="../assets/62.png" alt="">
+                <p>
+                    Avendo a disposizione questi dati è possibile stimare i costi di ogni operazione.
+                </p>
+                <hr>
+                <h4>Per ogni operazione</h4>
+                <p>
+                    Vediamo come fare correttamente la <span class="bold">stima del costo dell'operazione 2</span>.
+                </p>
+                <ul>
+                    <li>
+                        <p class="bold">Analisi della richiesta</p>
+                        <p>
+                            Trova i dati di un impiegato, del dipartimento nel quale lavora e dei progetti in cui è coinvolto
+                        </p>
+                    </li>
+                    <li>
+                        <p class="bold">Tavola degli accessi</p>
+                        <p>
+                            Per fare questa operazione dobbiamo:
+                        </p>
+                        <ul>
+                            <li>
+                                Accedere all'occorrenza di Impiegato e di Afferenza e quindi alle proprietà di Dipartimento
+                            </li>
+                            <li>
+                                Per avere i dati dei progetti a cui lavora, dobbiamo accedere (in media tre volte dalla tabella dei volumi) a Partecipazione e quindi alle proprietà di Progetto
+                            </li>
+                        </ul>
+                        <p>
+                            Tutto viene riassunto in una <span class="bold">tavola degli accessi</span>.
+                        </p>
+                        <img src="../assets/63.png" alt="">
+                        <p class="bold">
+                            Il costo totale dell'operazione è dato dalla somma di tutti gli accessi, che in questo caso è 9.
+                        </p>
+                        <p class="bold red">
+                            Ricordiamoci anche che essendo le operazioni di scrittura più onerose di quelle di scrittura 1S=2L.
+                        </p>
+                    </li>
+                </ul>
+                <hr>
+                <h4>Ristrutturazione dello schema</h4>
+                <p>
+                    Una volta analizzato il costo di tutte le operazioni, procediamo con la ristrutturazione. Questo processo si divide in:
+                </p>
+                <ul>
+                    <li>
+                        <p class="bold">Analisi delle ridondanze</p>
+                        <p>
+                            In generale l'analisi di tutti quegli attributi derivabili da altre entità o relazioni.
+                        </p>
+                        <p>
+                            Consideriamo l'esempio Città-Persona per l'anagrafica di una regione:
+                        </p>
+                        <ul>
+                            <li>
+                                Operazione 1: memorizza una persona nuova con la relativa città
+                            </li>
+                            <li>
+                                Operazione 2: stampa tutti i dati di una città (incluso il numero di abitanti)
+                            </li>
+                        </ul>
+                        <img src="../assets/64.png" alt="">
+                        <p>
+                            Come è possibile vedere nello schema E-R il numero di abitanti rappresenta una ridondanza, infatti
+                            può essere preso sia da città che contanto gli N Persona della relazione Residenza.
+                            In tutti i casi in cui c'è ridondanza il problema è sempre uno: Eliminare o lasciare?
+                            Entrambe le scelte presentano vantaggi e svantaggi. Per aiutarci nella scelta viene 
+                            fatto, li dove è presente ridondanza una <span class="bold">valutazione sull'indice di prestazione</span>.
+                        </p>
+                        <p>
+                            Valutiamo l'indice di prestazione per l'attributo Numero abitanti per ogni singola operazione:
+                        </p>
+                        <h5>Con ridondanza (con numero abitanti in città)</h5>
+                        <ul>
+                            <li>
+                                Operazione 1 richiede:
+                                <ul>
+                                    <li>
+                                        Un accesso in scrittura a Persona
+                                    </li>
+                                    <li>
+                                        Un accesso in scrittura in Residenza
+                                    </li>
+                                    <li>
+                                        Uno in lettura per cercare la città
+                                    </li>
+                                    <li>
+                                        Uno in scrittura per incrementare il numero di abitanti
+                                    </li>
+                                </ul>
+                                Il tutto ripetuto 500 volte, per un totale di 1500 accessi in scrittura e 500 in lettura.
+                            </li>
+                            <li>
+                                Operazione 2 richiede: un accesso in lettura a Città (2 volte al giorno)
+                            </li>
+                        </ul>
+                    </li>
+                    <p>
+                        Considerando  gli accessi in scrittura 1S=2L abbiamo un numero totale di accessi per entrambe le operazioni di 3500.
+                    </p>
+                    <h5>Senza ridondanza (elimino numero abitanti da città)</h5>
+                    <ul>
+                        <li>
+                            Operazione 1 richiede:
+                            <ul>
+                                <li>
+                                    Un accesso in scrittura a Persona
+                                </li>
+                                <li>
+                                    Un accesso in scrittura in residenza (ripetuto 500 volte)
+                                </li>
+                            </ul>
+                            Il tutto ripetuto per 500 volte, per un totale di 1000 accessi al giorno di scrittura.
+                        </li>
+                        <li>
+                            Operazione 2 richiede:
+                            <ul>
+                                <li>
+                                    Accesso alle informazioni della città (trascurabile)
+                                </li>
+                                <li>
+                                    Accesso al numero di abitanti per città (contare il numero di abitanti per città, circa 5000)
+                                </li>
+                            </ul>
+                            Ripetuto 2 volte al giorno per un totale di 100000 accessi.
+                        </li>
+                    </ul>
+                    <p>
+                        Considerando  gli accessi in scrittura 1S=2L abbiamo un numero totale di accessi per entrambe le operazioni di 12000. Quindi 8500
+                        in più rispetto al caso di ridondanza.
+                    </p>
+                    <p>
+                        La versione con ridondanza, seppur occupa 1 kilobyte (considerando 4 byte per ogni entità Città per il numero abitanti) in più rispetto a quella senza, è conveniente da attuare rispetto quello senza.
+                    </p>
+                    <p>
+                        In questo caso <span class="bold">conviene lasciare la ridondanza</span>.
+                    </p>
+                    <p>
+                        Ovviamente, come verificato per l'esempio, la versione con ridondanza occuperà sempre spazio in più.
+                    </p>
+                    <li>
+                        <p class="bold">Eliminazione delle gerarchie</p>
+                        <p>
+                            Il modello relazionale non implementa le gerarchie, introdotte invece nello schema E-R, allora bisogna eliminarle; questo 
+                            è possibile tramite tre strategie.
+                        </p> 
+                        <img class="small-img" src="../assets/65.png" alt="">
+                        <ul>
+                            <li>
+                                <p class="bold">Mantenimento delle entità</p>
+                                <p>
+                                    Tutte le entità figlie vengono mantenute e sostituiamo
+                                    alle gerarchie delle associazioni. Ogni entità viene identificata
+                                    dalla relazione.
+                                </p>
+                                <img class="small-img" src="../assets/66.png" alt="">
+                            </li>
+                            <li>
+                                <p class="bold">Collasso verso l'alto</p>
+                                <p>
+                                    Si rimuovono le entità figlie riunendo tutti gli attributi di queste nell'entità padre.
+                                </p>
+                                <img src="../assets/67.png" alt="">
+                            </li>
+                            <li>
+                                <p class="bold">Collasso verso il basso</p>
+                                <p>
+                                    Si elimina l'entità padre trasferendo tutti i suoi attributi nelle entità figlie.
+                                    Si tratta di una strategia molto utile in tutte quelle situazioni in cui le entità figlie
+                                    hanno molti più attributi dell'entità padre. <span class="bold">Questa strategia si sconsiglia
+                                        sempre nel caso di gerarchie non totali perchè andremo ad aggiungere ridondanze nei dati</span>
+                                </p>
+                                <img class="xsmall-img" src="../assets/68.png" alt="">
+                            </li> 
+                        </ul>
+                    </li>
+                    <li>
+                        <p class="bold">Partizionamento/Accoppamento di Entità e Associazioni</p>
+                    </li>
+                    <li>
+                        <p class="bold">Scelta degli identificatori principali</p>
+                    </li>
+                </ul>
+
+
+         
+            </li>
+            <li>
+                <h3>Traduzione verso il modello logico</h3>
+                <p>
+                    Viene fatto riferimento ad un modello logico (nel nostro caso quello relazionale) e può includere ulteriore ottimizzazione sul modello logico (es.normalizzazione per il modello logico relazionale).
+                </p>
+            </li>
+        </ol>
     
 
     </section>
