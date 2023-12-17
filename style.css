@@ -92,6 +92,12 @@ section{
     border-color: black;
     border-style: solid;
 }
+.bonus{
+    padding: 30px;
+    margin: 10px;
+    border:2px solid black;
+
+}
 body{
     margin: 0;
     padding: 0;
@@ -103,11 +109,8 @@ header{
     padding: 20px;
 }
 
-.example{
-    background-color:thistle;
-    padding: 15px;
-    margin: 20px;
-    display: block;
+li{
+    padding: 5px;
 }
 
 .tooltip {
@@ -135,7 +138,7 @@ header{
 img{
     display: block; 
     margin: 0 auto;
-    width: 60%;
+    width: 40%;
 }
 
 @media screen and (max-width: 600px) {
@@ -155,5 +158,12 @@ img{
 }
 
 .small-img{
-    width: 20%;
+    width: 27%;
+}
+.xsmall-img{
+    width: 11%;
+}
+
+.text-center{
+    text-align: center;
 }

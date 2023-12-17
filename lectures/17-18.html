@@ -1,0 +1,612 @@
+<html>
+
+<head>
+    <title>Database</title>
+    <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
+            RelaX</a>
+        <a class="nav-link" href="https://www.mycompiler.io/it/new/sql">Simulatore SQL</a>
+        <a class="nav-link" href="../index.html" target="_self">Home</a>
+        <h1>Database</h1>
+    </header>
+    <section>
+        <h2>Costruzione di una base di dati</h2>
+        <p>
+            La costruzione di una base di dati viene effettuata seguendo i relativi step:
+        </p>
+        <ol>
+            <li>
+                Progettazione
+            </li>
+            <li>
+                Implementazione
+            </li>
+            <li>
+                Validazione e collaudo
+            </li>
+            <li>
+                Manutenzione
+            </li>
+        </ol>
+    </section>
+    <section>
+        <h2>Progettazione</h2>
+        <p>
+            Nella fase di progettazione distinguiamo:
+        </p>
+        <ol type="a">
+            <li>
+                <span class="bold">Progettazione Concettuale</span>
+            </li>
+            <li>
+                <span class="bold">Progettazione Logica</span>
+            </li>
+            <li>
+                <span class="bold">Progettazione Fisica</span>
+            </li>
+        </ol>
+        <hr>
+        <h3>Progettazione concettuale</h3>
+        <p>
+            Durante la progettazione concettuale si parte dall'analisi dei requisiti,
+            durante questa fase viene prima prodotto un documento informale sulla
+            base delle informazioni raccolte dal cliente. Questo primo documento
+            viene rielaborato e viene costruito un <span class="bold">glossario dei termini</span>.
+        </p>
+        <p>
+            Es. Da una prima analisi dei requisiti, intervistando il cliente proprietario di un magazzino, otteniamo:
+        </p>
+        <ul>
+            <li>
+                Il magazzino è composto da scaffali
+            </li>
+            <li>
+                I fornitori forniscono prodotti
+            </li>
+            <li>
+                I clienti ordinano prodotti
+            </li>
+            <li>
+                Gli scaffali contengono prodotti
+            </li>
+            <li>
+                Gli operai sono addetti agli scaffali
+            </li>
+        </ul>
+        <p>
+            Da questi requisiti produciamo un glossario dei termini:
+        </p>
+        <img src="../assets/24.png" alt="">
+        <p>
+            Se prendiamo come esempio la prima riga, fornitore è legato al prodotto, infatti avevamo detto "I fornitori
+            forniscono prodotti".
+        </p>
+        <p>
+            Dal glossario dei termini viene successivamente costruito lo <span class="bold">schema scheletro</span>
+            seguendo il <span class="bold">modello entità-relazione</span>.
+        </p>
+        <h4>Modello entità-relazione (E-R)</h4>
+        <p>
+            Si tratta di un modello <span class="bold">grafico</span> per passare dalla raccolta dei requisiti ad un
+            modello più formale composto da:
+        </p>
+        <ul>
+            <li>
+                <span class="bold">Entità</span> sono classi di oggetti (cose,persone,ecc...) importanti ai fini
+                dell'applicazione che si vuole modellare. Un'<span class="bold">istanza di entità</span> è un oggetto
+                che esiste e fa parte di un'entità.
+                <img class="small-img" src="../assets/25.png" alt="">
+                <p>
+                    A livello grafico verrà rappresentato con un rettangolo.
+                </p>
+                <img class="small-img" src="../assets/27.png" alt="">
+            </li>
+            <li>
+                <span class="bold">Relazioni (o Associazioni)</span> rappresentano legami logici fra due o più entità
+                dell'applicazione. Un'<span class="bold">istanza di associazione</span> è l'implementazione di
+                un'associazione.
+                <imgclass="small-img" src="../assets/26.png" alt="">
+                    <p>
+                        A livello grafico rappresentiamo le associazioni con un rombo che collega due rettangoli
+                        (entità):
+                    </p>
+
+                    <img class="small-img" src="../assets/28.png" alt="">
+            </li>
+            <li>
+                <p>
+                    <span class="bold">Proprietà</span> che possono essere:
+                </p>
+                <ul>
+                    <li>
+                        <span class="bold">singola</span> tutte quelle proprietà per le quali è ammesso un singolo
+                        valore (il cognome ad esempio, infatti una persona può avere al massimo un cognome)
+                        <img class="xsmall-img" src="../assets/32.png" alt="">
+                    </li>
+                    <li>
+                        <span class="bold">multipla</span> tutte quelle proprietà per il quale sono ammessi n valori (il
+                        nome ad esempio, infatti una persona può avere più nomi)
+                        <img class="xsmall-img" src="../assets/34.png" alt="">
+                        <p>
+                            Con la notazione (1,n) indichiamo che quella proprietà può essere inserita da un minimo di
+                            una volta ad un massimo di n volte. Se quindi la notazione è (1,2) significa che la stessa
+                            proprietà può avere un massimo di 2 valori.
+                            Con la notazione (0,n) indichiamo invece una <span class="bold">proprietà opzionale.</span>
+                        </p>
+                    </li>
+                    <li>
+                        <span class="bold">composta</span> tutte quelle proprietà (singole o multiple) che per essere
+                        rappresentate hanno bisogno di più
+                        <img class="xsmall-img" src="../assets/36.png" alt="">
+                    </li>
+                </ul>
+                <p>
+                    Una proprietà (singola,multipla o composta) è <span class="bold">derivata</span> se è calcolata a
+                    partire da dati esterni.
+                    <img class="small-img" src="../assets/38.png" alt="">
+                </p>
+                <p>
+                    Ad esempio lo stipendio è calcolato come <span class="italic">stipendio = salario_giornaliero *
+                        presenze.
+                    </span>
+                </p>
+                <p>
+                    Una proprietà (singola,multipla o composta) è <span class="bold">chiave</span> se identifica in modo
+                    univoco le istanze di entità.
+                </p>
+                <p>
+                    Una o più proprietà possono essere associate o a relazioni o a proprietà.
+                </p>
+                <span class="bold text-center red">Nello specifico, le proprietà chiave delle relazioni sono sempre
+                    composte in quanto vengono ereditate le proprietà chiave delle entità che collega</span>
+
+
+                <p>
+                    Di seguito un esempio di <span class="bold">specifica delle proprietà</span> di un'entità studente:
+                </p>
+                <img class="small-img" src="../assets/37.png" alt="">
+                <p>
+                    In questo esempio:
+                </p>
+                <ul>
+                    <li>
+                        Matricola,Cognome e Sesso sono obbligatorie e con una cardinalità massima 1
+                    </li>
+                    <li>
+                        Telefono,Servizio sono opzionali e con una cardinalità massima 1
+                    </li>
+                    <li>
+                        Laurea è opzionale e con una cardinalità massima n
+                    </li>
+                    <li>
+                        Tasse è obbligatoria ed ha cardinalità massima di n e composta
+                    </li>
+                </ul>
+                <p>
+                    Data una relazione definiamo <span class="bold">cardinalità</span> della relazione il numero di
+                    volte in cui una qualsiasi istanza di un’entità coinvolta in un’associazione partecipa
+                    all’associazione.
+                </p>
+                <ul>
+                    <li>Associazione molti a molti (n:m)</li>
+                    <li>Associazione uno ad uno (1:1)</li>
+                    <li>Associazione uno a molti (1:n)</li>
+                </ul>
+                <p>
+                    Un'entità può avere un'associazione anche con se stessa, in questo caso parliamo di <span
+                        class="bold">autoassociazioni</span>, ad esempio:
+                </p>
+                <img class="small-img" src="../assets/46.png" alt="">
+                <p>
+                    Un dipendente può essere sposato con un altro dipendente.
+                </p>
+                <p>
+                    Su ogni ramo dell'autoassociazione può anche essere riportato il <span class="italic">ruolo</span>
+                    del
+                    partecipante dell'associazione (marito,moglie).
+                    Nell'esempio specifico riportato si parla di <span class="bold">autoassociazione 1:1</span>.
+                </p>
+                <p>
+                    Esistono anche <span class="bold">autoassociazioni molti a molti (n:m)</span> e <span
+                        class="bold">autoassociazioni ricorsive(1:n)</span>.
+                </p>
+                <p>
+                    Le autoassociazioni ricorsive vengono anche chiamate <span class="bold">gerarchia (1:n)</span>
+                </p>
+                <img class="small-img" src="./../assets/47.png" alt="">
+                <p>
+                    In questo caso un impiegato è controllato da un altro impiegato e allo stesso tempo un impiegato può
+                    controllare da 0 a più impiegati.
+                </p>
+            </li>
+        </ul>
+        <h4>Identificazione esterna</h4>
+        <p>
+            In alcuni casi un'entità può anche essere identificata da altre ad essa collegata.
+        </p>
+        <img class="small-img" src="./../assets/48.png" alt="">
+        <p>
+            In questo caso il corso di studio è identificato dal suo nome ma anche dal dipartimento che è un'entità esterna.
+        </p>
+        <p class="bold">
+            Le identificazioni esterne avvengono sempre tramite associazioni binarie in cui l'entità da identificare partecipa con cardinalità (1,1)
+        </p>
+        <p>
+            Infatti come è possibile vedere per ogni corso di studio abbiamo uno ed un solo dipartimento (1:1), non vale il viceversa.
+        </p> 
+        <p>
+            Inoltre non è possibile identificare esternamente reciprocamente due entità, tornando all'esempio, non è possibile
+            identificare un corso di studi con un dipartimento ed allo stesso tempo identificare un dipartimento con un corso di studi. Altrimenti creerei un ciclo.
+        </p>
+        <p>
+            Es. Disegnare lo schema scheletro dai seguenti requisiti
+        </p>
+        <ul>
+            <li>
+                I treni sono identificati da un codice e da una data, sono composti da vetture che contengono i posti da prenotare.
+            </li>
+            <li>
+                Le vetture sono numerate, i posti sono numerati nello stesso modo all'interno di ogni vettura
+            </li>
+        </ul>
+        <p>
+            Es. Disegnare lo schema scheletro dai seguenti requisiti
+        </p>
+        <ul>
+            <li>
+                I treni sono identificati da un codice e da una data, sono composti da vetture che contengono i posti da prenotare.
+            </li>
+            <li>
+                Le vetture sono numerate, i posti sono numerati nello stesso modo all'interno di ogni vettura
+            </li>
+        </ul>
+        <h4>Gerarchie</h4>
+        <p>
+            A volte si sente la necessità durante la progettazione di basi di dati di avere entità
+            simili tra loro e con una relazione logica di classe-sottoclasse.
+        </p>
+        <p>
+            Definiamo:
+        </p>
+        <p>
+            La <span class="bold">gerarchia concettuale</span> è il legame logico tra un'entità padre E ed alcune entità figlie
+            E1,E2,...,En dove:
+        </p>
+        <ul>
+            <li>
+                E è la <span class="bold">generalizzazione</span>
+            </li>
+            <li>
+                E1,E2,...,En sono <span class="bold">specializzazioni</span> di E
+            </li>
+        </ul>
+        <p>
+            Inoltre:
+        </p>
+        <ul>
+            <li>
+                Un'istanza Ek è anche istanza di E
+            </li>
+            <li>
+                Un'istanza di E può essere un'istanza di Ek
+            </li>
+            <li>
+                Nel caso in cui n=1 allora E1 è un <span class="bold">sottoinsieme</span> di E
+            </li>
+        </ul>
+        <p>
+            Vediamo un esempio. Un'azienda si avvale dell'opera di professionisti esterni, quindi il suo personale si suddivide in esterni e dipendenti. Di fatto
+            abbiamo due entità "dipendente" e "esterno" che "derivano" dalla classe "Personale".
+        </p>
+        <img class="small-img" src="./../assets/49.png" alt="">
+        <p>
+            Ognuna delle sottoclassi eredità le proprietà di "personale" (matr,cognome,nome) ma ne specifica altre per Ognuna 
+            come "ore" per "esterno".
+        </p>
+        <p>
+            Per dire che "dipendente" eredita da "personale", facciamo una freccia dalla sottoclasse verso la superclasse.
+        </p>
+        <p>
+            Nella gerarchia in verde sono inoltre presente due sigle:
+        </p>
+        <ul>
+            <li>
+                t
+            </li>
+            <li>
+                 e
+            </li>
+        </ul>
+        <p>
+            Possiamo fare esempi più complessi, come il seguente:
+        </p>
+        <img class="small-img" src="./../assets/50.png" alt="">
+        <p>
+            Nello schema anagrafe ogni pescatore ed ogni cacciatore è un cittadino, ma non il viceversa. Possiamo
+            per cui avere cittadini che non sono ne pescatori ne cacciatori. Ogni sottoclasse
+            aggiunge alla classe certe proprietà utili a definirla come il n_licenza per il pescatore.
+            Ogni pescatore per essere definito avrà n_licenza e c_f ereditato da Cittadino.
+        </p>
+        <p>
+            Nella gerarchia in verde sono inoltre presente due sigle:
+        </p>
+        <ul>
+            <li>
+                nt
+            </li>
+            <li>
+                ne
+            </li>
+        </ul>
+        <h5>Tipi di gerarchie: totalità</h5>
+        <ul>
+            <li>
+                <span class="bold">t</span> sta per <span class="bold">totale</span>: per ogni istanza dell'entità padre deve far parte di una delle entità figlie. 
+                <ul>
+                    <li>
+                        Nell'esempio del personale, ogni dipendente può essere o esterno o dipendente
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <span class="bold">nt</span> sta per <span class="bold">non totale</span>: Le istanze delle entità padre possono far parte di una delle entità figlie.
+                <ul>
+                    <li>
+                        Nell'esempio sia i pescatori che i cacciatori sono sottoinsiemi dei cittadini, ma non tutti i cittadini sono pescatori o cacciatori
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <h5>Tipi di gerarchie: to</h5>
+        <ul>
+            <li>
+                <span class="bold">e</span> sta per <span class="bold">esclusica</span>: Ogni istanza dell'entità padre deve far parte di una suora dell'entità figlie.
+                <ul>
+                    <li>
+                        Nell'esempio del personale, una istanza di personale non può essere sia dipendente che esterno.
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <span class="bold">ne</span> sta per <span class="bold">non esclusiva</span>: Ogni istanza dell'entità padre può far parte di uno o più entità figlie.
+                <ul>
+                    <li>
+                        Un cittadino può essere sia pescatore che cacciatore
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <p>
+            Le gerarchie possono essere anche <span class="bold">annidate</span>.
+        </p>
+        <img class="small-img" src="./../assets/51.png" alt="">
+        <p>
+            Lo schema scheletro viene ampliato da altra documentazione <span class="bold">business rules</span> composta da:
+        </p>
+        <ul>
+            <li>
+                Dizionario dei termini, per ogni entità andiamo a specificare:
+                <ul>
+                    <li>
+                        nome entità
+                    </li>
+                    <li>
+                        descrizione
+                    </li>
+                    <li>
+                        attributi
+                    </li>
+                    <li>
+                        identificatori
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Dizionario delle relazioni, per ogni relazione andiamo a specificare:
+                <ul>
+                    <li>
+                        Nome relazione
+                    </li>
+                    <li>
+                        Descrizione
+                    </li>
+                    <li>
+                        Entità coinvolte
+                    </li>
+                </ul>
+                Aggiungiamo inoltre per ogni relazione:
+                <ul>
+                    <li>
+                        Eventuali attributi della relazione
+                    </li>
+                    <li>
+                        Una descrizione sulla cardinalità
+                    </li>
+                </ul>
+                
+            </li>
+            <li>
+                Regole di Vincolo, utili per esprimere tutti quei vincoli non esprimibili tramite schema scheletro (es. tutti i dipendenti devono avere età maggiore di 18)
+            </li>
+            <li>
+                Regole di derivazione, utili nel in tutti quei casi in cui le proprietà sono calcolate a partire da dati esterni (es. come calcolare lo stipendio per ogni dipendente)
+            </li>
+        </ul>
+        <p class="orange">
+            Quindi alla fine della fase di progettazione concettuale avremo:
+        </p>
+        <ul class="orange bold">
+            <li>
+                Glossario dei termini
+            </li>
+            <li>
+                Schema scheletro
+            </li>
+            <li>
+                Business rules dello schema scheletro
+            </li>
+        </ul>
+        <div class="bonus">
+            <h5>(Bonus) Strategie di progettazione</h5>
+            <p>Le tre stategie principali per fare buona progettazione concettuale sono:</p>
+            <ul>
+                <li>
+                    <span class="bold">Top-Down</span>
+                    <p> 
+                        In ordine:
+                    </p>
+                    <ol>
+                        <li>
+                            Si costruisce dalla specifica dei requisiti il glossario dei termini
+                        </li>
+                        <li>
+                            Si costruisce lo schema scheletro
+                        </li>
+                        <li>
+                            Lo schema scheletro viene via via esteso costruendo degli schemi intermedi sempre più completi
+                        </li>
+                        <li>
+                            Produzione dello schema finale
+                        </li>
+                    </ol>
+                    <img class="small-img" src="./../assets/52.png" alt="">
+                    <p>
+                        Il processo di raffinamento viene fatto seguendo delle regole dette <span class="bold">primitive di trasformazione</span>: 
+                    </p>
+                   <ul>
+                    <li>
+                        <span class="bold">Trasformazione T1</span> si applica quando un'entità descrive due concetti diversi legati fra di loro.
+                        In altre parole ci accorgiamo che il requisito del cliente è divisibile in due entità il relazione.
+                        <img  src="./../assets/53.png" alt="">
+                    </li>
+                    <li>
+                        <span class="bold">Trasformazione T2</span> cioè un'entità è in realtà sottoclasse di una più grande.
+                        <img src="./../assets/54.png" alt="">
+                    </li>
+                    <li>
+                        <span class="bold">Trasformazione T3</span> una relazione in realtà descrive due relazioni diverse tra entità.
+                        <img src="./../assets/55.png" alt="">
+                    </li>
+                    <li>
+                        <span class="bold">Trasformazione T4</span> una relazione descrive un concetto con esistenza autonoma. In questo caso essa va sostituita con un'entità.
+                        <img src="./../assets/56.png" alt="">
+                    </li>
+                    <li>
+                        <span class="bold">Trasformazione T5</span> si applica per aggiungere attributi ad entità.
+                        <img src="./../assets/57.png" alt="">
+                    </li>
+                    <li>
+                        <span class="bold">Trasformazione T6</span> si applica per aggiungere attributi a relazioni .
+                        <img src="./../assets/58.png" alt="">
+                    </li>
+                   </ul>
+                   <p>
+                    Questa strategia permette al progettista di iniziare i lavori immediatamente sullo schema scheletro trascurando i dettagli. Questa metodologia non va bene per applicazioni complesse in cui è difficile avere una visione di insieme.
+                   </p>
+                </li>
+                <li>
+                    <span class="bold">Bottom-Up</span>
+                    <p>
+                        Nella strategia Bottom-Up si descrivono piccoli schemi separati che via via si fondono per creare lo schema finale.
+                    </p>
+                    <p>
+                        In ordine:
+                    </p>
+                    <ol>
+                        <li>
+                            Si costruisce dalla specifica dei requisiti il glossario dei termini
+                        </li>
+                        <li>
+                            Si individuano le entità e proprietà
+                        </li>
+                        <li>
+                            Si cercano legami tra le entità tramite le primitive di trasformazione
+                        </li>
+                        <li>
+                            Si ottiene uno schema scheletro
+                        </li>
+                    </ol>
+                    <p>
+                        Per questo schema le primitive di trasformazione saranno:
+                    </p>
+                    <ul>
+                        <li>
+                            <span class="bold">Trasformazione T1</span>, si introduce un'entità corrispondente per ogni classe di oggetti.
+                        </li>
+                        <li>
+                            <span class="bold">Trasformazione T2</span>, si introduce un'associazione tra due entità se sono logicamente legate.
+                        </li>
+                        <li>
+                            <span class="bold">Trasformazione T3</span>, si introduce una <span class="italic">generalizzazione</span> (gerarchia).
+                        </li>
+                        <li>
+                            <span class="bold">Trasformazione T4</span>, a partire da una serie di attributi si individua un'entità che li aggrega.
+                            <img src="./../assets/59.png" alt="">
+                        </li>
+                        <li>
+                            <span class="bold">Trasformazione T5</span>, a partire da una serie di attributi si individua una relazione che li aggrega.
+                            <img src="./../assets/60.png" alt="">
+                        </li>
+                    </ul>
+                    <p>
+                        A differenza di prima quindi abbiamo già attributi e proprietà, dobbiamo cercare un modo per aggregarli.
+                    </p>
+                    <p>
+                        Si tratta di una strategia che si adatta bene ad una progettazione di gruppo, in cui diverse persone si occupano di sviluppare certe parti. Le parti verranno assemblate successivamente.
+                    </p>
+                    <p>
+                        Come svantaggio abbiamo che si introduce complessità per l'integrazione tra parti.
+                    </p>
+                </li>
+                <li>
+                    <span class="bold">Generale</span>
+                    <p>
+                        Si tratta di un'alternativa interessante alle altre due per db di piccole-medie dimensioni.
+                    </p>
+                    <p>
+                        In ordine:
+                    </p>
+                    <ol>
+                        <li>
+                            Si costruisce dalla specifica dei requisiti il glossario dei termini
+                        </li>
+                        <li>
+                            Si costruisce lo schema scheletro
+                        </li>
+                        <li>
+                            Si suddivide lo schema scheletro in componenti <span class="bold">se necessario</span>
+                        </li>
+                        <li>
+                            Ogni componente viene raffinato sulla base delle specifiche
+                        </li>
+                    </ol>
+                    <p>
+                        Si tratta cioè di una metodologia mista tra le prime due dove 
+                        si procede come per la top-down e solo se è necessario facciamo una 
+                        decomposizione (passo 3) come per la bottom-up.
+                    </p>
+                </li>
+            </ul>
+        </div>
+        <hr>
+
+
+
+
+
+    </section>
+
+
+</body>
+
+</html>
