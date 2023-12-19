@@ -236,10 +236,113 @@
                         </ul>
                     </li>
                     <li>
-                        <p class="bold">Partizionamento/Accoppamento di Entità e Associazioni</p>
+                        <p class="bold">Partizionamento di Entità</p>
+                        <img src="../assets/69.png" alt="">
+                        <p>
+                            Immaginiamo di avere un'entità dipendente a cui accediamo sempre o ai dati anagrafici oppure ai dati lavorativi.
+                            Allora potremmo secondo il partizionamento di Entità e associazioni, dividere questi aspetti e trattare il dipendente
+                            come se fosse una relazione tra le due tipologie di dato.
+                        </p>
+                        <p>
+                            Il partizionamento appena fatto viene detto <span class="bold">partizionamento verticale</span>.
+                        </p>
+                        <img src="../assets/69.png" alt="">
+                        <p>
+                            Specificatamente per il modello relazionale, non abbiamo il supporto di attributi multivalore, ad esempio, se abbiamo 
+                            un'entità Agenzia a cui poter associare secondo lo schema E-R più numeri di telefono (1,n), non possiamo tradurre questa necessità
+                            in uno schema di tipo relazionale, allora in questi casi, usiamo un <span class="bold">partizionamento orizzontale</span>.
+                        </p>
+                        <img src="../assets/70.png" alt="">
+                        <p>
+                            Quello che facciamo con questo tipo di partizionamento è sostituire tutti gli attributi multivalore ((1,n)) con relazioni (1,n).
+                        </p>
+
                     </li>
                     <li>
-                        <p class="bold">Scelta degli identificatori principali</p>
+                        <p class="bold">Accorpamento di entità</p>
+                        <p>
+                            Si tratta di una procedura inversa rispetto la precedente.
+                        </p>
+                        <img src="../assets/71.png" alt="">
+                        <p>
+                            Solitamente l'accorpamento è giustificato se le operazioni più frequenti su Persona richiedono i dati relativi ad appartamento.
+                        </p>
+                        <p class="bold red">
+                            Gli accorpamenti si fanno <span class="italic">solitamente</span> su relazioni uno ad uno, è raro che si facciano in relazioni uno a molti, è invece
+                            <span class="underline">vietato</span> farli per relazioni molti a molti.
+                        </p>
+                        <p>
+                            Facendo un accorpamento molti a molti andremo infatti ad introdurre ridondanza perchè avremmo più copie delle stesse informazioni.
+                        </p>
+
+                    </li>
+                    <li>
+                        <p class="bold">Traduzione e scelta degli identificatori principali</p>
+                        <p>
+                            Sia entità che relazioni dello schema E-R vanno tradotte nel modello relazionale in "tabelle".
+                        </p>
+                        <ul>
+                            <li>
+                                <p class="bold">
+                                    Traduzione di entità molti a molti
+                                </p>
+                                <p>
+                                    Usiamo la <span class="bold">traduzione standard</span>
+                                </p>
+                                <img src="../assets/72.png" alt="">
+                            </li>
+                            <li>
+                                <p class="bold">
+                                    Traduzione di entità uno a molti
+                                </p>
+                                <p>
+                                    Resta valida la <span class="bold">traduzione standard</span>
+                                </p>
+                                <img src="../assets/73.png" alt="">
+                            </li>
+                        </ul>
+                        <p>
+                            Secondo questa procedura anche le relazioni verranno tradotte in tabella. La coppia formata dalle due chiavi nella relazione, 
+                            rappresenta il legame tra le entità.
+                        </p>
+                        <p>
+                            Una <span class="bold">procedura alternativa</span> a quella standard in questo tipo di relazione potrebbe essere quella che ci da come risultato:
+                        </p>
+                        <img class="xsmall-img" src="../assets/74.png" alt="">
+                        <p>
+                            Se E1 partecipa con cardinalità (0,1) allora la soluzione conterrà in K2,AR,BR valori nullable.
+                        </p>
+                    </li>
+                    <li>
+                        <p class="bold">
+                            Traduzione di entità 1 a 1 
+                        </p>
+                        <p>
+                            Per le entità 1 a 1, <span class="bold">non viene usata <span class="underline">solitamente</span> la traduzione standard</span>, perchè per queste associazioni
+                            abbiamo come risultato un'unica tabella.
+                        </p>
+                        <img  src="../assets/75.png" alt="">
+                        <ul>
+                            <li>
+                                Se le cardinalità minime sono entrambe 1 la chiave può essere indifferentemente K1 o K2 si sceglierà quella più significativa. Come nell'esempio precedente comune-sindaco.
+                            </li>
+                            <li>
+                                Se la cardinalità di E2 è (0,1) e quella di E1 (1,1) allora la chiave sarà K2. Ad esempio:
+                                <img  src="../assets/77.png" alt="">
+                                In questo caso la nostra E2 è dalla parte di cittadino, quindi: i cittadini possono o no aver preso parte del servizio militare, ma tutti quelli 
+                                che hanno preso parte del servizio militare sono cittadini. Per tutti (sia chi ha preso parte che no) usiamo come chiama primaria il cod_f secondo questa regola.
+                                Ci accorgiamo che è inoltre quella logicamente più adatta.
+                            </li>
+                            <li>
+                                Se E2 è l'entità con il maggior numero di istanze alcune delle quali non si associano, ci saranno dei valori NULL in corrispondenza con K1. K1 in questo caso non potrebbe essere scelta.
+                            </li>
+                            <li>
+                                Se sia E1 che E2 hanno cardinalità (0,1) allora verrà usata una traduzione a tre tabelle.
+                                <img class="xsmall-img" src="../assets/76.png" alt="">
+                            </li>
+                        </ul>
+                      
+                      
                     </li>
                 </ul>
 
