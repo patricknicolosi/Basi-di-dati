@@ -1,5 +1,3 @@
-
-
 <html>
 
 <head>
@@ -22,342 +20,348 @@
         <h1>Database</h1>
     </header>
     <section>
-        <h2>Progettazione logica</h2>
+        <h2>Progettazione logica e traduzione verso il modello logico</h2>
+        <img src="../assets/61.png" alt="">
         <p>
-            La progettazione logica si divide in:
+            Le operazioni di cui vogliamo analizzare il costo sono:
         </p>
         <ol>
             <li>
-                <h3>Riprogettazione dello schema scheletro</h3>
-                <p>
-                    Immaginiamo di avere il seguente schema:
-                </p>
-                <img src="../assets/61.png" alt="">
-                <p>
-                    Le operazioni di cui vogliamo analizzare il costo sono:
-                </p>
-                <ol>
-                    <li>
-                        Assegna un impiegato ad un progetto
-                    </li>
-                    <li>
-                        Trova i dati di un impiegato, del dipartimento nel quale lavora e dei progetti in cui è coinvolto
-                    </li>
-                    <li>
-                        Trova i dati di tutti gli impiegati di un certo dipartimento
-                    </li>
-                    <li>
-                        Per ogni sede, trova i dipartimenti con il cognome del direttore e l'elenco degli impiegati
-                    </li>
-                </ol>
-                <hr>
-                <h4>Per tutte le operazioni</h4>
-                <p>
-                    Per stimare il costo di ogni singola operazione, è essenziale avere due tabelle di stima. La prima è la 
-                    <span class="bold">tabella dei volumi</span>, mentre la seconda è la <span class="bold">tabella delle operazioni</span>. Entrambe le tabelle faranno quindi
-                    parte della documentazione della base di dati.
-                </p>
-                <img src="../assets/62.png" alt="">
-                <p>
-                    Avendo a disposizione questi dati è possibile stimare i costi di ogni operazione.
-                </p>
-                <hr>
-                <h4>Per ogni operazione</h4>
-                <p>
-                    Vediamo come fare correttamente la <span class="bold">stima del costo dell'operazione 2</span>.
-                </p>
-                <ul>
-                    <li>
-                        <p class="bold">Analisi della richiesta</p>
-                        <p>
-                            Trova i dati di un impiegato, del dipartimento nel quale lavora e dei progetti in cui è coinvolto
-                        </p>
-                    </li>
-                    <li>
-                        <p class="bold">Tavola degli accessi</p>
-                        <p>
-                            Per fare questa operazione dobbiamo:
-                        </p>
-                        <ul>
-                            <li>
-                                Accedere all'occorrenza di Impiegato e di Afferenza e quindi alle proprietà di Dipartimento
-                            </li>
-                            <li>
-                                Per avere i dati dei progetti a cui lavora, dobbiamo accedere (in media tre volte dalla tabella dei volumi) a Partecipazione e quindi alle proprietà di Progetto
-                            </li>
-                        </ul>
-                        <p>
-                            Tutto viene riassunto in una <span class="bold">tavola degli accessi</span>.
-                        </p>
-                        <img src="../assets/63.png" alt="">
-                        <p class="bold">
-                            Il costo totale dell'operazione è dato dalla somma di tutti gli accessi, che in questo caso è 9.
-                        </p>
-                        <p class="bold red">
-                            Ricordiamoci anche che essendo le operazioni di scrittura più onerose di quelle di scrittura 1S=2L.
-                        </p>
-                    </li>
-                </ul>
-                <hr>
-                <h4>Ristrutturazione dello schema</h4>
-                <p>
-                    Una volta analizzato il costo di tutte le operazioni, procediamo con la ristrutturazione. Questo processo si divide in:
-                </p>
-                <ul>
-                    <li>
-                        <p class="bold">Analisi delle ridondanze</p>
-                        <p>
-                            In generale l'analisi di tutti quegli attributi derivabili da altre entità o relazioni.
-                        </p>
-                        <p>
-                            Consideriamo l'esempio Città-Persona per l'anagrafica di una regione:
-                        </p>
-                        <ul>
-                            <li>
-                                Operazione 1: memorizza una persona nuova con la relativa città
-                            </li>
-                            <li>
-                                Operazione 2: stampa tutti i dati di una città (incluso il numero di abitanti)
-                            </li>
-                        </ul>
-                        <img src="../assets/64.png" alt="">
-                        <p>
-                            Come è possibile vedere nello schema E-R il numero di abitanti rappresenta una ridondanza, infatti
-                            può essere preso sia da città che contanto gli N Persona della relazione Residenza.
-                            In tutti i casi in cui c'è ridondanza il problema è sempre uno: Eliminare o lasciare?
-                            Entrambe le scelte presentano vantaggi e svantaggi. Per aiutarci nella scelta viene 
-                            fatto, li dove è presente ridondanza una <span class="bold">valutazione sull'indice di prestazione</span>.
-                        </p>
-                        <p>
-                            Valutiamo l'indice di prestazione per l'attributo Numero abitanti per ogni singola operazione:
-                        </p>
-                        <h5>Con ridondanza (con numero abitanti in città)</h5>
-                        <ul>
-                            <li>
-                                Operazione 1 richiede:
-                                <ul>
-                                    <li>
-                                        Un accesso in scrittura a Persona
-                                    </li>
-                                    <li>
-                                        Un accesso in scrittura in Residenza
-                                    </li>
-                                    <li>
-                                        Uno in lettura per cercare la città
-                                    </li>
-                                    <li>
-                                        Uno in scrittura per incrementare il numero di abitanti
-                                    </li>
-                                </ul>
-                                Il tutto ripetuto 500 volte, per un totale di 1500 accessi in scrittura e 500 in lettura.
-                            </li>
-                            <li>
-                                Operazione 2 richiede: un accesso in lettura a Città (2 volte al giorno)
-                            </li>
-                        </ul>
-                    </li>
-                    <p>
-                        Considerando  gli accessi in scrittura 1S=2L abbiamo un numero totale di accessi per entrambe le operazioni di 3500.
-                    </p>
-                    <h5>Senza ridondanza (elimino numero abitanti da città)</h5>
-                    <ul>
-                        <li>
-                            Operazione 1 richiede:
-                            <ul>
-                                <li>
-                                    Un accesso in scrittura a Persona
-                                </li>
-                                <li>
-                                    Un accesso in scrittura in residenza (ripetuto 500 volte)
-                                </li>
-                            </ul>
-                            Il tutto ripetuto per 500 volte, per un totale di 1000 accessi al giorno di scrittura.
-                        </li>
-                        <li>
-                            Operazione 2 richiede:
-                            <ul>
-                                <li>
-                                    Accesso alle informazioni della città (trascurabile)
-                                </li>
-                                <li>
-                                    Accesso al numero di abitanti per città (contare il numero di abitanti per città, circa 5000)
-                                </li>
-                            </ul>
-                            Ripetuto 2 volte al giorno per un totale di 100000 accessi.
-                        </li>
-                    </ul>
-                    <p>
-                        Considerando  gli accessi in scrittura 1S=2L abbiamo un numero totale di accessi per entrambe le operazioni di 12000. Quindi 8500
-                        in più rispetto al caso di ridondanza.
-                    </p>
-                    <p>
-                        La versione con ridondanza, seppur occupa 1 kilobyte (considerando 4 byte per ogni entità Città per il numero abitanti) in più rispetto a quella senza, è conveniente da attuare rispetto quello senza.
-                    </p>
-                    <p>
-                        In questo caso <span class="bold">conviene lasciare la ridondanza</span>.
-                    </p>
-                    <p>
-                        Ovviamente, come verificato per l'esempio, la versione con ridondanza occuperà sempre spazio in più.
-                    </p>
-                    <li>
-                        <p class="bold">Eliminazione delle gerarchie</p>
-                        <p>
-                            Il modello relazionale non implementa le gerarchie, introdotte invece nello schema E-R, allora bisogna eliminarle; questo 
-                            è possibile tramite tre strategie.
-                        </p> 
-                        <img class="small-img" src="../assets/65.png" alt="">
-                        <ul>
-                            <li>
-                                <p class="bold">Mantenimento delle entità</p>
-                                <p>
-                                    Tutte le entità figlie vengono mantenute e sostituiamo
-                                    alle gerarchie delle associazioni. Ogni entità viene identificata
-                                    dalla relazione.
-                                </p>
-                                <img class="small-img" src="../assets/66.png" alt="">
-                            </li>
-                            <li>
-                                <p class="bold">Collasso verso l'alto</p>
-                                <p>
-                                    Si rimuovono le entità figlie riunendo tutti gli attributi di queste nell'entità padre.
-                                </p>
-                                <img src="../assets/67.png" alt="">
-                            </li>
-                            <li>
-                                <p class="bold">Collasso verso il basso</p>
-                                <p>
-                                    Si elimina l'entità padre trasferendo tutti i suoi attributi nelle entità figlie.
-                                    Si tratta di una strategia molto utile in tutte quelle situazioni in cui le entità figlie
-                                    hanno molti più attributi dell'entità padre. <span class="bold">Questa strategia si sconsiglia
-                                        sempre nel caso di gerarchie non totali perchè andremo ad aggiungere ridondanze nei dati</span>
-                                </p>
-                                <img class="xsmall-img" src="../assets/68.png" alt="">
-                            </li> 
-                        </ul>
-                    </li>
-                    <li>
-                        <p class="bold">Partizionamento di Entità</p>
-                        <img src="../assets/69.png" alt="">
-                        <p>
-                            Immaginiamo di avere un'entità dipendente a cui accediamo sempre o ai dati anagrafici oppure ai dati lavorativi.
-                            Allora potremmo secondo il partizionamento di Entità e associazioni, dividere questi aspetti e trattare il dipendente
-                            come se fosse una relazione tra le due tipologie di dato.
-                        </p>
-                        <p>
-                            Il partizionamento appena fatto viene detto <span class="bold">partizionamento verticale</span>.
-                        </p>
-                        <img src="../assets/69.png" alt="">
-                        <p>
-                            Specificatamente per il modello relazionale, non abbiamo il supporto di attributi multivalore, ad esempio, se abbiamo 
-                            un'entità Agenzia a cui poter associare secondo lo schema E-R più numeri di telefono (1,n), non possiamo tradurre questa necessità
-                            in uno schema di tipo relazionale, allora in questi casi, usiamo un <span class="bold">partizionamento orizzontale</span>.
-                        </p>
-                        <img src="../assets/70.png" alt="">
-                        <p>
-                            Quello che facciamo con questo tipo di partizionamento è sostituire tutti gli attributi multivalore ((1,n)) con relazioni (1,n).
-                        </p>
-
-                    </li>
-                    <li>
-                        <p class="bold">Accorpamento di entità</p>
-                        <p>
-                            Si tratta di una procedura inversa rispetto la precedente.
-                        </p>
-                        <img src="../assets/71.png" alt="">
-                        <p>
-                            Solitamente l'accorpamento è giustificato se le operazioni più frequenti su Persona richiedono i dati relativi ad appartamento.
-                        </p>
-                        <p class="bold red">
-                            Gli accorpamenti si fanno <span class="italic">solitamente</span> su relazioni uno ad uno, è raro che si facciano in relazioni uno a molti, è invece
-                            <span class="underline">vietato</span> farli per relazioni molti a molti.
-                        </p>
-                        <p>
-                            Facendo un accorpamento molti a molti andremo infatti ad introdurre ridondanza perchè avremmo più copie delle stesse informazioni.
-                        </p>
-
-                    </li>
-                    <li>
-                        <p class="bold">Traduzione e scelta degli identificatori principali</p>
-                        <p>
-                            Sia entità che relazioni dello schema E-R vanno tradotte nel modello relazionale in "tabelle".
-                        </p>
-                        <ul>
-                            <li>
-                                <p class="bold">
-                                    Traduzione di entità molti a molti
-                                </p>
-                                <p>
-                                    Usiamo la <span class="bold">traduzione standard</span>
-                                </p>
-                                <img src="../assets/72.png" alt="">
-                            </li>
-                            <li>
-                                <p class="bold">
-                                    Traduzione di entità uno a molti
-                                </p>
-                                <p>
-                                    Resta valida la <span class="bold">traduzione standard</span>
-                                </p>
-                                <img src="../assets/73.png" alt="">
-                            </li>
-                        </ul>
-                        <p>
-                            Secondo questa procedura anche le relazioni verranno tradotte in tabella. La coppia formata dalle due chiavi nella relazione, 
-                            rappresenta il legame tra le entità.
-                        </p>
-                        <p>
-                            Una <span class="bold">procedura alternativa</span> a quella standard in questo tipo di relazione potrebbe essere quella che ci da come risultato:
-                        </p>
-                        <img class="xsmall-img" src="../assets/74.png" alt="">
-                        <p>
-                            Se E1 partecipa con cardinalità (0,1) allora la soluzione conterrà in K2,AR,BR valori nullable.
-                        </p>
-                    </li>
-                    <li>
-                        <p class="bold">
-                            Traduzione di entità 1 a 1 
-                        </p>
-                        <p>
-                            Per le entità 1 a 1, <span class="bold">non viene usata <span class="underline">solitamente</span> la traduzione standard</span>, perchè per queste associazioni
-                            abbiamo come risultato un'unica tabella.
-                        </p>
-                        <img  src="../assets/75.png" alt="">
-                        <ul>
-                            <li>
-                                Se le cardinalità minime sono entrambe 1 la chiave può essere indifferentemente K1 o K2 si sceglierà quella più significativa. Come nell'esempio precedente comune-sindaco.
-                            </li>
-                            <li>
-                                Se la cardinalità di E2 è (0,1) e quella di E1 (1,1) allora la chiave sarà K2. Ad esempio:
-                                <img  src="../assets/77.png" alt="">
-                                In questo caso la nostra E2 è dalla parte di cittadino, quindi: i cittadini possono o no aver preso parte del servizio militare, ma tutti quelli 
-                                che hanno preso parte del servizio militare sono cittadini. Per tutti (sia chi ha preso parte che no) usiamo come chiama primaria il cod_f secondo questa regola.
-                                Ci accorgiamo che è inoltre quella logicamente più adatta.
-                            </li>
-                            <li>
-                                Se E2 è l'entità con il maggior numero di istanze alcune delle quali non si associano, ci saranno dei valori NULL in corrispondenza con K1. K1 in questo caso non potrebbe essere scelta.
-                            </li>
-                            <li>
-                                Se sia E1 che E2 hanno cardinalità (0,1) allora verrà usata una traduzione a tre tabelle.
-                                <img class="xsmall-img" src="../assets/76.png" alt="">
-                            </li>
-                        </ul>
-                      
-                      
-                    </li>
-                </ul>
-
-
-         
+                Assegna un impiegato ad un progetto
             </li>
             <li>
-                <h3>Traduzione verso il modello logico</h3>
-                <p>
-                    Viene fatto riferimento ad un modello logico (nel nostro caso quello relazionale) e può includere ulteriore ottimizzazione sul modello logico (es.normalizzazione per il modello logico relazionale).
-                </p>
+                Trova i dati di un impiegato, del dipartimento nel quale lavora e dei progetti in cui è coinvolto
+            </li>
+            <li>
+                Trova i dati di tutti gli impiegati di un certo dipartimento
+            </li>
+            <li>
+                Per ogni sede, trova i dipartimenti con il cognome del direttore e l'elenco degli impiegati
             </li>
         </ol>
-    
+        <hr>
+        <h4>Per tutte le operazioni</h4>
+        <p>
+            Per stimare il costo di ogni singola operazione, è essenziale avere due tabelle di stima. La prima è la
+            <span class="bold">tabella dei volumi</span>, mentre la seconda è la <span class="bold">tabella delle
+                operazioni</span>. Entrambe le tabelle faranno quindi
+            parte della documentazione della base di dati.
+        </p>
+        <img src="../assets/62.png" alt="">
+        <p>
+            Avendo a disposizione questi dati è possibile stimare i costi di ogni operazione.
+        </p>
+        <hr>
+        <h4>Per ogni operazione</h4>
+        <p>
+            Vediamo come fare correttamente la <span class="bold">stima del costo dell'operazione 2</span>.
+        </p>
+        <ul>
+            <li>
+                <p class="bold">Analisi della richiesta</p>
+                <p>
+                    Trova i dati di un impiegato, del dipartimento nel quale lavora e dei progetti in cui è coinvolto
+                </p>
+            </li>
+            <li>
+                <p class="bold">Tavola degli accessi</p>
+                <p>
+                    Per fare questa operazione dobbiamo:
+                </p>
+                <ul>
+                    <li>
+                        Accedere all'occorrenza di Impiegato e di Afferenza e quindi alle proprietà di Dipartimento
+                    </li>
+                    <li>
+                        Per avere i dati dei progetti a cui lavora, dobbiamo accedere (in media tre volte dalla tabella
+                        dei volumi) a Partecipazione e quindi alle proprietà di Progetto
+                    </li>
+                </ul>
+                <p>
+                    Tutto viene riassunto in una <span class="bold">tavola degli accessi</span>.
+                </p>
+                <img src="../assets/63.png" alt="">
+                <p class="bold">
+                    Il costo totale dell'operazione è dato dalla somma di tutti gli accessi, che in questo caso è 9.
+                </p>
+                <p class="bold red">
+                    Ricordiamoci anche che essendo le operazioni di scrittura più onerose di quelle di scrittura 1S=2L.
+                </p>
+            </li>
+        </ul>
+        <hr>
+        <h4>Ristrutturazione dello schema</h4>
+        <p>
+            Una volta analizzato il costo di tutte le operazioni, procediamo con la ristrutturazione. Questo processo si
+            divide in:
+        </p>
+        <ul>
+            <li>
+                <p class="bold">Analisi delle ridondanze</p>
+                <p>
+                    In generale l'analisi di tutti quegli attributi derivabili da altre entità o relazioni.
+                </p>
+                <p>
+                    Consideriamo l'esempio Città-Persona per l'anagrafica di una regione:
+                </p>
+                <ul>
+                    <li>
+                        Operazione 1: memorizza una persona nuova con la relativa città
+                    </li>
+                    <li>
+                        Operazione 2: stampa tutti i dati di una città (incluso il numero di abitanti)
+                    </li>
+                </ul>
+                <img src="../assets/64.png" alt="">
+                <p>
+                    Come è possibile vedere nello schema E-R il numero di abitanti rappresenta una ridondanza, infatti
+                    può essere preso sia da città che contanto gli N Persona della relazione Residenza.
+                    In tutti i casi in cui c'è ridondanza il problema è sempre uno: Eliminare o lasciare?
+                    Entrambe le scelte presentano vantaggi e svantaggi. Per aiutarci nella scelta viene
+                    fatto, li dove è presente ridondanza una <span class="bold">valutazione sull'indice di
+                        prestazione</span>.
+                </p>
+                <p>
+                    Valutiamo l'indice di prestazione per l'attributo Numero abitanti per ogni singola operazione:
+                </p>
+                <h5>Con ridondanza (con numero abitanti in città)</h5>
+                <ul>
+                    <li>
+                        Operazione 1 richiede:
+                        <ul>
+                            <li>
+                                Un accesso in scrittura a Persona
+                            </li>
+                            <li>
+                                Un accesso in scrittura in Residenza
+                            </li>
+                            <li>
+                                Uno in lettura per cercare la città
+                            </li>
+                            <li>
+                                Uno in scrittura per incrementare il numero di abitanti
+                            </li>
+                        </ul>
+                        Il tutto ripetuto 500 volte, per un totale di 1500 accessi in scrittura e 500 in lettura.
+                    </li>
+                    <li>
+                        Operazione 2 richiede: un accesso in lettura a Città (2 volte al giorno)
+                    </li>
+                </ul>
+            </li>
+            <p>
+                Considerando gli accessi in scrittura 1S=2L abbiamo un numero totale di accessi per entrambe le
+                operazioni di 3500.
+            </p>
+            <h5>Senza ridondanza (elimino numero abitanti da città)</h5>
+            <ul>
+                <li>
+                    Operazione 1 richiede:
+                    <ul>
+                        <li>
+                            Un accesso in scrittura a Persona
+                        </li>
+                        <li>
+                            Un accesso in scrittura in residenza (ripetuto 500 volte)
+                        </li>
+                    </ul>
+                    Il tutto ripetuto per 500 volte, per un totale di 1000 accessi al giorno di scrittura.
+                </li>
+                <li>
+                    Operazione 2 richiede:
+                    <ul>
+                        <li>
+                            Accesso alle informazioni della città (trascurabile)
+                        </li>
+                        <li>
+                            Accesso al numero di abitanti per città (contare il numero di abitanti per città, circa
+                            5000)
+                        </li>
+                    </ul>
+                    Ripetuto 2 volte al giorno per un totale di 100000 accessi.
+                </li>
+            </ul>
+            <p>
+                Considerando gli accessi in scrittura 1S=2L abbiamo un numero totale di accessi per entrambe le
+                operazioni di 12000. Quindi 8500
+                in più rispetto al caso di ridondanza.
+            </p>
+            <p>
+                La versione con ridondanza, seppur occupa 1 kilobyte (considerando 4 byte per ogni entità Città per il
+                numero abitanti) in più rispetto a quella senza, è conveniente da attuare rispetto quello senza.
+            </p>
+            <p>
+                In questo caso <span class="bold">conviene lasciare la ridondanza</span>.
+            </p>
+            <p>
+                Ovviamente, come verificato per l'esempio, la versione con ridondanza occuperà sempre spazio in più.
+            </p>
+            <li>
+                <p class="bold">Eliminazione delle gerarchie</p>
+                <p>
+                    Il modello relazionale non implementa le gerarchie, introdotte invece nello schema E-R, allora
+                    bisogna eliminarle; questo
+                    è possibile tramite tre strategie.
+                </p>
+                <img class="small-img" src="../assets/65.png" alt="">
+                <ul>
+                    <li>
+                        <p class="bold">Mantenimento delle entità</p>
+                        <p>
+                            Tutte le entità figlie vengono mantenute e sostituiamo
+                            alle gerarchie delle associazioni. Ogni entità viene identificata
+                            dalla relazione.
+                        </p>
+                        <img class="small-img" src="../assets/66.png" alt="">
+                    </li>
+                    <li>
+                        <p class="bold">Collasso verso l'alto</p>
+                        <p>
+                            Si rimuovono le entità figlie riunendo tutti gli attributi di queste nell'entità padre.
+                        </p>
+                        <img src="../assets/67.png" alt="">
+                    </li>
+                    <li>
+                        <p class="bold">Collasso verso il basso</p>
+                        <p>
+                            Si elimina l'entità padre trasferendo tutti i suoi attributi nelle entità figlie.
+                            Si tratta di una strategia molto utile in tutte quelle situazioni in cui le entità figlie
+                            hanno molti più attributi dell'entità padre. <span class="bold">Questa strategia è <span class="red">vietata</span>
+                                sempre nel caso di gerarchie non totali perchè andremo a perdere dati</span>. Infatti
+                                , avendo ad esempio una gerarchia non totale Cittadino/Pestatore-Cacciatore, in cui abbiamo cittadini
+                                che esistono e possono non essere ne cacciatori ne pescatori, applicando questo collasso, ci andiamo a perdere totalmente tutti i cittadini che sono solo cittadini. Quindi si rischia la perdita
+                                di tutti i dati relativi alle entità che fanno parte della classe padre perchè sono ammesse (dopo il collasso verso il basso) solo entità che fanno parte delle classi figlie.
+                        </p>
+                        <img class="xsmall-img" src="../assets/68.png" alt="">
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <p class="bold">Partizionamento di Entità</p>
+                <img src="../assets/69.png" alt="">
+                <p>
+                    Immaginiamo di avere un'entità dipendente a cui accediamo sempre o ai dati anagrafici oppure ai dati
+                    lavorativi.
+                    Allora potremmo secondo il partizionamento di Entità e associazioni, dividere questi aspetti e
+                    trattare il dipendente
+                    come se fosse una relazione tra le due tipologie di dato.
+                </p>
+                <p>
+                    Il partizionamento appena fatto viene detto <span class="bold">partizionamento verticale</span>.
+                </p>
+                <img src="../assets/69.png" alt="">
+                <p>
+                    Specificatamente per il modello relazionale, non abbiamo il supporto di attributi multivalore, ad
+                    esempio, se abbiamo
+                    un'entità Agenzia a cui poter associare secondo lo schema E-R più numeri di telefono (1,n), non
+                    possiamo tradurre questa necessità
+                    in uno schema di tipo relazionale, allora in questi casi, usiamo un <span
+                        class="bold">partizionamento orizzontale</span>.
+                </p>
+                <img src="../assets/70.png" alt="">
+                <p>
+                    Quello che facciamo con questo tipo di partizionamento è sostituire tutti gli attributi multivalore
+                    ((1,n)) con relazioni (1,n).
+                </p>
 
+            </li>
+            <li>
+                <p class="bold">Accorpamento di entità</p>
+                <p>
+                    Si tratta di una procedura inversa rispetto la precedente.
+                </p>
+                <img src="../assets/71.png" alt="">
+                <p>
+                    Solitamente l'accorpamento è giustificato se le operazioni più frequenti su Persona richiedono i
+                    dati relativi ad appartamento.
+                </p>
+                <p class="bold red">
+                    Gli accorpamenti si fanno <span class="italic">solitamente</span> su relazioni uno ad uno, è raro
+                    che si facciano in relazioni uno a molti, è invece
+                    <span class="underline">vietato</span> farli per relazioni molti a molti.
+                </p>
+                <p>
+                    Facendo un accorpamento molti a molti andremo infatti ad introdurre ridondanza perchè avremmo più
+                    copie delle stesse informazioni.
+                </p>
+
+            </li>
+            <li>
+                <p class="bold">Traduzione e scelta degli identificatori principali</p>
+                <p>
+                    Sia entità che relazioni dello schema E-R vanno tradotte nel modello relazionale in "tabelle".
+                </p>
+                <ul>
+                    <li>
+                        <p class="bold">
+                            Traduzione di entità molti a molti
+                        </p>
+                        <p>
+                            Usiamo la <span class="bold">traduzione standard</span>
+                        </p>
+                        <img src="../assets/72.png" alt="">
+                    </li>
+                    <li>
+                        <p class="bold">
+                            Traduzione di entità uno a molti
+                        </p>
+                        <p>
+                            Resta valida la <span class="bold">traduzione standard</span>
+                        </p>
+                        <img src="../assets/73.png" alt="">
+                    </li>
+                </ul>
+                <p>
+                    Secondo questa procedura anche le relazioni verranno tradotte in tabella. La coppia formata dalle
+                    due chiavi nella relazione,
+                    rappresenta il legame tra le entità.
+                </p>
+                <p>
+                    Una <span class="bold">procedura alternativa</span> a quella standard in questo tipo di relazione
+                    potrebbe essere quella che ci da come risultato:
+                </p>
+                <img class="xsmall-img" src="../assets/74.png" alt="">
+                <p>
+                    Se E1 partecipa con cardinalità (0,1) allora la soluzione conterrà in K2,AR,BR valori nullable.
+                </p>
+            </li>
+            <li>
+                <p class="bold">
+                    Traduzione di entità 1 a 1
+                </p>
+                <p>
+                    Per le entità 1 a 1, <span class="bold">non viene usata <span class="underline">solitamente</span>
+                        la traduzione standard</span>, perchè per queste associazioni
+                    abbiamo come risultato un'unica tabella.
+                </p>
+                <img src="../assets/75.png" alt="">
+                <ul>
+                    <li>
+                        Se le cardinalità minime sono entrambe 1 la chiave può essere indifferentemente K1 o K2 si
+                        sceglierà quella più significativa. Come nell'esempio precedente comune-sindaco.
+                    </li>
+                    <li>
+                        Se la cardinalità di E2 è (0,1) e quella di E1 (1,1) allora la chiave sarà K2. Ad esempio:
+                        <img src="../assets/77.png" alt="">
+                        In questo caso la nostra E2 è dalla parte di cittadino, quindi: i cittadini possono o no aver
+                        preso parte del servizio militare, ma tutti quelli
+                        che hanno preso parte del servizio militare sono cittadini. Per tutti (sia chi ha preso parte
+                        che no) usiamo come chiama primaria il cod_f secondo questa regola.
+                        Ci accorgiamo che è inoltre quella logicamente più adatta.
+                    </li>
+                    <li>
+                        Se E2 è l'entità con il maggior numero di istanze alcune delle quali non si associano, ci
+                        saranno dei valori NULL in corrispondenza con K1. K1 in questo caso non potrebbe essere scelta.
+                    </li>
+                    <li>
+                        Se sia E1 che E2 hanno cardinalità (0,1) allora verrà usata una traduzione a tre tabelle.
+                        <img class="xsmall-img" src="../assets/76.png" alt="">
+                    </li>
+                </ul>
+
+
+            </li>
+        </ul>
     </section>
 
 
