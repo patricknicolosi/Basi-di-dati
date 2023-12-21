@@ -1,0 +1,207 @@
+<html>
+
+<head>
+    <title>Database</title>
+    <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
+            RelaX</a>
+        <a class="nav-link" href="https://www.mycompiler.io/it/new/sql">Simulatore SQL</a>
+        <a class="nav-link" href="../index.html" target="_self">Home</a>
+        <h1>Database</h1>
+    </header>
+    <section>
+        <h2>Progettazione completa database</h2>
+        <a href="assets/Progettazione completa database.docx" target="_blank">Link</a>
+    </section>
+    <section>
+        <h2>Normalizzazione di schemi</h2>
+        <p>
+            Seguendo le buone norme di progettazione, gli schemi risultanti sono 
+            <span class="bold">già normalizzati</span>. Tuttavia, le tecniche di 
+            normalizzazione sono utili per capire se dal punto di vista dei dati
+            la nostra base di dati presenta o no delle anomalie. 
+        </p>
+        <p>
+            Immaginiamo di avere il seguente schema logico della tabella esami.
+        </p>
+        <p>
+            Esami(Matricola, Corso, Nome, Telefono, Voto)
+        </p>
+        <p>
+            Gli attributi Nome,Telefono andrebbero eliminati, in quanto 
+            avremo lo stesso numero di telefono per ogni esame superato dallo stesso studente.
+        </p>
+        <p>
+            Questa struttura errata va ad introdurre diverse anomalie:
+        </p>
+        <ul>
+            <li>
+                <p class="bold">Anomalia di aggiornamento</p>
+                <p>
+                    Se lo studente cambia il numero di telefono, dovremmo andare ad aggiornare
+                    questo dato in tutti gli esami dati.
+                </p>
+            </li>
+            <li>
+                <p class="bold">Anomalia di eliminazione</p>
+                <p>
+                    Se eliminiamo tutti gli Esami associati ad una matricola, vista l'assenza di una tabella Studenti, 
+                    il database non avrebbe più nessuna informazione riguardante lo studente.
+                </p>
+            </li>
+            <li>
+                <p class="bold">Anomalia di inserimento</p>
+                <p>
+                    Se uno studente non ha ancora dato esami non può essere inserito nella base di dati.
+                </p>
+            </li>
+        </ul>
+        <p>
+            La soluzione ovvia per andare ad eliminare queste anomlie è dividere la relazione Esami in:
+        </p>
+        <ul>
+            <li>
+                Esame(Matricola,Corso,Voto)
+            </li>
+            <li>
+                Studente(Matricola,Nome,Telefono)
+            </li>
+        </ul>
+       
+        
+        <code>
+            <span class="code-title">Dipendenza funzionale</span>
+            Sia R(A1,...,An) uno schema di relazione, X e Y sottoinsiemi di {A1,...,An}. Diciamo che 
+            <span class="bold">X implica funzionalmente Y</span>, per ogni relazione r dello schema R, se due tuple t1 t2 
+            di r coincidono su tutti gli attributi di X allora devono anche coincidere con tutti gli attributi di Y.
+        </code>
+        <p>
+            In altre parole, se prendiamo due insiemi di attributi X={Matricola,Corso} e Y={Voto}. Diciamo
+            che X->Y se comunque prese due tuple t1,t2 in R=Esami, abbiamo che se coincidono i valori degli attributi di X, allora
+            devono coincidere i valori degli attributi di Y.
+        </p>
+        <p>
+            Ancora più semplificato, si dice che Matricola,Corso->Voto se comunque prese due tuple
+            il valore degli attributi di X coincide, così come coincide il valore degli attributi di Y.
+            io per una coppia Matricola,Corso abbiamo un solo possibile valore di Voto.
+        </p>
+        <div class="bonus">
+            <h5>Notazione</h5>
+            <ul>
+                <li>
+                    Le prime lettere maiuscole dell'alfabeto (A,B...) rappresentano attributi
+                </li>
+                <li>
+                    Le ultime lettere maiuscole dell'alfabeto (U,V,Z...) rappresentano insiemi attributi
+                </li>
+                <li>
+                    R è lo schema di relazione
+                </li>
+                <li>
+                    ABC sta ad indicare l'insieme composto dai tre {A,B,C}
+                </li>
+                <li>
+                    XY sta ad indicare X U Y
+                </li>
+                <li>
+                    XA o AX indica l'insieme di attributi X unito con l'insieme contenente l'attributo A -> X U {A}
+                </li>
+            </ul>
+        </div>
+        <code>
+            Sia F un insieme di dipendenze funzionali per uno schema di relazione R e sia 
+            X->Y una dipendenza funzionale. Diciamo che F <span class="bold">logicamente implica</span> X->Y, e si scrive F |= X->Y,
+            se per ogni relazione r di R che soddisfa tutte le dipendenze di F, r soddisfa anche X->Y.
+        </code>
+        <p>
+            Ad esempio:
+        </p>
+        <ul type="none">
+            <li>
+                {A->B,B->C} |= A->C
+            </li>
+            <li>
+                Se r di R soddisfa sia {A->B,B->C} che A->C.
+            </li>
+        </ul>
+        <code>
+            Dato un insieme F di dipendenze funzionali la sua <span class="bold">chiusura</span> F+ è l'insieme delle dipendenze
+            funzionali che sono implicite logicamente da F, in simboli: <br>
+            F+={X->Y | F |= X->Y}
+        </code>
+        <p>
+           In altre parole la chiusura F+ è l'insieme di tutte quelle dipendenze (implicite logicamente) che in qualche modo possiamo ricavare da F
+        </p>
+        <code>
+            Sia X={A1,A2,...} un sottoinsieme di attributi, allora Xsi dice <span class="bold">chiave</span> se
+            X -> (A1,A2,...,An in F+)
+        </code>
+        <p>
+            In altre parole se X è chiave in r, allora ogni altro attributo di r dipende logicamente da X.
+        </p>
+        <p>
+            La difficoltà del calcolo delle dipendenze funzionali risiede proprio nel trovare un algoritmo
+            per il calcolo della chiusura.
+        </p>
+        <p>
+            Il calcolo della chiusura viene fatto usando gli <span class="bold">assiomi di Armstrong</span>
+        </p>
+        <div class="bonus">
+            <h5>Assiomi di Armstrong</h5>
+            <p>
+                Sia U={A1,A2,...,An} un insieme universo di attributi.
+            </p>
+            <code>
+                Scrivo F |- X->Y  se da F posso dedurre X->Y applicando 
+                un numero finito di volte gli assiomi di Armstrong
+            </code>
+            <p>
+                I tre assiomi di Armstrong sono:
+            </p>
+            <ul>
+               <li>
+                    <p class="bold">Riflessività</p>
+                    Se Y è sottoinsieme di X che a sua volta è sottoinsieme di U, allora F|-X->Y
+               </li>
+               <li>
+                    <p class="bold">Aumento</p>
+                    Se F |- X->Y allora dato Z, F |- XZ -> YZ
+               </li>
+               <li>
+                    <p class="bold">Transitività</p>
+                    Se F|-X->Y e F|-Y->Z allora F|-X->Z
+               </li>
+            </ul>
+            <code>
+                <span class="code-title">Correttezza</span>
+                Se F |- (X->Y) allora F |= (X->Y)
+            </code>
+            <p>
+                In altre parole se X->Y è deducibile da F tramite gli assiomi di Armstrong allora F |= (X->Y) è chiusura.  Per dimostrare la correttezza basta dimostrare che gli assiomi sono corretti (e lo sono).
+            </p>
+           
+            <code>
+                <span class="code-title">Completezza</span>
+                Se F |= (X->Y) allora F |- (X->Y)
+            </code>
+            <p>
+                In altre parole se  F |= (X->Y) è chiusura allora (X->Y) è deducibile da F tramite gli assiomi di Armstrong
+            </p>
+           
+        </div>
+    </section>
+
+    <script type="text/javascript" src="https://www.maths.nottingham.ac.uk/plp/pmadw/LaTeXMathML.js"></script>
+</body>
+
+</html>
