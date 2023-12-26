@@ -29,7 +29,7 @@
             Seguendo le buone norme di progettazione, gli schemi risultanti sono 
             <span class="bold">già normalizzati</span>. Tuttavia, le tecniche di 
             normalizzazione sono utili per capire se dal punto di vista dei dati
-            la nostra base di dati presenta o no delle anomalie. 
+            la nostra base di dati presenta o no delle anomalie o delle ridondanze. 
         </p>
         <p>
             Immaginiamo di avere il seguente schema logico della tabella esami.
@@ -77,7 +77,9 @@
                 Studente(Matricola,Nome,Telefono)
             </li>
         </ul>
-       
+       <p>
+        Vedremo delle tecniche per rimuover problemi quali anomalie e ridondanze tramite dei metodi semiautomatici di normalizzazione.
+       </p>
         
         <code>
             <span class="code-title">Dipendenza funzionale</span>
@@ -182,26 +184,10 @@
                     Se F|-X->Y e F|-Y->Z allora F|-X->Z
                </li>
             </ul>
-            <code>
-                <span class="code-title">Correttezza</span>
-                Se F |- (X->Y) allora F |= (X->Y)
-            </code>
-            <p>
-                In altre parole se X->Y è deducibile da F tramite gli assiomi di Armstrong allora F |= (X->Y) è chiusura.  Per dimostrare la correttezza basta dimostrare che gli assiomi sono corretti (e lo sono).
-            </p>
-           
-            <code>
-                <span class="code-title">Completezza</span>
-                Se F |= (X->Y) allora F |- (X->Y)
-            </code>
-            <p>
-                In altre parole se  F |= (X->Y) è chiusura allora (X->Y) è deducibile da F tramite gli assiomi di Armstrong
-            </p>
-           
+       
         </div>
     </section>
 
-    <script type="text/javascript" src="https://www.maths.nottingham.ac.uk/plp/pmadw/LaTeXMathML.js"></script>
 </body>
 
 </html>

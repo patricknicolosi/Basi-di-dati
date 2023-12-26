@@ -1,0 +1,90 @@
+<html>
+
+<head>
+    <title>Database</title>
+    <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
+            RelaX</a>
+        <a class="nav-link" href="https://www.mycompiler.io/it/new/sql">Simulatore SQL</a>
+        <a class="nav-link" href="../index.html" target="_self">Home</a>
+        <h1>Database</h1>
+    </header>
+    <section>
+        <h2>Correttezza e completezza</h2>
+        <p>
+            Abbiamo detto che il calcolo della chiusura può essere fatta mediante l'applicazione degli assiomi di Armstrong. Per fare
+            ciò bisogna però prima dimostrare che una catena di applicazioni di assiomi è sia corretta che completa.
+        </p>
+        <h3>
+            Correttezza
+        </h3>
+        <p>
+            Dimostriamo la correttezza di una catena di assiomi, appurato che gli assiomi sono corretti, in maniera ricorsiva.
+        </p>
+        <p class="bold">
+            Quello che devo dimostrare è che se X->Y è deducibile da F tramite gli assiomi di Armstrong allora F |= (X->Y) è chiusura.
+        </p>
+        <p>
+            Se F|-X->Y e D1,D2,...,Dn una catena di assiomi allora sappiamo che Di è corretto perchè gli assiomi sono corretti.
+            Chiamo j=i+1, allora Dj è derivato mediante l'applicazione di un assioma in Di. Dj è a sua volta corretto perchè applicazione
+            di un assioma. Questo per tutte le applicazioni della catena
+        </p>
+        <h3>
+            Completezza
+        </h3>
+        <p>
+            Per dimostrare la completezza introduciamo il lemma fondamentale.
+        </p>
+        <ul>
+            <li>
+                <p class="bold">
+                    Lemma fondamentale
+                </p>
+                <p>
+                    Definiamo X+= {A|F |- X->A} l'insieme degli attributi A tale che da F posso derivare che X->A.
+                    Allora F |- X->Y se e solo se Y è sottoinsieme di di X+.
+                </p>
+            </li>
+        </ul>
+        <p>
+            In altre parole X+ è l'insieme di tutti quegli attributi che dipenndono funzionalmente da qualcosa.
+        </p>
+        <p class="bold">
+            Quello che devo dimostrare è che se F |= X->Y allora tramite l'applicazione di assiomi posso derivare X->Y da F.
+        <p>
+            Suppongo che ci sia una regola X->Y che non posso derivare da F tramite gli assiomi <span class="bold">not F |- X->Y</span>.
+            Per il lemma fondamentale Y non è sottoinsieme di X+. Allora è possibile trovare due tuple t1 e t2 che presentano gli stessi attributi solo per X+.
+            Chiamo r una relazione formata dalle tuple t1 e t2.
+        </p>
+        <p>
+            Dimostro:
+        </p>
+        <p>
+            Supponiamo esistea una V->W in F tale che r non la soddisfa. Allora t1 e t2 coincidono come prima
+            in V ma non in W. Quindi V è sottoinsieme di X+ e W no. Per Transitività visto che F|-X->V e F|-V->W allora
+            F|-X->W che contraddice il fatto che W non è sottoinsieme di X+. <br>
+            Quindi r soddisfa tutte le dipendenze di r.
+        </p>
+        <p>
+            Se sono soddisfatte tutte le dipendenze di r allora vuol dire che sono soddisfatte tutte le dipendenze della chiusura e che r non soddisfa altre dipendeze oltre quelle della chiusura.
+        </p>
+        <h2>Algoritmo calcolo X+</h2>
+        <p>
+            Trovare un algortimo per il calcolo della chiusura è qualcosa di molto complesso, più semplice è invece trovare l'insieme X+
+            cioè l'insieme di tutti quegli attributi che dipendono funzionalmente da qualche altro insieme di X di attributi.
+        </p>
+    </section>
+
+</body>
+
+</html>
