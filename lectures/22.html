@@ -46,9 +46,17 @@
             </li>
             <li>
                 Tuttavia non preserva le dipendenze funzionali. Infatti:
-                <ul>
-                    P
-                </ul>
+                <ol class="bold">
+                    <li>
+                        pi_SZ(F) è vuoto infatti non esiste una dipendenza funzionale in F che coinvolge i soli attributi SZ (infatti coinvolge anche C)
+                    </li>
+                    <li>
+                        pi_CZ(F)={Z->C} infatti Z->C è una dipendenza che è in F e che coinvolge CZ della proiezione. Non possiamo prendere CS->Z perchè abbiamo un attributo in più che è S non considerato nella proiezione.
+                    </li>
+                    <li>
+                        Notiamo che abbiamo perso il vincolo CS->Z e quindi non vengono conservate le dipendenze funzionali.
+                    </li>
+                </ol>
             </li>
         </ul>
     </section>
