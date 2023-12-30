@@ -1,0 +1,83 @@
+<html>
+
+<head>
+    <title>Database</title>
+    <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
+            RelaX</a>
+        <a class="nav-link" href="https://www.mycompiler.io/it/new/sql">Simulatore SQL</a>
+        <a class="nav-link" href="../index.html" target="_self">Home</a>
+        <h1>Database</h1>
+    </header>
+    <section>
+        <h2>Conservazione delle dipendenze funzionali</h2>
+        <p>
+           La <span class="bold">proiezione pi_Z(F) di F su un insieme di Z di attributi</span> è l'insieme delle dipendenze X->Y appartenenti a F+ tali che XY è sottoinsieme di Z.
+        </p>
+        <p>
+            Dato uno schema relazionale (R,F) ed una sua decomposizione d={R1,R2,...,Rk} si dice che essa
+            <span class="bold">conserva le dipendenze funzionali</span> se F è implicata logicamente dall'unione delle proiezioni
+            pi_Ri(F) di F sugli Ri.
+        </p>
+        <p>
+            Una decomposizione loss-less join mi permette di non perdere dati, una decomposizione che invecec
+            conserva le dipendenze funzionali, mi permette di conservare i vincoli di integrità.
+        </p>
+        <h3>Esempio di decomposizione che preserva i dati ma non le dipendenze funzionali</h3>
+        <ul>
+            <li>
+                Consideriamo lo schema R(C,S,Z) che ci dice che nella città C c'è un palazzo all'indirizzo S con codice postale Z.
+            </li>
+            <li>
+                Valgono le dipendenze F={CS->Z,Z->C}
+            </li>
+            <li>
+                La decomposizione R(SZ,CZ) preserva i dati
+            </li>
+            <li>
+                Tuttavia non preserva le dipendenze funzionali. Infatti:
+                <ul>
+                    P
+                </ul>
+            </li>
+        </ul>
+    </section>
+    <section>
+        <h2>
+            Forme normali
+        </h2>
+        <h3></h3>
+        <p>
+            Uno schema relazionale R con dipendenze F si dice in <span class="bold">Forma normale di Boyce-Codd(BNCF)</span> se
+            per ogni X->A di F+, se A non appartiene ad X allora X deve essere una superchiave di R.
+        </p>
+        <p>
+            In altre parole, la definizione mi dice:
+        </p>
+        <ol>
+            <li>
+                Prendi tutte le dipendenze del tipo X->A che posso ottenere da F+.
+            </li>
+            <li>
+                Se l'attributo A non è contenuto in X allora per essere la tabella in forma normale deve essere superchiave di R o in altre parole
+                deve essere un attributo che mi implica tutti gli altri attributi della tabella.
+            </li>
+        </ol>
+        <p>
+            (Caso banale)  b Si può dimostrare che se tutte le dipendenze di F sono del tipo X->A, allora basta verificare la proprietà solo su F e non su F+.
+        </p>
+    </section>
+
+</body>
+
+</html>
