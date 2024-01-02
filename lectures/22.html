@@ -9,6 +9,26 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
+    <script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+        </script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+          tex2jax: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            processEscapes: true,
+            processEnvironments: true,
+          },
+          TeX: {
+            equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"],
+          },
+          "HTML-CSS": { scale: 100 },
+        });
+    </script>
+
+
 </head>
 
 <body>
@@ -22,11 +42,13 @@
     <section>
         <h2>Conservazione delle dipendenze funzionali</h2>
         <p>
-           La <span class="bold">proiezione pi_Z(F) di F su un insieme di Z di attributi</span> è l'insieme delle dipendenze X->Y appartenenti a F+ tali che XY è sottoinsieme di Z.
+            La <span class="bold">proiezione pi_Z(F) di F su un insieme di Z di attributi</span> è l'insieme delle
+            dipendenze X->Y appartenenti a F+ tali che XY è sottoinsieme di Z.
         </p>
         <p>
             Dato uno schema relazionale (R,F) ed una sua decomposizione d={R1,R2,...,Rk} si dice che essa
-            <span class="bold">conserva le dipendenze funzionali</span> se F è implicata logicamente dall'unione delle proiezioni
+            <span class="bold">conserva le dipendenze funzionali</span> se F è implicata logicamente dall'unione delle
+            proiezioni
             pi_Ri(F) di F sugli Ri.
         </p>
         <p>
@@ -36,7 +58,8 @@
         <h3>Esempio di decomposizione che preserva i dati ma non le dipendenze funzionali</h3>
         <ul>
             <li>
-                Consideriamo lo schema R(C,S,Z) che ci dice che nella città C c'è un palazzo all'indirizzo S con codice postale Z.
+                Consideriamo lo schema R(C,S,Z) che ci dice che nella città C c'è un palazzo all'indirizzo S con codice
+                postale Z.
             </li>
             <li>
                 Valgono le dipendenze F={CS->Z,Z->C}
@@ -46,15 +69,19 @@
             </li>
             <li>
                 Tuttavia non preserva le dipendenze funzionali. Infatti:
-                <ol class="bold">
+                <ol>
                     <li>
-                        pi_SZ(F) è vuoto infatti non esiste una dipendenza funzionale in F che coinvolge i soli attributi SZ (infatti coinvolge anche C)
+                        $\pi_{SZ}(F) = \emptyset$ infatti non esiste una dipendenza funzionale in F che coinvolge i
+                        soli attributi SZ (infatti coinvolge anche C)
                     </li>
                     <li>
-                        pi_CZ(F)={Z->C} infatti Z->C è una dipendenza che è in F e che coinvolge CZ della proiezione. Non possiamo prendere CS->Z perchè abbiamo un attributo in più che è S non considerato nella proiezione.
+                        $\pi_{CZ}(F)={Z \rightarrow C}$ infatti Z->C è una dipendenza che è in F e che coinvolge CZ
+                        della proiezione. Non possiamo prendere CS->Z perchè abbiamo un attributo in più che è S non
+                        considerato nella proiezione.
                     </li>
                     <li>
-                        Notiamo che abbiamo perso il vincolo CS->Z e quindi non vengono conservate le dipendenze funzionali.
+                        Notiamo che abbiamo perso il vincolo CS->Z e quindi non vengono conservate le dipendenze
+                        funzionali.
                     </li>
                 </ol>
             </li>
@@ -66,7 +93,8 @@
         </h2>
         <h3></h3>
         <p>
-            Uno schema relazionale R con dipendenze F si dice in <span class="bold">Forma normale di Boyce-Codd(BNCF)</span> se
+            Uno schema relazionale R con dipendenze F si dice in <span class="bold">Forma normale di
+                Boyce-Codd(BCNF)</span> se
             per ogni X->A di F+, se A non appartiene ad X allora X deve essere una superchiave di R.
         </p>
         <p>
@@ -77,12 +105,179 @@
                 Prendi tutte le dipendenze del tipo X->A che posso ottenere da F+.
             </li>
             <li>
-                Se l'attributo A non è contenuto in X allora per essere la tabella in forma normale deve essere superchiave di R o in altre parole
+                Se l'attributo A non è contenuto in X allora per essere F in forma normale deve essere superchiave di R
+                o in altre parole
                 deve essere un attributo che mi implica tutti gli altri attributi della tabella.
             </li>
         </ol>
         <p>
-            (Caso banale)  b Si può dimostrare che se tutte le dipendenze di F sono del tipo X->A, allora basta verificare la proprietà solo su F e non su F+.
+            <span class="italic">Caso banale</span> b Si può dimostrare che se tutte le dipendenze di F sono del tipo
+            X->A, allora basta verificare la proprietà solo su F e non su F+.
+        </p>
+        <p>
+            <span class="italic">Esempio</span>
+        </p>
+        <p>
+            Consideriamo R(C,S,Z) e l'insieme F={CS->Z, Z->C}. Verifichiamo se F è in forma
+            normale BCNF.
+        </p>
+        <p>
+            La prima cosa che notiamo è che nell'insieme F ci sono tutte dipendenze del tipo
+            X->A, quindi possiamo verificare la proprietà solo per F (caso banale).
+        </p>
+        <p>
+            La prima superchiave è <span class="bold">CS</span>:
+        </p>
+        <ul>
+            <li>
+                Sappiamo che CS->CS (sempre)
+            </li>
+            <li>
+                CS->Z (da F)
+            </li>
+            <li>
+                Per la proprietà dell'aumento possiamo scrivere CS->CSZ
+            </li>
+            <li>
+                CS implica tutti gli attributi di R e quindi è chiave
+            </li>
+        </ul>
+        <p>
+            La seconda superchiave è <span class="bold">ZS</span>:
+        </p>
+        <ul>
+            <li>
+                Z->Z (sempre)
+            </li>
+            <li>
+                Z->C (da F)
+            </li>
+            <li>
+                Per la proprietà dell'aumento possiamo scrivere ZS->CS
+            </li>
+            <li>
+                Dal caso banale ZS->ZCS e quindi ZS implica tutti gli attributi è per cui chiave
+            </li>
+        </ul>
+        <p>
+            Z->C non soddisfa la proprietà in quanto ZS è superchiave ma non Z, quindi F non è in BCNF.
+        </p>
+        <p>
+            Uno schema relazionale R con dipendenze F si dice in <span class="bold">terza forma normale</span>(3NF)
+            se per ogni X->A di F+, se A non appartiene ad X allora X è una superchiave di R oppure A è <span
+                class="italic">attributo primo</span>, cioè appartiene a
+            qualche chiave.
+        </p>
+        <p>
+            <span class="italic">Caso banale</span> Si può dimostrare che se tutte le dipendenze di F sono del tipo
+            X->A, allora basta verificare la proprietà solo su F e non su F+.
+        </p>
+        <p class="italic">
+            Esempio
+        </p>
+        <p>
+            Sempre nell'esempio di prima, che abbiamo visto
+            non essere in BCNF, possiamo dire essere in 3NF infatti
+            CS è superchiave, Z,della dipendenza Z->C, non è superchiave
+            ma C è un attributo primo di CS->Z.
+        </p>
+        <p>
+            La 3NF è quindi una forma rilassata della BCNF.
+        </p>
+        <p class="bold">
+            Perchè la BCNF? </p>
+        <p>
+            Si tratta di uno strumento utile per eliminare le ridondanze. Prendendo
+            una tabella con ridondanze e trasformandola in BCNF otteniamo come risultato quello di avere una tabella
+            senza ridondanze.
+            Dopo questo processo conserviamo i dati ma non è detto le dipendenze.
+        </p>
+        <p class="bold">
+            Perchè la 3NF? </p>
+        <p>
+            La 3NF non rimuove le ridondanze. Allora a cosa serve?
+            Prendendo una tabella con ridondanze e trasformandola in 3NF otteniamo come risultato una tabelle dove
+            abbiamo conservato
+            sia i dati che le dipendenze.
+        </p>
+        <p>
+            Quindi:
+        </p>
+        <ul>
+            <li>
+                BCNF rimuove le ridondanze conservando i dati ma non è detto preservi le dipendenze.
+            </li>
+            <li>
+                3NF conserva i dati e le dipendenze ma non è detto elimini le ridondanze.
+            </li>
+        </ul>
+        <p>
+            <span class="italic bold">Possiamo avere tutto?</span> Risponderemo a questa domanda Dopo
+            aver visto come trasformare F in una delle forme normali.
+        </p>
+        <p>
+            Abbiamo visto come vedere se F è in BCNF oppure in 3NF. Vediamo come
+            trasformare F (se non lo è) nelle rispettive forme normali.
+        </p>
+        <p>
+            <span class="bold">Lemma 1</span> Sia R uno schema con dipendenze F e
+            sia d={R1,R2,...,Rk} una decomposizione che preserva i dati rispetto a F e Sia
+            d'={S1,S2} una decomposizione di R1 che preserva i dati rispetto a 
+            $ \pi_{R_1}(F) $ . Allora la decomposizione di R,d''={S1,S2,R2,...,Rk} preserva i dati
+            rispetto ad F.
+        </p>
+        <p>
+            Quello che dice il lemma è che se ho una decomposizione che preserva i dati, applicando a cascata tante 
+            decomposizioni che preservano i dati, la decomposizione finale preserva i dati.
+        </p>
+        <p>
+            <span class="bold">Lemma 2</span> Ogni schema R con due attributi
+            è in BCNF. Inoltre, se R non è in BCNF allora esistono due attributi A,B tali che 
+            (R - AB) -> A
+        </p>
+        <p>
+            <span class="bold">Lemma 3</span> Dato uno schema R ed un insieme di dipendenze funzionali
+            F, se proiettiamo $R1 \subseteq R$ ottenendo F1, e successivamente proiettiamo
+            su $R2 \subseteq R1$ ottenendo F2, allora si ha che $F2=\pi_{R2}(F)$.
+        </p>
+        <p>
+            Definiamo <span class="bold">l'algoritmo di decomposizione in BCNF</span> .
+        </p>
+        <p>
+            Data una relazione R={A1,A2,A3} ed un insieme F={A1->A3} con X->A = A1->A3, divido in due relazioni:
+        </p>
+        <ol>
+            <li>
+                <span class="bold">XA</span> che nel nostro caso è A1,A3
+            </li>
+            <li>
+                <span class="bold">R-A</span> che nel nostro caso è A1,A2
+            </li>
+        </ol>
+        <p>
+            Ripeto il punto 2 se questo non ci da una decomposizione in BCNF. Nel nostro
+            caso specifico ci viene data una BCNF nel punto 2 in quanto rispetta il lemma 2.
+        </p>
+        <p>
+            Definiamo <span class="bold">l'algoritmo di decomposizione in 3NF</span>.
+        </p>
+        <p>
+            Data sempre la relazione R={A1,A2,A3} ed un insieme F={A1->A3} con X->A = A1->A3:
+        </p>
+        <ol>
+            <li>
+                Se ci sono attributi di R non presenti in F, li mettiamo da parte e creiamo una nuova relazione R1={A2}
+            </li>
+            <li>
+                Per ogni dipendenza X->A di F creiamo una nuova tabella. Nel nostro caso aggiungiamo R2={A1,A3}
+            </li>
+        </ol>
+        <p>
+            Otteniamo cosi una decomposizione in 3NF che preserva solo le dipendenze ma non i dati. Per preservare anche i dati, raffiniamo l'algoritmo.
+        </p>
+        <p>
+            Supponiamo che in R={A1,A2,A3} la coppia A1,A2 sia chiave, allora alla decomposizione di prima basta aggiungere una nuova decomposizione formata solo dalla chiave
+            per ottenere una decomposizione in 3NF che preserva sia i dati che le dipendenze. Nel nostro caso aggiungiamo quindi una relazione R3={A1,A2}
         </p>
     </section>
 
