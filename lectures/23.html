@@ -40,7 +40,385 @@
         <h1>Database</h1>
     </header>
     <section>
-        <h2>Title</h2>
+        <h2>Gestione delle transizioni</h2>
+        <p>
+            <span class="bold">Transazione</span> parte di programma
+            caratterizzata da un inizio (<span class="bold">begin-transaction</span> e <span class="bold">start
+                transaction</span> in SQL) ed una fine
+            (<span class="bold">end-transaction</span> e <span class="bold">non esplicita</span> in SQL) e al cui
+            interno deve essere eseguita una ed una sola volta uno dei seguenti comandi:
+        </p>
+        <ul>
+            <li>
+                <span class="bold">commit work</span> per terminare correttamente
+            </li>
+            <li>
+                <span class="bold">rollback work</span> per abortire la transazione
+            </li>
+        </ul>
+        <p>
+            Un <span class="bold">sistema transazionale (OLTP)</span> è in grado di definire insiemi di transazioni per
+            applicativo, e in modo che venga gestito tutto contemporaneamente.
+        </p>
+        <code>
+            <pre>
+start transaction;
+update ContoCorrente
+    set Saldo = Saldo + 10 where NumConto = 1234;
+commit work;
+            </pre>
+        </code>
+        <p>
+            In questo caso il database salverà le modifiche alla chiamata di commit work, altimenti per un qualunque
+            problema, verrà ripristinato uno stato precedente.
+        </p>
+        <code>
+            <pre>
+start transaction;
+update ContoCorrente
+    set Saldo = Saldo + 10 where NumConto = 1234;
+SELECT Saldo into A from ContoCorrente WHERE NumConto = 1234;
+if(A > 10) then commit work;
+else rollback work;
+            </pre>
+        </code>
+        <p>
+            In questo caso le modifiche vengono salvate se il Saldo è maggiore di 10 altrimenti
+            viene chimata rollback work. Chiamando rollback work è come se nessuna transazione è stata avviata (viene
+            ignorata la transazione).
+        </p>
+        <p>
+            La transazione, come visto, gode di istruzioni ACID:
+        </p>
+        <ul>
+            <li>
+                <p class="bold">
+                    Atomicità
+                </p>
+                <p>
+                    L'istruzione non può mantenere la base di dati in uno stato intermedio.
+                </p>
+            </li>
+            <li>
+                <p class="bold">
+                    Consistenza
+                </p>
+                <p>
+                    La transazione rispetta tutti i vincoli di integrità prima e dopo la transazione.
+                    Normalmente il controllo sui vincoli, viene fatto con la transazione, tuttavia, esiste
+                    la possibilità per alcune basi di dati, di "mettere in pausa" il controllo
+                    di vincoli di integrità. Quindi durante la transazione il controllo è disabilitato,
+                    dopo il commit, viene fatto un controllo per verificare
+                    che tutti i vincoli sono ancora rispettati.
+                </p>
+            </li>
+            <li>
+                <p class="bold">
+                    Isolamento
+                </p>
+                <p>
+                    Una transazione non risente degli effetti delle altre transazioni concorrenti (eseguite
+                    contemporanemente).
+
+                </p>
+            </li>
+            <li>
+                <p class="bold">
+                    Durabilità
+                </p>
+                <p>
+                    Gli effetti di una transazione andata in commit non vanno perduti.
+                </p>
+            </li>
+        </ul>
+        <p>
+            Ognuno delle caratteristiche sopra citate vengono
+            rispettate e gestite dal DBMS da utility separate.
+        </p>
+        <ul>
+            <li>
+                Atomicità e durabilità vengono preservate dal <span class="bold">Gestore dell'affidabilità</span>
+            </li>
+            <li>
+                Isolamento viene preservato dal <span class="bold">gestore della concorrenza</span>
+            </li>
+            <li>
+                Consistenza viene preservata dal <span class="bold">gestore di integrità a tempo di esecuzione</span>
+            </li>
+        </ul>
+        
+        <div class="bonus">
+            <h4>Memoria</h4>
+            <p>
+                Prima di parlare di gestore dell'affidibilità facciamo un piccolo ripasso sulla memoria.
+                Abbiamo:
+            </p>
+            <ul>
+                <li>
+                    <span class="italic">Memoria centrale</span> che non è persistente. Memorie di questo tipo sono le
+                    più veloci ma le meno affidabili di tutte. Di questa categoria fa parte la memoria RAM.
+                </li>
+                <li>
+                    <span class="italic">Memoria di massa</span> è persistente ma può danneggiarsi.
+                </li>
+                <li>
+                    <span class="italic">Memoria stabile</span> che non può danneggiarsi. Si tratta in generale di
+                    un'astrazione che viene attuata mediante tecniche di ridondanza dati (backup,raid dei dischi,backup
+                    remoto...)
+                </li>
+            </ul>
+            <p>
+                Il database in teoria è memorizzato nella memoria stabile.
+            </p>
+        </div>
+        <h3>
+            Gestore dell'affidabilità
+        </h3>
+        <p>
+            Assicura l'atomicità e la durabilità delle transazioni attraverso tre comandi:
+        </p>
+        <ul>
+            <li>
+                <span class="bold">start transaction (B)</span>
+            </li>
+            <li>
+                <span class="bold">commit work (C)</span>
+            </li>
+            <li>
+                <span class="bold">rollback work (A)</span>
+            </li>
+        </ul>
+        <p>
+            Il gestore dell'affidabilità usa un file di <span class="bold"> log</span>. Questo file
+            viene generato al primo avvio della base di dati.
+        </p>
+        <h4>File di log</h4>
+        <p>
+            Per ogni riga del file di log i record supportati sono:
+        </p>
+        <ul>
+            <li>
+                <p class="bold">operazioni</p>
+                <p>
+                    Le tipologie di operazioni che possiamo avere nel file di log sono:
+                </p>
+                <ul>
+                    <li>
+                        <span class="italic">begin</span> B(T), cioè la transazione T è iniziata
+                    </li>
+                    <li>
+                        <span class="italic">insert</span> I(T,O,AS), cioè l'operazione di insert sulla transazione
+                        T
+                        sull'oggetto O del database e con stato dopo l'operazione AT.
+                    </li>
+                    <li>
+                        <span class="italic">delete</span> D(T,O,BS), simile all'insert ma prendendo come
+                        riferimento BS
+                        che è lo stato prima dell'eliminazione.
+                    </li>
+                    <li>
+                        <span class="italic">update</span> U(T,BS,AS)
+                    </li>
+                    <li>
+                        <span class="italic">commit</span> C(T)
+                    </li>
+                    <li>
+                        <span class="italic">abort</span> A(T)
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <p class="bold">
+                    checkpoint
+                </p>
+                <p>
+                    Un checkpoint blocca l'esecuzione di tutte le transizioni in corso registrando
+                    le transizioni terminate e le transizioni in corso al momento del checkpoint.
+                </p>
+                <ol>
+                    <li>
+                        Si sospende l'accetazione di ogni tipo di richiesta
+                    </li>
+                    <li>
+                        Vengono salvate tutte le pagine di memoria "sporche" (che non hanno completato la
+                        memorizzazione
+                        sul disco) in memoria, ma di solo quelle transazioni che sono state finite con successo
+                        (hanno
+                        registrato lo stato di commit)
+                    </li>
+                    <li>
+                        Viene aggiornato il log in maniera sincrona
+                    </li>
+                </ol>
+                <p>
+                    Siamo sicuri che le transazioni finite sono state salvate, le transazioni non terminate con
+                    successo
+                    non sono state salvate ma almeno abbiamo una copia storica nel log.
+                </p>
+                <p>
+                    Molto utile nel caso di <span class="bold">guasti soft</span> per crash dell'applicativo o guasto
+                    hardware e
+                    per effettuare un <span class="bold">warm restart</span>.
+                </p>
+            </li>
+            <li>
+                <p class="bold">dump</p>
+                <p>
+                    Si tratta di una copia vera e propria del database per intero. Questa operazione viene effettuata
+                    quando
+                    non c'è traffico nel db. Molto utili in caso di <span class="bold"> guasti hard </span> con perdita
+                    di dati.
+                    In questi casi verrà fatto un <span class="bold">cold restart</span>.
+                </p>
+            </li>
+        </ul>
+        <p>
+            Il gestore dell'affidabilità permette di eseguire operazioni di:
+        </p>
+        <h4>Redo e Undo</h4>
+        <ul>
+            <li>
+                <span class="italic">UNDO</span> cancella le operazioni che sono state eseguite
+            </li>
+            <li>
+                <span class="italic">REDO</span> ripete le operazioni che sono state eseguite
+            </li>
+        </ul>
+        <p>
+            L'operazione di UNDO su di un oggetto dipende dal tipo di operazione:
+        </p>
+        <ul>
+            <li>
+                per un <span class="italic">update</span> o <span class="italic">delete</span> copia il valore del
+                before state (BS) nell'oggeto O
+            </li>
+            <li>
+                per un <span class="italic">insert</span> eliminare O
+            </li>
+        </ul>
+        <p>
+            L'operazione di REDO su di un oggetto dipende dal tipo di operazione:
+        </p>
+        <ul>
+            <li>
+                per un <span class="italic">update</span> o <span class="italic">insert</span> copia il valore
+                dell'after state (AS) nell'oggeto O
+            </li>
+            <li>
+                per un <span class="italic">delete</span> eliminare O
+            </li>
+        </ul>
+        <p>
+            Queste due operazioni si dicono <span class="italic">idempotenti</span> nel senso che
+            ripetere operazioni di undo o redo n volte o 1 volta ci permette di restituire lo stesso risultato.
+        </p>
+        <code>
+            undo(undo(A))=undo(A)
+        </code>
+        <code>
+            redo(redo(A))=redo(A)
+        </code>
+        <h4>Gestione dei guasti</h4>
+        <p>Viene usato il modello <span class="bold">fails-stop</span></p>
+        <ol>
+            <li>
+                Il database si trova in uno stato <span class="italic">normal</span>
+            </li>
+            <li>
+                Il database in seguito a qualche fallimento passa ad uno stato di <span class="italic">stop</span> in cui 
+                la base di dati viene bloccata
+            </li>
+            <li>
+                Il database dopo un operazione di <span class="italic">boot</span> (ripresa che può essere warm o cold) passa ad uno stato di <span class="italic">restart</span>
+            </li>
+            <li>
+                Il database durante la fase di restart può avere un guasto e quindi il database in questi casi ritorna ad uno stato di stop
+            </li>
+            <li>
+                Viene ripristinato il funzionamento consueto della base di dati
+            </li>
+        </ol>
+        <img src="../assets/78.png" alt="">
+        <h5>Fase di restart</h5>
+        <p>
+            Il processo di restart ha l'obiettivo di andare a classificare tutte le transazioni,
+            distinguendo:
+        </p>
+        <ul>
+            <li>
+                Transazioni completate (tutti i dati in memoria)
+            </li>
+            <li> 
+                In commit ma non necessariamente completate (può serivire un redo)
+            </li>
+            <li>
+                Senza commit o contengono un abort(vanno annullate con undo)
+            </li>
+        </ul>
+        <p>
+           Se la restart è di tipo warm allora:
+        </p>
+        <ol>
+            <li>
+                Cerca l'ultimo checkpoint percorrendo il log a ritroso
+            </li>
+            <li>
+                Costruisce due insiemi, quelli degli UNDO (trasazioni da disfare) e l'insieme
+                dei REDO (transazioni da rifare)
+            </li>
+            <li>
+                Ripercorre il log all'indietro fino alla prima operazione della transazione più vecchia di UNDO
+            </li>
+            <li>
+                Ripercorre il log in avanti dal checkpoint rifacendo tutte le azioni delle transazioni di REDO
+            </li>
+        </ol>
+        <p>
+            Se la restart è di tipo cold allora:
+        </p>
+        <ol>
+            <li>
+                Si ripristinano i dati a partire dal backup
+            </li>
+            <li>
+                Si eseguono tutte le operazioni dal backup fino all'istante del guasto
+            </li>
+            <li>
+                Si esegue una ripresa a caldo
+            </li>
+        </ol>
+        <div class="bonus">
+            <p class="italic">Esempio warm restart</p>
+            <img class="xsmall-img" src="../assets/79.png" alt="">
+            <ol>
+                <li>
+                    Metto nell'insieme degli UNDO tutte le operazioni registrate al momento del CHECKPOINT, quindi UNDO={t2,t3,t4}
+                </li>
+                <li>
+                    Costruismo gli insiemi di UNDO e REDO scorrendo le operazioni dal CHECKPOINT verso il basso:
+                    <ol>
+                        <li>
+                            C(t4) -> UNDO={t2,t3}, REDO={t4}: sposto t4 nei REDO perchè al momento del crash aveva già finito la propria esecuzione
+                        </li>
+                        <li>
+                            B(t5) -> UNDO={t2,t3,t5}, REDO={t4}: inserisco t5 perchè non è certo abbia registrato un commit prima del crash
+                        </li>
+                        <li>
+                            A(t3) -> non faccio nulla perchè t3 si trova già nell'insieme UNDO
+                        </li>
+                        <li>
+                            C(t5) ->  UNDO={t2,t3}, REDO={t4,t5}: sposto t5 in REDO
+                        </li>
+                    </ol>
+                </li>
+                <li>
+                    Ripercorre il log all'indietro fino alla prima operazione della transazione più vecchia di UNDO che è t2
+                </li>
+                <li>
+                    Ripercorre il log in avanti dal checkpoint rifacendo tutte le azioni delle transazioni di REDO
+                </li>
+            </ol>
+        </div>
     </section>
 
 </body>
