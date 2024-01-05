@@ -1,0 +1,247 @@
+<html>
+<head>
+    <title>Database</title>
+    <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+        </script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+          tex2jax: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            processEscapes: true,
+            processEnvironments: true,
+          },
+          TeX: {
+            equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"],
+          },
+          "HTML-CSS": { scale: 100 },
+        });
+    </script>
+</head>
+
+<body>
+    <header>
+        <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
+            RelaX</a>
+        <a class="nav-link" href="https://www.mycompiler.io/it/new/sql">Simulatore SQL</a>
+        <a class="nav-link" href="../index.html" target="_self">Home</a>
+        <h1>Database</h1>
+    </header>
+    <section>
+        <h2>Anomalie per transazioni concorrenti</h2>
+        <h3>Perdita di aggiornamento</h3>
+        <p>
+            Supponiamo di avere due transazioni identiche <span class="italic">t1</span> e <span class="italic">t2</span> che incrementano
+            un certo valore x di 1. Supponiamo che il valore di x iniziale è 2.
+        </p>
+        <p>
+            Se le due transazioni fossero eseguite serialmente otterremo x=4. Lo stesso
+            risultato deve essere garantito nel caso in cui le transazioni sono eseguite in maniera
+            concorrente.
+        </p>
+        <p>
+            Non è difficile pensare ad una situazione in cui senza controllo della concorrenza
+            l'esecuzione delle transazioni dia un risultato non consistente.
+        </p>
+        <img class="small-img" src="../assets/80.png" alt="">
+        <p>
+            La cosa che notiamo è che il begin della t2 inizia prima della scrittura della t1. In altre parole,
+            quando inizia t2 x=2 perchè non sono state salvate le modifiche della t1. Alla fine 
+            avremo come risultato finale x=3.
+        </p>
+        <p>
+            Quindi senza un controllo delle concorrenze otteniamo un risultato errato.
+        </p>
+        <p>
+            Questo problema si chiama <span class="bold">perdita di aggiornamento</span>
+        </p>
+        <h3>Lettura sporca</h3>
+        <img class="small-img" class="img" src="../assets/81.png" alt="">
+        <p>
+            In questo caso la t2 legge il valore scritto dalla t1, ma la t2 finisce con un abort.
+            Quello che succede è che la t2 legge in realtà un valore intermedio.
+        </p>
+        <p>
+            Alla fine avremo un valore di x=4 che non è corretto.
+        </p>
+        <h3>Aggiornamento fantasma</h3>
+        <p>
+            Assumiamo ci sia un vincolo di integrità y+z=1000.
+        </p>
+        <img class="small-img" src="../assets/82.png" alt="">
+        <p>
+            s=1100, il vincolo sembra non essere soddisfatto. In realtà quello che succede è che
+            la t1 legge un valore di y che è non aggiornato in base alle azioni
+            fatte dalla t2.
+        </p>
+        <h3>Inserimento fantasma</h3>
+        <img src="../assets/83.png" alt="">
+        <p>
+            In questo caso anche se l'inserimento c'è stato dalla t2, per la t1
+            è come se non fosse mai successo, perchè legge i valori prima dell'inzio della t2.
+        </p>
+        <p>
+           Possiamo sintetizzare queste anomalie in:
+        </p>
+        <ul>
+            <li>
+               <span class="italic"> Perdita di aggiornamento</span>: Causato da due write che avvengono contemporaneamente 
+            </li>
+            <li>
+                <span class="italic">Lettura sporca</span>: Causato o da una read seguita da una write, oppure da una write seguita da una read e comunque con almeno una che finisce in abort
+            </li>
+            <li>
+                <span class="italic">Aggiornamento fantasma</span>: lettura di una transazione che avviene prima della scrittura di una seconda transazione sullo stesso dato.
+            </li>
+            <li>
+                <span class="italic">Inserimento fantasma</span>: lettura di una transazione che avviene prima della scrittura di una seconda transazione su un nuovo dato.
+            </li>
+        </ul>
+        <p>
+            Il <span class="bold">gestore della concorrenza</span> si occupa proprio di evitare queste anomalie.
+        </p>
+        <p>
+            Uno <span class="bold">schedule</span> è una sequenza di operazioni i i/o di transazioni concorrenti.
+        </p>
+        <p class="italic">Esempio</p>
+        $$S_1:r_1(x)r_2(z)w_1(x)w_2(z)$$
+        <p>
+            Per ogni schedule consideriamo una <span class="bold">commit-proiezione</span> e ignoriamo le transazioni che vnno in abort, rimuovendo tutte le loro azioni dallo schedule.
+        </p>
+        <p>
+            Quindi per ogni schedule consideriamo solo transazioni andate a buon fine.
+        </p>
+        <p>
+            Il commit in uno schedule viene fatto li dove troviamo una write (w).
+        </p>
+        <p>
+            Uno <span class="bold">scheduler</span> è un sistema che accetta,rifiuta o riordina le operazioni richieste dalle transizioni. 
+            Uno scheduler deve <span class="italic">in stream</span> (realtime).
+        </p>
+        <p>
+            Uno <span class="bold">schedule seriale</span> è un insieme di transazioni in modo che 
+            queste siano separate ed eseguite una alla volta, ad esempio: 
+        </p>
+        $$S_2:r_1(x)r_1(z)w_1(x)r_2(z)w_2(z)$$
+        <p>
+            Uno <span class="bold">schedule serializzabile</span> produce lo stesso risultato di uno schedule
+            seriale sulle stesse transazioni. In altre parole si tratta di uno schedule
+            che produce esattamente lo stesso risultato, prese le stesse transazioni, di uno schedule seriale.
+            Per dire che uno schedule è equivalente ad un altro schedule, abbiamo necessità di una
+            <span class="bold">nozione di equivalenza tra schedule</span>. 
+        </p>        
+        <p>
+            L'idea è quella di trovare delle classi di schedule serializzabili e la cui serializzabilità sia verificabile a basso costo in modo 
+            da poter essere fatto realtime dalla base di dati.
+        </p>
+        <h3>View-serializzabilità</h3>
+        <p>
+            Vediamo alcune definizioni preliminari:
+        </p>
+        <ul>
+            <li>
+                $r_i(x)$ <span class="bold">legge-da</span> $w_j(x)$ in uno schedule S se $w_j(i)$ precede $r_i(x)$ in S e non c'è $w_k(x)$ tra $r_i(x)$ e $w_j(x)$.
+                <p>
+                    In altre parole diciamo che una transizione i sull'oggetto x legge-da una scrittura della transizione j sempre su x in uno schedule S se la scrittura di j precede la lettura di i in S e non c'è una transizione k tra $r_i(x)$ e $w_j(x)$.
+                </p>
+            </li>
+            <li>
+                L'ultimo oggeto di scrittura in uno schedule S è detta <span class="bold">scrittura finale</span>.
+            </li>
+            <li>
+                Due schedule sono <span class="bold">view-equivalenti</span> $S_i \approx _V S_j$ se hanno le stesse relazioni legge-da e le stesse scritture finali.
+            </li>
+            <li>
+                Uno schedule è <span class="bold">view-serializzabile</span> se è view-equivalente ad un qualche schedule seriale.
+            </li>
+            <li>
+                L'insieme degli schedule view-serializzabili <span class="bold"></span> è un sottoinsieme di tutti gli schedule serializzabili.
+            </li>
+        </ul>
+        <p class="italic">
+            Esempio
+        </p>
+        <img  src="../assets/84.png" alt="">
+        <p>
+            Notiamo prima d tutto che S4 è seriale.
+        </p>
+        <p>
+            Analizziamo S3:
+        </p>
+        <ul>
+            <li>
+                Prendo le relazioni legge-da da S3:
+                <ul>
+                    <li>
+                        $W_0(x)$ precede $r_2(x)$ quindi $r_2(x)$ legge-da $W_0(x)$
+                    </li>
+                    <li>
+                        $W_0(x)$ precede $r_1(x)$ quindi $r_1(x)$ legge-da $W_0(x)$
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Prendo le scritture finali da S3:
+                <ul>
+                    <li>
+                        $w_2(x)$
+                    </li>
+                    <li>
+                        $w_2(z)$
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+
+        <p>
+            Analizziamo S4:
+        </p>
+        <ul>
+            <li>
+                Prendo le relazioni legge-da da S3:
+                <ul>
+                    <li>
+                        $W_0(x)$ precede $r_1(x)$ quindi $r_1(x)$ legge-da $W_0(x)$
+                    </li>
+                    <li>
+                        $W_0(x)$ precede $r_2(x)$ quindi $r_2(x)$ legge-da $W_0(x)$
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Prendo le scritture finali da S3:
+                <ul>
+                    <li>
+                        $w_2(x)$
+                    </li>
+                    <li>
+                        $w_2(z)$
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <p>
+            Visto che S3 ed S4 hanno le stesse relazioni legge-da e le stesse scritture finali allora sono view-equivalenti.
+        </p>
+        <p>
+            S3 è view-serializzabile perchè view-equivalente a S4 che è seriale.
+        </p>
+
+
+
+
+    </section>
+
+</body>
+
+</html>
