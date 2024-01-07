@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <title>Database</title>
     <link rel="stylesheet" href="../style.css">
@@ -40,7 +41,8 @@
         <h2>Anomalie per transazioni concorrenti</h2>
         <h3>Perdita di aggiornamento</h3>
         <p>
-            Supponiamo di avere due transazioni identiche <span class="italic">t1</span> e <span class="italic">t2</span> che incrementano
+            Supponiamo di avere due transazioni identiche <span class="italic">t1</span> e <span
+                class="italic">t2</span> che incrementano
             un certo valore x di 1. Supponiamo che il valore di x iniziale è 2.
         </p>
         <p>
@@ -55,7 +57,7 @@
         <img class="small-img" src="../assets/80.png" alt="">
         <p>
             La cosa che notiamo è che il begin della t2 inizia prima della scrittura della t1. In altre parole,
-            quando inizia t2 x=2 perchè non sono state salvate le modifiche della t1. Alla fine 
+            quando inizia t2 x=2 perchè non sono state salvate le modifiche della t1. Alla fine
             avremo come risultato finale x=3.
         </p>
         <p>
@@ -90,20 +92,24 @@
             è come se non fosse mai successo, perchè legge i valori prima dell'inzio della t2.
         </p>
         <p>
-           Possiamo sintetizzare queste anomalie in:
+            Possiamo sintetizzare queste anomalie in:
         </p>
         <ul>
             <li>
-               <span class="italic"> Perdita di aggiornamento</span>: Causato da due write che avvengono contemporaneamente 
+                <span class="italic"> Perdita di aggiornamento</span>: Causato da due write che avvengono
+                contemporaneamente
             </li>
             <li>
-                <span class="italic">Lettura sporca</span>: Causato o da una read seguita da una write, oppure da una write seguita da una read e comunque con almeno una che finisce in abort
+                <span class="italic">Lettura sporca</span>: Causato o da una read seguita da una write, oppure da una
+                write seguita da una read e comunque con almeno una che finisce in abort
             </li>
             <li>
-                <span class="italic">Aggiornamento fantasma</span>: lettura di una transazione che avviene prima della scrittura di una seconda transazione sullo stesso dato.
+                <span class="italic">Aggiornamento fantasma</span>: lettura di una transazione che avviene prima della
+                scrittura di una seconda transazione sullo stesso dato.
             </li>
             <li>
-                <span class="italic">Inserimento fantasma</span>: lettura di una transazione che avviene prima della scrittura di una seconda transazione su un nuovo dato.
+                <span class="italic">Inserimento fantasma</span>: lettura di una transazione che avviene prima della
+                scrittura di una seconda transazione su un nuovo dato.
             </li>
         </ul>
         <p>
@@ -115,7 +121,8 @@
         <p class="italic">Esempio</p>
         $$S_1:r_1(x)r_2(z)w_1(x)w_2(z)$$
         <p>
-            Per ogni schedule consideriamo una <span class="bold">commit-proiezione</span> e ignoriamo le transazioni che vnno in abort, rimuovendo tutte le loro azioni dallo schedule.
+            Per ogni schedule consideriamo una <span class="bold">commit-proiezione</span> e ignoriamo le transazioni
+            che vnno in abort, rimuovendo tutte le loro azioni dallo schedule.
         </p>
         <p>
             Quindi per ogni schedule consideriamo solo transazioni andate a buon fine.
@@ -124,12 +131,13 @@
             Il commit in uno schedule viene fatto li dove troviamo una write (w).
         </p>
         <p>
-            Uno <span class="bold">scheduler</span> è un sistema che accetta,rifiuta o riordina le operazioni richieste dalle transizioni. 
+            Uno <span class="bold">scheduler</span> è un sistema che accetta,rifiuta o riordina le operazioni richieste
+            dalle transizioni.
             Uno scheduler deve <span class="italic">in stream</span> (realtime).
         </p>
         <p>
-            Uno <span class="bold">schedule seriale</span> è un insieme di transazioni in modo che 
-            queste siano separate ed eseguite una alla volta, ad esempio: 
+            Uno <span class="bold">schedule seriale</span> è un insieme di transazioni in modo che
+            queste siano separate ed eseguite una alla volta, ad esempio:
         </p>
         $$S_2:r_1(x)r_1(z)w_1(x)r_2(z)w_2(z)$$
         <p>
@@ -137,10 +145,11 @@
             seriale sulle stesse transazioni. In altre parole si tratta di uno schedule
             che produce esattamente lo stesso risultato, prese le stesse transazioni, di uno schedule seriale.
             Per dire che uno schedule è equivalente ad un altro schedule, abbiamo necessità di una
-            <span class="bold">nozione di equivalenza tra schedule</span>. 
-        </p>        
+            <span class="bold">nozione di equivalenza tra schedule</span>.
+        </p>
         <p>
-            L'idea è quella di trovare delle classi di schedule serializzabili e la cui serializzabilità sia verificabile a basso costo in modo 
+            L'idea è quella di trovare delle classi di schedule serializzabili e la cui serializzabilità sia
+            verificabile a basso costo in modo
             da poter essere fatto realtime dalla base di dati.
         </p>
         <h3>View-serializzabilità</h3>
@@ -149,28 +158,37 @@
         </p>
         <ul>
             <li>
-                $r_i(x)$ <span class="bold">legge-da</span> $w_j(x)$ in uno schedule S se $w_j(i)$ precede $r_i(x)$ in S e non c'è $w_k(x)$ tra $r_i(x)$ e $w_j(x)$.
+                $r_i(x)$ <span class="bold">legge-da</span> $w_j(x)$ in uno schedule S se $w_j(i)$ precede $r_i(x)$ in S
+                e non c'è $w_k(x)$ tra $r_i(x)$ e $w_j(x)$.
                 <p>
-                    In altre parole diciamo che una transizione i sull'oggetto x legge-da una scrittura della transizione j sempre su x in uno schedule S se la scrittura di j precede la lettura di i in S e non c'è una transizione k tra $r_i(x)$ e $w_j(x)$.
+                    In altre parole diciamo che una transizione i sull'oggetto x legge-da una scrittura della
+                    transizione j sempre su x in uno schedule S se la scrittura di j precede la lettura di i in S e non
+                    c'è una transizione k tra $r_i(x)$ e $w_j(x)$.
                 </p>
             </li>
             <li>
                 L'ultimo oggeto di scrittura in uno schedule S è detta <span class="bold">scrittura finale</span>.
             </li>
             <li>
-                Due schedule sono <span class="bold">view-equivalenti</span> $S_i \approx _V S_j$ se hanno le stesse relazioni legge-da e le stesse scritture finali.
+                Due schedule sono <span class="bold">view-equivalenti</span> $S_i \approx _V S_j$ se hanno le stesse
+                relazioni legge-da e le stesse scritture finali.
             </li>
             <li>
-                Uno schedule è <span class="bold">view-serializzabile</span> se è view-equivalente ad un qualche schedule seriale.
+                Uno schedule è <span class="bold">view-serializzabile</span> se è view-equivalente ad un qualche
+                schedule seriale.
             </li>
             <li>
-                L'insieme degli schedule view-serializzabili <span class="bold"></span> è un sottoinsieme di tutti gli schedule serializzabili.
+                L'insieme degli schedule view-serializzabili <span class="bold"></span> è un sottoinsieme di tutti gli
+                schedule serializzabili.
+            </li>
+            <li>
+                L'insieme degli schedule view-serializzabili è indicato con <span class="bold">VSR</span>.
             </li>
         </ul>
         <p class="italic">
             Esempio
         </p>
-        <img  src="../assets/84.png" alt="">
+        <img src="../assets/84.png" alt="">
         <p>
             Notiamo prima d tutto che S4 è seriale.
         </p>
@@ -201,8 +219,6 @@
                 </ul>
             </li>
         </ul>
-
-
         <p>
             Analizziamo S4:
         </p>
@@ -231,14 +247,62 @@
             </li>
         </ul>
         <p>
-            Visto che S3 ed S4 hanno le stesse relazioni legge-da e le stesse scritture finali allora sono view-equivalenti.
+            Visto che S3 ed S4 hanno le stesse relazioni legge-da e le stesse scritture finali allora sono
+            view-equivalenti.
         </p>
         <p>
             S3 è view-serializzabile perchè view-equivalente a S4 che è seriale.
         </p>
-
-
-
+        <p class="italic bold">
+            Determinare la verifica della view-equivalenza dati due schedule è un'operazione polinomiale. Determinare
+            invece la View-serializzabilità di uno schedule è un problema np-completo non attuabile in realtà.
+        </p>
+        <p>
+            In altre parole se ci viene dato uno schedule è inconveniente capire se è view-serializzabile. è possibile
+            trovare alcune pratiche
+            per mitigare il problema (conflict-serializzabilità).
+        </p>
+        <h3>Conflict-serializzabilità</h3>
+        <p>
+            Vediamo alcune definizioni preliminari:
+        </p>
+        <ul>
+            <li>
+                Un'azione $a_i$ è in <span class="bold">conflitto</span> con $a_j$ se operano sullo stesso oggetto e
+                almeno una di esse è scrittura. Due casi possibili:
+            </li>
+            <li>
+                <ul>
+                    <li>
+                        <span class="bold">conflitto read-write</span> cioè due transazioni diverse che operano
+                        contemporaneamente sullo stesso oggetto (rw o wr)
+                    </li>
+                    <li>
+                        <span class="bold">confillo write-write</span> cioè due transazioni diverse che scrivono
+                        contemporaneamente il valore di uno stesso oggetto (ww)
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Due schedule si dicono <span class="bold">conflict-equivalenti</span> $S_i \approx _C S_j$ se includono
+                le stesse operazioni ed ogni coppia di operazioni in conflitto compare nello stesso ordine in entrambi.
+            </li>
+            <li>
+                Uno schedule è <span class="bold">conflict-serializzabile</span> se è conflict equivalente ad un qualche
+                schedule seriale.
+            </li>
+            <li>
+                L'insieme degli schedule conflict-serializzabili è indicato con <span class="bold">CSR</span>.
+            </li>
+        </ul>
+        <h3>CSR e VSR</h3>
+        <p>
+            Ogni schedule conflict-serializzabile è view-serializzabile, <span class="bold">non vale necessariamente il viceversa</span>.
+        </p>
+        <p>
+            Come conseguenza abbiamo che:
+        </p>
+        <img class="small-img" src="../assets/85.png" alt="">
 
     </section>
 
