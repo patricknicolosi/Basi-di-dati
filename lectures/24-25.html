@@ -38,6 +38,10 @@
         <h1>Database</h1>
     </header>
     <section>
+        <h2>Esercizio dipendenze funzionali</h2>
+        <a href="../assets/Esercizio dipendenze funzionali.docx" target="_blank">Link</a>
+    </section>
+    <section>
         <h2>Anomalie per transazioni concorrenti</h2>
         <h3>Perdita di aggiornamento</h3>
         <p>
@@ -118,7 +122,7 @@
         <p>
             Uno <span class="bold">schedule</span> è una sequenza di operazioni i i/o di transazioni concorrenti.
         </p>
-        <p class="italic">Esempio</p>
+        <h5 class="italic">Esempio</h5>
         $$S_1:r_1(x)r_2(z)w_1(x)w_2(z)$$
         <p>
             Per ogni schedule consideriamo una <span class="bold">commit-proiezione</span> e ignoriamo le transazioni
@@ -132,7 +136,7 @@
         </p>
         <p>
             Uno <span class="bold">scheduler</span> è un sistema che accetta,rifiuta o riordina le operazioni richieste
-            dalle transizioni.
+            dalle transazioni.
             Uno scheduler deve <span class="italic">in stream</span> (realtime).
         </p>
         <p>
@@ -152,7 +156,9 @@
             verificabile a basso costo in modo
             da poter essere fatto realtime dalla base di dati.
         </p>
-        <h3>View-serializzabilità</h3>
+    </section>
+    <section>
+        <h2>View-serializzabilità</h2>
         <p>
             Vediamo alcune definizioni preliminari:
         </p>
@@ -185,9 +191,9 @@
                 L'insieme degli schedule view-serializzabili è indicato con <span class="bold">VSR</span>.
             </li>
         </ul>
-        <p class="italic">
+        <h5 class="italic">
             Esempio
-        </p>
+        </h5>
         <img src="../assets/84.png" alt="">
         <p>
             Notiamo prima d tutto che S4 è seriale.
@@ -262,7 +268,9 @@
             trovare alcune pratiche
             per mitigare il problema (conflict-serializzabilità).
         </p>
-        <h3>Conflict-serializzabilità</h3>
+    </section>
+    <section>
+        <h2>Conflict-serializzabilità</h2>
         <p>
             Vediamo alcune definizioni preliminari:
         </p>
@@ -295,15 +303,260 @@
                 L'insieme degli schedule conflict-serializzabili è indicato con <span class="bold">CSR</span>.
             </li>
         </ul>
-        <h3>CSR e VSR</h3>
+    </section>
+    <section>
+        <h2>CSR e VSR</h2>
         <p>
-            Ogni schedule conflict-serializzabile è view-serializzabile, <span class="bold">non vale necessariamente il viceversa</span>.
+            <span class="italic">Ogni schedule conflict-serializzabile è view-serializzabile</span> <span
+                class="bold">non vale necessariamente il viceversa</span>.
         </p>
         <p>
             Come conseguenza abbiamo che:
         </p>
         <img class="small-img" src="../assets/85.png" alt="">
-
+        <p>
+            è possibile <span class="bold">verificare la conflict-serializzabilità</span> per mezzo del <span
+                class="bold">grafo dei conflitti</span>, formato da:
+        </p>
+        <ul>
+            <li>
+                un nodo per ogni transazione $t_i$
+            </li>
+            <li>
+                Un arco orientato da $t_i$ a $t_j$ se c'è almento un conflitto tra un'azione $a_i$ ed un'azione $a_j$
+                tale che $a_i$ precede $a_j$
+            </li>
+        </ul>
+        <p>
+            Uno schedule è in CSR <span class="bold">se e solo se il grado dei conflitti è aciclico</span>
+        </p>
+        <p>
+            Con il grafo dei conflitti è per cui possibile verificare la conflict-serializzabilità in teoria ma non in
+            pratica infatti
+            serve un meccanismo che possa controllare questo aspetto in maniera incrementale. Per conoscere il grafo dei
+            conflitti dobbiamo invece conoscere a priori
+            tutte le transazioni a priori. Inoltre, abbiamo considerato l'ipotesi della commit-proiezione che risulta
+            non realistica per il
+            funzionamento di una base di dati, dove le transazioni potrebbero anche subire un abort.
+        </p>
+    </section>
+    <section>
+        <h2>Lock</h2>
+        <p>
+            Per la gestione della concorrenza nelle transazioni, le basi di dati utilizzano i <span
+                class="bold">lock</span> gestiti dal
+            <span class="bold">lock manager</span>. La tabella riassume il comportamento e tipi di lock possibili.
+        </p>
+        <img src="../assets/86.png" alt="">
+        <p>
+            Lanciando una richiesta di unlock, se lo stato della risorsa è r_locked, il risultato dipenderà dal valore
+            di un contatore (<span class="bold">depends</span>). Il contatore tiene conto del numero di "lettori"; la
+            risorsa è rilasciata quando il contatore scende a zero. In pratica una risorsa che subisce richiesta di
+            unlock viene liberata quando il numero di "lettori" è zero.
+        </p>
+        <p>
+            Se la risorsa non è concessa, la transazione richiedente è posta in attesa in una coda fino a quando non
+            diventa disponibile la risorsa.
+        </p>
+        <p>
+            Il lock manager gestisce una <span class="bold">tabella dei lock</span> per tenere in memoria la situazione
+            attuale.
+        </p>
+        <p>
+            La maggior parte dei database usa <span class="bold">locking a due fasi</span> (2PL), un sistema di locking
+            che garantisce conflict-serializzabilità per le transazioni.
+            Questo sistema è basato su due regole:
+        </p>
+        <ul>
+            <li>
+                Ogni transazione può leggere o scrivere solo se "protetta" da un lock. Non esistono scritture o letture
+                senza l'autorizzazione del lock manager.
+            </li>
+            <li>
+                Una transazione dopo aver rilasciato un lock non può acquisirne altri.
+            </li>
+        </ul>
+        <p>
+            Inoltre, <span class="italic">ogni schedule 2PL è anche conflict-serializzabile</span>, <span
+                class="bold">ma non vale il viceversa</span>.
+        </p>
+        <p class="italic">
+            Controesempio per la non necessità
+        </p>
+        $$r_1(x)w_1(x)r_2(x)w_2(x)r_3(y)w_1(y)$$
+        <p>
+            L'esempio è una transazione conflict-serializzabile ma non valida per il 2PL, infatti notiamo che una volta
+            rilasciato il lock per la prima transazione (in $w_1(x)$) questa richiede ancora
+            un nuovo lock (in $w_1(y)$) e per il 2PL <small><span class="italic"> Una transazione dopo aver rilasciato
+                    un lock non può acquisirne altri</span></small>.
+        </p>
+        <img class="small-img" src="../assets/87.png" alt="">
+        <p>
+            Il <span class="bold">locking a due fasi stretto</span> è una condizione aggiuntiva che molte basi di dati
+            aggiungono secondo il quale <span class="bold">i lock possono essere rilasciati solo dopo il commit o
+                abort</span>. Questa condizione supera
+            la necessità dell'ipotesi di commit-proiezione.
+        </p>
+        <p>
+            Un problema relativo al 2PL è il <span class="bold">deadlock</span>, cioè due transazioni detengono ciascuna
+            una risorsa e aspettano la risorsa detenuta dall'altra.
+        </p>
+        <p class="italic">
+            Esempio
+        </p>
+        <p>
+            Dato lo schedule:
+        </p>
+        <p class="italic">
+            r_lock1(x), r_lock2(y), read1(x), read2(y), w_lock1(y), w_lock2(x)
+        </p>
+        <p>
+            In ordine:
+        </p>
+        <ol>
+            <li>
+                Viene concessa il r_lock per la transazione 1 sull'oggetto x
+            </li>
+            <li>
+                Viene concessa il r_lock per la transazione 2 sull'oggetto y
+            </li>
+            <li>
+                La transazione 1 legge l'oggetto x
+            </li>
+            <li>
+                La transazione 2 legge l'oggetto y
+            </li>
+            <li>
+                La risorsa y è in r_lock da parte della transazione 2, quindi w_lock1(y) verrà messo in attesa
+            </li>
+            <li>
+                La risorsa x è in r_lock da parte della transazione 1, quindi w_lock2(x) verrà messo in attesa
+            </li>
+        </ol>
+        <p>
+            Quindi la transazione 1 è in attesa della transazione 2, ma la transazione 2 è bloccata perchè in attesa
+            dalla transazione 1.
+        </p>
+        <p>
+            Si tratta di una situazione di stallo che necessità di un intervento esterno. Ci sono tre possibili
+            tecniche:
+        </p>
+        <ol>
+            <li>
+                <span class="bold">Timeout</span>, ogni richiesta di lock ha un tempo di validità. Il problema di questa
+                tecnica è quella di prevedere un tempo consono per ogni transazione.
+            </li>
+            <li>
+                <span class="bold">Rilevamento dello stallo </span> tramite la costruzione di un <span
+                    class="bold">grafo delle attese</span>. Se il grafo delle attese presenta un ciclo allora siamo in
+                presenza di uno stallo. Il problema di questa tecnica è quella che bisogna calcolare di volta in volta
+                il grafo delle attese.
+            </li>
+            <li>
+                <span class="bold">Prevenzione dello stallo</span> tramite l'uccisione di transazioni "sospette". Il
+                problema di questa soluzione è potrebbe essere "troppo rigida" in molti casi.
+            </li>
+        </ol>
+        <div class="bonus">
+            <h3>Transazioni in SQL</h3>
+            <p>
+                In SQL possiamo definire:
+            </p>
+            <ul>
+                <li>
+                    Transazioni <span class="bold">read-only</span> che non possono richiedere lock di scrittura
+                </li>
+                <li>
+                    Transazioni con un livello di isolamento specifico:
+                    <ul>
+                        <li>
+                            <span class="bold">read uncommitted</span> che consente letture sporche, letture inconsistenti. Sono molto performanti
+                        </li>
+                        <li>
+                            <span class="bold">read committed</span> evita letture sporche ma permette letture inconsistenti, aggiornamenti fantasma e inserimenti fantasma. Sono molto performanti
+                        </li>
+                        <li>
+                            <span class="bold">repeatable read</span> evita tutte le anomalie esclusi gli inserimenti fantasma
+                        </li>
+                        <li>
+                            <span class="bold">serializable</span> evita tutte le anomalie. Sono le più sicure ma le meno performanti.
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <p>
+                La perdita di aggiornamento per tutte le tipologie è sempre evitata.
+            </p>
+            <p>
+                La modalità repeatable read è quella standard in SQL.
+            </p>
+            <h4>2PL in SQL</h4>
+            <p class="bold">
+                Si ha sempre la condizione di 2PL stretto per i lock in scrittura.
+            </p>
+            <p>
+                Per le altre tipologie:
+            </p>
+            <ul>
+                <li>
+                    <span class="italic">read uncommited</span> non rispetta (sia della stessa transazione che delle altre) nessun lock in lettura, vengono rispettati solo quelli in scrittura della 2PL stretta
+                </li>
+                <li>
+                    <span class="italic">read commited</span> rispetta i lock in lettura (sia della stessa transazione che delle altre) ma senza rispettare 2PL in lettura (sempre in lettura perchè per la scrittura c'è la 2PL stretta)
+                </li>
+                <li>
+                    <span class="italic">repeatable read</span> 2PL stretta anche in lettura con <span class="bold">lock sui dati</span>. Il lock sui dati implementa il lock solo sui dati che sono coinvolti nelle operazioni in questione.
+                </li>
+                <li>
+                    <span class="italic">serializable</span> 2PL stretta anche in lettura con <span class="bold">lock di predicato</span> che:
+                    <ul>
+                        <li>
+                            Nel caso peggiore implementa il lock sull'intera relazione coinvolta
+                        </li>
+                        <li>
+                            Nel caso migliore viene ottimizzato il lock tramite l'indice
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="bonus">
+            <h3>Transazioni in MySql</h3>
+            <p></p>
+            <p>
+                Per alcuni engine tipo MyISAM non esiste alcun supporto per transazioni e lock. 
+            </p>
+            <p>
+                Inoltre in MySql è possibile stabilire dei <span class="bold">savepoint</span>, per dare la possibilità di effettuare rollback al savepoint senza far iniziare nuovamente la transazione.
+            </p>
+            <p>
+                La clausola <span class="bold">FOR UPDATE</span> stabilisce un <span class="bold">lock esclusivo</span> (<span class="italic">w_lock</span>) su tutte le righe lette che impedirà ad altri utenti 
+                di leggere le stesse righe fino al termine della nostra transazione.
+            </p>
+            <code>
+                SELECT...FOR UPDATE;
+            </code>
+            <p>
+                Esiste anche la clausola <span class="bold">LOCK IN SHARE MODE</span> che stabilisce invece un <span class="bold">lock condiviso</span> (<span class="italic">r_lock</span>) e che impedisce solo gli aggiornamenti,
+                garantendoci che il contenuto della riga rimarrà invariato per la durata della transazione.
+            </p>
+            <code>
+                SELECT...LOCK IN SHARE MODE;
+            </code> 
+            <p>
+                è possibile specificare un <span class="italic">livello di isolamento</span> a livello di transazione.
+            </p>
+            <code class="terminal">
+                c:\> mysqlId --transaction-isolation=<span class="italic">livello</span>
+            </code>
+            <p>
+                Altrimenti inline con la definizione della transazione e quindi:
+            </p>
+            <code>
+                SELECT SET [GLOBAL|SESSION] TRANSACTION ISOLATION LEVEL {READ UNCOMITTED | READ COMMITED | REPEATABLE READ | SERIALIZABLE}
+            </code>
+        </div>
+        
     </section>
 
 </body>
