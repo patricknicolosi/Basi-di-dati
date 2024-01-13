@@ -1,0 +1,359 @@
+<html>
+
+<head>
+    <title>Database</title>
+    <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+        </script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+          tex2jax: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            processEscapes: true,
+            processEnvironments: true,
+          },
+          TeX: {
+            equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"],
+          },
+          "HTML-CSS": { scale: 100 },
+        });
+    </script>
+
+
+</head>
+
+<body>
+    <header>
+        <a class="nav-link" href="https://dbis-uibk.github.io/relax/calc/local/uibk/local/0" target="_blank">Simulatore
+            RelaX</a>
+        <a class="nav-link" href="https://www.mycompiler.io/it/new/sql">Simulatore SQL</a>
+        <a class="nav-link" href="../index.html" target="_self">Home</a>
+        <h1>Database</h1>
+    </header>
+    <section>
+        <h2>XML</h2>
+        <p>
+            XML è un linguaggio di markup che ci permette di definire la struttura di un documento. Si tratta di un
+            linguaggio cui struttura e
+            informazioni vengono trasmesse tramite una serie di "tag" che prendono il nome di <span
+                class="bold">marcatori</span>.
+        </p>
+        <p>
+            XML non presenta un set di marcatori (come i tag per HTML), ma <span class="italic">ci fornisce solo le
+                regole sintattiche per definire nuovi i marcatori</span>
+            secondo le specifiche esigenze.
+        </p>
+        <p>
+            Per quanto riguarda la sintassi:
+        </p>
+        <ul>
+            <li>
+                Ogni tag può avere all'interno altri tag: possibilità di nidificazione
+            </li>
+            <li>
+                I tag devono essere appaiati: ogni tag di apertura ha il suo tag di chiusura
+            </li>
+            <li>
+                Esiste un tag root che contiene tutti gli altri
+            </li>
+            <li>
+                I nomi dei tag sono case-sensitive
+            </li>
+            <li>
+                Ogni tag può avere attributi che verrano specificati nel tag di apertura. Altre regole per gli attributi
+                sono:
+                <ul>
+                    <li>
+                        L'ordine negli attributi non conta
+                    </li>
+                    <li>
+                        I tag sono case-sensitive
+                    </li>
+                    <li>
+                        Lo stesso tag non può contenere due attributi con lo stesso nome
+                    </li>
+                    <li>
+                        Non sono ammessi attributi senza valore
+                    </li>
+                    <li>
+                        Il valore di un attributo non può essere del contenuto XML
+                    </li>
+                    <li>
+                        Il valore può contenere riferimenti ad entità
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <h5>Esempio</h5>
+        <code>
+            <textarea name="" id="" cols="50" rows="4">
+                <?xml version="1.0"?>
+                <tag1>
+                    <tag2 att="valoreAtt">contenuto</tag2>
+                </tag1>
+            </textarea>
+        </code>
+        <p>
+            Una <span class="bold">grammatica DTD</span> è costituita da un insieme di regole che stabiliscono la
+            composizione e la struttura di un documento XML.
+        </p>
+        <p>
+            Una grammatica DTD mi definisce un insieme di regole che mi dicono se un documento XML è correttamente
+            formattato.
+        </p>
+        <img src="../assets/88.png" alt="">
+        <p>
+            Una grammatica DTD può essere integrata:
+        </p>
+        <ul>
+            <li>
+                Diirettamente nel documento XML
+                <code>
+                    <textarea name="" id="" cols="50" rows="5">
+                        <?xml version="1.0"?>
+                        <!DOCTYPE Grammatica [
+                        <!ELEMENT Elemento(att1,att2)>
+                        ...
+                        ]>
+                    </textarea>
+                </code>
+            </li>
+            <li>
+                Richiamata dal documento come risorsa esterna
+                <code>
+                    <textarea name="" id="" cols="50" rows="3">
+                        <?xml version="1.0"?>
+                        <!DOCTYPE Grammatica SYSTEM "grammatica.DTD">
+                        ...
+                    </textarea>
+                </code>
+            </li>
+        </ul>
+        <p>
+            La sintassi:
+        </p>
+        <ul>
+            <li>
+                Per le informazioni testuali
+                <img class="small-img" src="../assets/89.png" alt="">
+            </li>
+            <li>
+                Per elementi annidati
+                <img src="../assets/90.png" alt="">
+            </li>
+        </ul>
+        <p>
+            In Dtd possiamo anche dare una definizione di <span class="bold">molteplicità</span> agli elementi:
+        </p>
+        <img src="../assets/91.png" alt="">
+        <p>
+            Per quanto riguarda la <span class="bold">definizione di attributi</span> per un tag specifico, possiamo
+            specificare in Dtd:
+        </p>
+        <img src="../assets/92.png" alt="">
+        <small>
+            Nell'immagine vediamo come definire un attributo per un tag e come specificare se questo deve essere
+            obbligatorio o meno.
+        </small>
+        <p>
+            Un altro possibile valore oltre IMPLIED e REQUIRED è <code
+                class="code-inline">FIXED <span class="italic">fixed value</span></code> che ci specifica: "L'attributo
+            può anche essere omesso
+            ma se è presente assume il fixed value specificificato".
+        </p>
+        <p>
+            Qualunque altro specificatore diverso da REQUIRED,IMPLIED,FIXED verrà preso come il valore di default del
+            tag.
+        </p>
+        <code>
+            &lt;!ATTLIST Informazioni provincia Catania &gt;
+        </code>
+
+        <p>
+            Altre due parole chiave sono <span class="bold">PCDATA</span> e <span class="bold">CDATA</span>, nello
+            specifico la prima forza il parser
+            XML ad interpretare le entità, mentre la seconda disabilita la risoluzione delle entità.
+        </p>
+        <p>
+            In XML è sempre possibile definire nuove entità oltre le standard, dall'esempio precedente:
+        </p>
+        <img src="../assets/93.png" alt="">
+        <p>
+            Possiamo anche definire nuove entità a partire da risorse esterne:
+        </p>
+        <code>
+            &lt;!ENTITY abs SYSTEM "abstract.txt" &gt;
+        </code>
+        <p>
+            Abbiamo così definito una nuova entità abs che possiamo usare all'interno del nostro XML <code
+                class="code-inline">&lt;abstract &gt;&abs&lt;/abstract &gt;</code> cui valore sarà preso
+            direttamente dal file abstract.txt.
+        </p>
+        <p>
+            Proprio come per le entità di default, usando l'entità con CDATA bloccherò il parser XML che invece di
+            renderizzare il contenuto
+            dell'entità, farà visualizzare il testo "&abs".
+        </p>
+        <p>
+            XML fornisce un utile meccanismo per la gestione dei <span class="bold">namespace</span>. I namespace
+            delimitano degli "spazi per i nomi" e sono utili per eliminare
+            ambiguità nel caso in cui alcuni nomi o attributi usati all'interno di un documento XML sono ripetuti. Ad
+            esempio il titolo di un libro, potrebbe andare in conflitto con
+            il titolo di un dipinto in un file XML.
+        </p>
+        <p>
+            La sintassi:
+        </p>
+        <code>
+            nome-namespace:nome-elemento
+        </code>
+        <p>
+            Un namespace deve essere dichiarato attraverso l'attributo <span class="bold">xlmns</span>. Possiamo
+            definire ad esempio il namespace libro:
+        </p>
+        <code>
+<pre>
+&lt;biblioteca <span class="bold">xlmns:libro="https://www.esempio.org/1999/libro"</span>&gt;
+    &lt;/libro:titolo&gt; &lt;/libro:titolo&gt;
+&lt;/biblioteca&gt;
+</pre>
+        </code>
+        <p>
+            L'attributo xlmns definisce il namespace libro identificandolo univocamente con un <span
+                class="bold">URI</span>.
+        </p>
+        <p>
+            Un Uri viene utilizzato per definire in maniera univoca un namespace, ha la forma di un indirizzo web ma non ha nessuna relazione con esso.
+        </p>
+        <h5>Esempio</h5>
+        <p>
+            Si vogliono rappresentare le informazioni indirizzo e sito web entrambi con il tag indirizzo.
+        </p>
+        <img class="small-img" src="../assets/94.png" alt="">
+        <p>
+            In questo modo ci sarebbe ambiguità; per eliminare questo problema definiamo due namespace ct e rg.
+        </p>
+        <img class="small-img" src="../assets/95.png" alt="">
+        <p>
+            A questo punto il file xml senza ambiguità sarà:
+        </p>
+        <img class="small-img" src="../assets/96.png" alt="">
+        <p>
+            <span class="bold">XPATH</span> è un linguaggio che nasce dall'esigenza di navigare all'interno di file XML (ma anche HTML) per trovare 
+            eventuali informazioni.
+        </p>
+        <p>
+            L'idea di XPATH è quella di poter navigare un file XML come avviene la navigazione nel file system.
+        </p>
+        <ul>
+            <li>
+                <span class="bold">.</span> 
+            </li>
+            <li>
+                <span class="bold">..</span> 
+            </li>  
+                <span class="bold">/</span>
+            </li> 
+                <span class="bold">//</span> tutti gli elementi 
+            <li>
+                <span class="bold">@</span> attributo del nodo corrente
+            </li>
+            <li>
+                <span class="bold">*</span> qualsiasi nodo
+            </li>
+            <li>
+                <span class="bold">[p]</span> predicato, prende tutti quei nodi in cui il predicato p è valuta come true
+            </li>
+            <li>
+                <span class="bold">[n]</span> posizione, prende l'n-esimo elemento
+            </li>
+        </ul>
+        <h5>Esempio</h5>
+        <img src="../assets/97.png" alt="">
+        <h5>Esempio</h5>
+        <img class="small-img" src="../assets/98.png" alt="">
+        <h5>Esempio</h5>
+        <img class="small-img" src="../assets/99.png" alt="">
+        <h5>Esempio</h5>
+        <img class="small-img" src="../assets/100.png" alt="">
+        <h5>Esempio</h5>
+        <p>Il tag Libro ha un attributo dispobilità che può essere o "S" o "N", si vuole la lista di tutti quei 
+            libri disponibili con Xpath.
+        </p>
+        <code>
+            doc("libri.xml")/Elenco/Libro/[@disponibilità="S"]/Titolo
+        </code>
+        <p>
+            A partire da XPath è stato sviluppato un linguaggio di interrogazione in stile SQL per interrogare 
+            le sequenze di nodi e per andare anche ad elaborare queste sequenze. In linguaggio in questione si chiama
+            <span class="bold">XQuery</span> e si basa su 5 clausole:
+        </p>
+        <ul>
+            <li>
+                <span class="bold">FOR</span> per iterare su sequenze di nodi
+            </li>
+            <li>
+                <span class="bold">LET</span> per definire variabili
+            </li>
+            <li>
+                <span class="bold">WHERE</span> per esprimere condizioni
+            </li>
+            <li>
+                <span class="bold">ORDER BY</span> per ordinare
+            </li>
+            <li>
+                <span class="bold">RETURN</span> per costruire un risultato
+            </li>
+        </ul>
+        <p>
+            XQuery è un linguaggio che prende in input un file XML e <span class="bold">restituisce in output un file XML</span>.
+        </p>
+        <h5>Esempio</h5>
+        <code>
+<pre>
+let $libri := doc("libri.xml")//Libro
+return $libri;
+</pre>
+        </code>
+        <p>
+            In questo codice viene restituito un nuovo XML con tutti i Libri del file libri.xml. La query dell'esempio precedente è anche esprimibile come:
+        </p>
+        <h5>Esempio</h5>
+        <code>
+<pre>
+    for $libro in doc("libri.xml")//Libro
+    let $libri := $libro
+    return $libri
+</pre>
+        </code>
+        <p>
+            Il codice:
+        </p>
+        <ol>
+            <li>
+                Prende tutte i libri
+            </li>
+            <li>
+                Per ogni libro prende l'autore
+            </li>
+            <li>
+                Restituisco questa sequenza
+            </li>
+        </ol>
+        <p>
+            è possibile modificare la struttura
+        </p>
+    </section>
+
+</body>
+
+</html>
