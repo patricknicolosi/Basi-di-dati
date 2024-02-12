@@ -261,9 +261,12 @@
             <li>
                 <span class="bold">..</span> 
             </li>  
+            <li>
                 <span class="bold">/</span>
             </li> 
-                <span class="bold">//</span> tutti gli elementi 
+            <li>
+                <span class="bold">//</span> per indicare un elemento
+            </li>
             <li>
                 <span class="bold">@</span> attributo del nodo corrente
             </li>
@@ -275,15 +278,20 @@
             </li>
             <li>
                 <span class="bold">[n]</span> posizione, prende l'n-esimo elemento
-            </li>
+            </li> 
         </ul>
         <h5>Esempio</h5>
         <img src="../assets/97.png" alt="">
         <h5>Esempio</h5>
+        <p>Condizioni su elementi/attributi</p>
         <img class="small-img" src="../assets/98.png" alt="">
         <h5>Esempio</h5>
+        <p>Ricerca di sotto-elementi a qualsiasi livello</p>
         <img class="small-img" src="../assets/99.png" alt="">
         <h5>Esempio</h5>
+        <p>
+            Condizione sulla posizione dei sottoinsiemi
+        </p>
         <img class="small-img" src="../assets/100.png" alt="">
         <h5>Esempio</h5>
         <p>Il tag Libro ha un attributo dispobilità che può essere o "S" o "N", si vuole la lista di tutti quei 
@@ -305,7 +313,9 @@
                 <span class="bold">LET</span> per definire variabili
             </li>
             <li>
-                <span class="bold">WHERE</span> per esprimere condizioni
+                <span class="bold">WHERE</span> per esprimere condizioni. Nella condizione di questa clausola possono essere contenuti diversi predicati che sono 
+                connessi da <span class="italic">AND</span> e <span class="italic">OR</span>. Il <span class="italic">not()</span> è una funzione applicabile ad una condizione che 
+                inverte il valore di verità. 
             </li>
             <li>
                 <span class="bold">ORDER BY</span> per ordinare
@@ -315,43 +325,91 @@
             </li>
         </ul>
         <p>
-            XQuery è un linguaggio che prende in input un file XML e <span class="bold">restituisce in output un file XML</span>.
+            La funzione <span class="bold">text()</span> estrae il solo contenuto PCDATA di un elemento.
         </p>
-        <h5>Esempio</h5>
+        <p>
+            La funzione aggregata <span class="bold">count()</span> conta il numero di occorrenze.
+        </p>
+        <p>
+            La funzione aggregata <span class="bold">distinct-values()</span> restituisce i valori univoci contenuti nell'XPath.
+        </p>
+        <p>
+            Abbiamo anche la possibilità di usare costrutti condizionali <span class="bold">if then else</span>
+        </p>
         <code>
+            <span class="code-title">Sintassi if XQuery</span>
 <pre>
-let $libri := doc("libri.xml")//Libro
-return $libri;
+if(<span class="italic">condition</span>)
+then exp
+else exp
 </pre>
         </code>
         <p>
-            In questo codice viene restituito un nuovo XML con tutti i Libri del file libri.xml. La query dell'esempio precedente è anche esprimibile come:
+            Quando non è presente, la else va comunque specificata con una exp vuota
         </p>
-        <h5>Esempio</h5>
-        <code>
+    </p>
+    <code>
+        <span class="code-title">Sintassi if XQuery con ramo else vuoto</span>
 <pre>
+if(<span class="italic">condition</span>)
+then exp
+else ()
+</pre>
+    </code>
+        <p>
+            La funzione <span class="bold">position()</span> mi restituisce la posizione dell'elemento corrente.
+        </p>
+        <code>
+            <span class="code-title">Sintassi position() come predicato XPath</span>
+            node/subnode[<span class="bold">position()<=n</span>]
+            <span class="code-subtitle">Prende tutti i subnode con posizione <= n.</span>
+        </code>
+       <p>
+        XQuery è un linguaggio che prende in input file XML e restituisce file XML, possiamo definire quindi 
+        file XML con una struttura custom aggiungendo nuovi tag e attributi.
+       </p>
+       <code>
+<pre>
+{
     for $libro in doc("libri.xml")//Libro
-    let $libri := $libro
-    return $libri
+    let $authors := $libro/autore
+    return &lt;libro numAutori="{count($authors)}"/&gt;
+}
 </pre>
-        </code>
-        <p>
-            Il codice:
-        </p>
-        <ol>
-            <li>
-                Prende tutte i libri
-            </li>
-            <li>
-                Per ogni libro prende l'autore
-            </li>
-            <li>
-                Restituisco questa sequenza
-            </li>
-        </ol>
-        <p>
-            è possibile modificare la struttura
-        </p>
+      <span class="code-subtitle">Aggiunge l'attributo numAutori in una nuova struttura XML custom</span>
+       </code>
+       <p>
+        Possiamo usare anche l'operatore di accesso <span class="bold">[]</span> per accedere ad una lista di nodi
+       </p>
+       <code>
+<pre>
+node/subnode[i]
+</pre>
+       </code>
+       <p>
+        Xquery Update permette di esprimere anche <span class="italic">comandi di modifica</span>, attraverso due direttive:
+       </p>
+       <ul>
+        <li>
+            <span class="bold">insert node</span>
+<code>
+<pre>
+insert node
+    <span class="italic">new node</span>
+as first into <span class="italic">xpath_destination</span>
+</pre>     
+</code>
+        </li>
+        <li>
+            <span class="bold">delete node</span>
+<code>
+<pre>
+delete node
+    <span class="italic">xpath_destination</span>
+</pre>
+</code>
+        </li>
+       </ul>
     </section>
 
 </body>
