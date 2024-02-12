@@ -1,4 +1,4 @@
--- Trigger operazione 4
+-- Trigger Op.4 (quando viene assegnato un trigger passa allo stato "Aperto")
 DELIMITER //
 CREATE TRIGGER aggiorna_stato_ticket
 AFTER INSERT ON Ticket_Assegnato
@@ -10,7 +10,7 @@ BEGIN
 END//
 DELIMITER ;
 
--- Trigger operazione 5
+-- Trigger Op.5 (quando un ticket viene chiuso vengono eliminate tutte le assegnazioni in Ticket_assegnati di quel ticket)
 DELIMITER //
 CREATE TRIGGER elimina_assegnazioni
 AFTER UPDATE ON Ticket
@@ -22,7 +22,7 @@ BEGIN
 END//
 DELIMITER ;
 
--- Trigger operazione 11
+-- Trigger Op.11 (elimina tutti i ticket assegnati al developer. Se quel ticket è senza developer lo passa ad uno stato "Non assegnato")
 DELIMITER //
 CREATE TRIGGER elimina_developer
 BEFORE DELETE ON Developer

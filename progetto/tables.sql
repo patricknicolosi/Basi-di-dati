@@ -17,7 +17,7 @@ CREATE TABLE Ticket (
     ID_ticket INT PRIMARY KEY,
     ID_software INT,
     Versione VARCHAR(50),
-    Stato VARCHAR(50) DEFAULT 'Non Assegnato',
+    Stato VARCHAR(50) DEFAULT 'Non Assegnato' CHECK (Stato IN ('Aperto', 'Chiuso', 'Non Assegnato')),
     Descrizione TEXT,
     Data_apertura DATE,
     Data_chiusura DATE,
