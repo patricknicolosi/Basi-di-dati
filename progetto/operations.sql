@@ -13,15 +13,15 @@ INSERT INTO Ticket (ID_ticket, ID_software, Versione, Stato, Descrizione, Data_a
 VALUES 
 (29, 4, '1.0', 'Non Assegnato', 'Problema di visualizzazione grafico', '2024-02-12', NULL),
 
--- 4 Assegnare un ticket ad un developer 
+-- 4 Assegnare un ticket ad un developer (usa trigger aggiorna_stato_ticket)
 INSERT INTO Ticket_Assegnato (CF_Developer, ID_ticket)
 VALUES
 ('CDCFSCPN', 29);
 
--- 5 Chiudere un issue
+-- 5 Chiudere un issue (usa trigger elimina_assegnazioni)
 UPDATE Ticket 
-SET Stato = 'Chiuso', Data_chiusura = valore_data_chiusura 
-WHERE ID_ticket = 29;
+SET Stato = 'Chiuso', Data_chiusura = CURRENT_DATE 
+WHERE ID_ticket = 1;
 
 -- 6 Visualizzare tutte le release dell’applicativo “Ricevimenti App” ordinate per data 
 SELECT R.*
@@ -56,7 +56,7 @@ INSERT INTO Developer (CF_developer, Nome, Cognome)
 VALUES 
 ('CDCFSCWN', 'William', 'Nicolosi');
 
--- 11 Eliminare un developer 
+-- 11 Eliminare un developer (usa trigger elimina_developer)
 DELETE FROM Developer WHERE CF_developer = 'CDCFSCPN';
 
 -- 12 Visualizzare tutte le issue non assegnate di una release ordinate per date di  apertura 
