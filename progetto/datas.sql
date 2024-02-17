@@ -20,9 +20,8 @@ VALUES
 (3, '2.0.0', 'Miglioramenti grafici', '2022-02-10'),
 (3, '2.0.1', 'Bug ricerca', '2022-04-15'),
 (3, '2.2.1', 'Aggiornamento del sistema di debug', '2022-02-28'),
-(3, '2.2.2', 'Miglioramenti delle funzionalità di ricerca', '2022-03-20');
+(3, '2.2.2', 'Miglioramenti delle funzionalità di ricerca', '2022-03-20'),
 (3, '2.2.3', NULL, '2022-03-25');
-
 
 INSERT INTO Ticket (ID_ticket, ID_software, Versione, Descrizione, Data_apertura, Data_chiusura)
 VALUES
@@ -117,5 +116,3 @@ VALUES
 ('CDCFSCVD', 27),
 ('CDCFSCSL', 28),
 ('CDCFSCPN', 28);
-
-

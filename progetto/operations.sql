@@ -11,7 +11,7 @@ VALUES
 -- Op.3 Creare un nuovo ticket 
 INSERT INTO Ticket (ID_ticket, ID_software, Versione, Stato, Descrizione, Data_apertura, Data_chiusura)
 VALUES 
-(29, 4, '1.0', 'Non Assegnato', 'Problema di visualizzazione grafico', '2024-02-12', NULL),
+(29, 4, '1.0', 'Non Assegnato', 'Problema di visualizzazione grafico', '2024-02-12', NULL);
 
 -- Op.4 Assegnare un ticket esistente ad un developer (usa trigger aggiorna_stato_ticket)
 INSERT INTO Ticket_Assegnato (CF_Developer, ID_ticket)
@@ -47,7 +47,7 @@ ORDER BY T.Data_apertura;
 -- Op.9 Visualizzare tutte le issue chiuse di una release ordinate per date di chiusura 
 SELECT *
 FROM Ticket T
-WHERE T.Stato = 'Chiuso' AND T.ID_software = 3 AND T.Versione = '2.2.2'
+WHERE T.Stato = 'Chiuso' AND T.ID_software = 1 AND T.Versione = '1.0'
 ORDER BY T.Data_apertura;
 
 
