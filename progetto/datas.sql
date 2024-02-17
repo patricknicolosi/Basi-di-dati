@@ -2,7 +2,7 @@ INSERT INTO Software (ID_software, Nome, OS)
 VALUES 
 (1, 'Ricevimenti App', 'Web'),
 (2, 'Gym Manager', 'Windows'),
-(3, 'Product Search', 'Android');
+(3, 'Product Search', NULL);
 
 INSERT INTO Releases (ID_software, Versione, Note, Data) 
 VALUES
@@ -21,6 +21,7 @@ VALUES
 (3, '2.0.1', 'Bug ricerca', '2022-04-15'),
 (3, '2.2.1', 'Aggiornamento del sistema di debug', '2022-02-28'),
 (3, '2.2.2', 'Miglioramenti delle funzionalità di ricerca', '2022-03-20');
+(3, '2.2.3', NULL, '2022-03-25');
 
 
 INSERT INTO Ticket (ID_ticket, ID_software, Versione, Descrizione, Data_apertura, Data_chiusura)

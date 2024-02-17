@@ -1,33 +1,33 @@
 CREATE TABLE Software (
-    ID_software INT PRIMARY KEY,
-    Nome VARCHAR(255),
+    ID_software INT PRIMARY KEY NOT NULL,
+    Nome VARCHAR(255) NOT NULL,
     OS VARCHAR(100)
 );
 
 CREATE TABLE Releases (
     ID_software INT,
-    Versione VARCHAR(50),
+    Versione VARCHAR(50) NOT NULL,
     Note TEXT,
-    Data DATE,
+    Data DATE NOT NULL,
     PRIMARY KEY (ID_software, Versione),
     FOREIGN KEY (ID_software) REFERENCES Software(ID_software)
 );
 
 CREATE TABLE Ticket (
-    ID_ticket INT PRIMARY KEY,
+    ID_ticket INT PRIMARY KEY NOT NULL,
     ID_software INT,
     Versione VARCHAR(50),
     Stato VARCHAR(50) DEFAULT 'Non Assegnato' CHECK (Stato IN ('Aperto', 'Chiuso', 'Non Assegnato')),
-    Descrizione TEXT,
-    Data_apertura DATE,
+    Descrizione TEXT NOT NULL,
+    Data_apertura DATE NOT NULL,
     Data_chiusura DATE,
     FOREIGN KEY (ID_software, Versione) REFERENCES Releases(ID_software, Versione)
 );
 
 CREATE TABLE Developer (
-    CF_developer VARCHAR(16) PRIMARY KEY,
-    Nome VARCHAR(50),
-    Cognome VARCHAR(50)
+    CF_developer VARCHAR(16) PRIMARY KEY NOT NULL,
+    Nome VARCHAR(50) NOT NULL,
+    Cognome VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE Ticket_Assegnato (
