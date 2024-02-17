@@ -8,12 +8,12 @@ INSERT INTO Releases (ID_software, Versione, Note, Data)
 VALUES
 (4, '1.0', 'Prima versione rilasciata', '2024-01-15');
 
--- Op.3 Aprire un nuovo ticket 
+-- Op.3 Creare un nuovo ticket 
 INSERT INTO Ticket (ID_ticket, ID_software, Versione, Stato, Descrizione, Data_apertura, Data_chiusura)
 VALUES 
 (29, 4, '1.0', 'Non Assegnato', 'Problema di visualizzazione grafico', '2024-02-12', NULL),
 
--- Op.4 Assegnare un ticket ad un developer (usa trigger aggiorna_stato_ticket)
+-- Op.4 Assegnare un ticket esistente ad un developer (usa trigger aggiorna_stato_ticket)
 INSERT INTO Ticket_Assegnato (CF_Developer, ID_ticket)
 VALUES
 ('CDCFSCPN', 29);
