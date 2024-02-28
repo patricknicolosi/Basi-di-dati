@@ -17,8 +17,8 @@ CREATE TABLE Ticket (
     ID_ticket INT PRIMARY KEY NOT NULL,
     ID_software INT NOT NULL,
     Versione VARCHAR(50) NOT NULL,
-    Stato VARCHAR(50) DEFAULT 'Non Assegnato' CHECK (Stato IN ('Aperto', 'Chiuso', 'Non Assegnato')) NOT NULL,
-    Descrizione TEXT NOT NULL,
+    Stato VARCHAR(50) DEFAULT 'Non Assegnato' CHECK (Stato IN ('Aperto', 'Chiuso', 'Non Assegnato')),
+    Descrizione VARCHAR(50) NOT NULL,
     Data_apertura DATE NOT NULL,
     Data_chiusura DATE,
     FOREIGN KEY (ID_software, Versione) REFERENCES Releases(ID_software, Versione)
