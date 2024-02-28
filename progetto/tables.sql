@@ -5,7 +5,7 @@ CREATE TABLE Software (
 );
 
 CREATE TABLE Releases (
-    ID_software INT,
+    ID_software INT NOT NULL,
     Versione VARCHAR(50) NOT NULL,
     Note TEXT,
     Data DATE NOT NULL,
@@ -15,9 +15,9 @@ CREATE TABLE Releases (
 
 CREATE TABLE Ticket (
     ID_ticket INT PRIMARY KEY NOT NULL,
-    ID_software INT,
-    Versione VARCHAR(50),
-    Stato VARCHAR(50) DEFAULT 'Non Assegnato' CHECK (Stato IN ('Aperto', 'Chiuso', 'Non Assegnato')),
+    ID_software INT NOT NULL,
+    Versione VARCHAR(50) NOT NULL,
+    Stato VARCHAR(50) DEFAULT 'Non Assegnato' CHECK (Stato IN ('Aperto', 'Chiuso', 'Non Assegnato')) NOT NULL,
     Descrizione TEXT NOT NULL,
     Data_apertura DATE NOT NULL,
     Data_chiusura DATE,
@@ -31,8 +31,8 @@ CREATE TABLE Developer (
 );
 
 CREATE TABLE Ticket_Assegnato (
-    CF_Developer VARCHAR(16),
-    ID_ticket INT,
+    CF_Developer VARCHAR(16) NOT NULL,
+    ID_ticket INT NOT NULL,
     PRIMARY KEY (ID_ticket, CF_Developer),
     FOREIGN KEY (ID_ticket) REFERENCES Ticket(ID_ticket),
     FOREIGN KEY (CF_Developer) REFERENCES Developer(CF_developer)
