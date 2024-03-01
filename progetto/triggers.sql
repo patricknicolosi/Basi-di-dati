@@ -1,4 +1,4 @@
--- Trigger Op.4 (quando viene assegnato un trigger passa allo stato "Aperto")
+-- Trigger Op.4 (quando viene assegnato un ticket passa allo stato "Aperto")
 DELIMITER //
 CREATE TRIGGER aggiorna_stato_ticket
 AFTER INSERT ON Ticket_Assegnato
